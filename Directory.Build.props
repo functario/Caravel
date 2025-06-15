@@ -1,0 +1,19 @@
+<Project>
+  <PropertyGroup>
+    <SdkTargetFramework>net9.0</SdkTargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <CopyToBinFolder>true</CopyToBinFolder>
+    <AnalysisLevel>latest</AnalysisLevel>
+    <AnalysisMode>All</AnalysisMode>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <CodeAnalysisTreatWarningsAsErrors>true</CodeAnalysisTreatWarningsAsErrors>
+    <EnforceCodeStyleInBuild>true</EnforceCodeStyleInBuild>
+    <ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally>
+  </PropertyGroup>
+  <PropertyGroup>
+    <NoWarn>IDE0055, CS1591</NoWarn>
+    <!-- IDE2006, IDE0058, IDE0290, IDE0072, IDE0110, IDE0100 -->
+  </PropertyGroup>
+</Project>
