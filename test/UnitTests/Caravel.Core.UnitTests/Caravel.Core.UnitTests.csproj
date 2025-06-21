@@ -21,6 +21,7 @@
     </ItemGroup>
     <ItemGroup>
         <ProjectReference Include="..\..\..\src\Caravel.Core\Caravel.Core.csproj" />
+        <ProjectReference Include="..\..\Caravel.Tests.Fixtures\Caravel.Tests.Fixtures.csproj" />
         <ProjectReference Include="..\..\Caravel.Tests.Support\Caravel.Tests.Support.csproj" />
     </ItemGroup>
 </Project>

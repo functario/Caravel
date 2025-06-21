@@ -26,6 +26,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Caravel.Tests.Support", "te
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "UnitTests", "UnitTests", "{E9540A45-EA02-4F9F-8C57-D83AA246CFE4}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Caravel.Tests.Fixtures", "test\Caravel.Tests.Fixtures\Caravel.Tests.Fixtures.csproj", "{2E70A971-648E-4D93-A717-8B6974160A3C}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -48,6 +50,10 @@ Global
 		{C1002264-B5E4-4F48-B542-717A11A55CD2}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C1002264-B5E4-4F48-B542-717A11A55CD2}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C1002264-B5E4-4F48-B542-717A11A55CD2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2E70A971-648E-4D93-A717-8B6974160A3C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2E70A971-648E-4D93-A717-8B6974160A3C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2E70A971-648E-4D93-A717-8B6974160A3C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2E70A971-648E-4D93-A717-8B6974160A3C}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -58,6 +64,7 @@ Global
 		{CD9116A5-EF5C-4AF4-8993-8C06B8BD02FD} = {E9540A45-EA02-4F9F-8C57-D83AA246CFE4}
 		{C1002264-B5E4-4F48-B542-717A11A55CD2} = {02EA681E-C7D8-13C7-8484-4AC65E1B71E8}
 		{E9540A45-EA02-4F9F-8C57-D83AA246CFE4} = {02EA681E-C7D8-13C7-8484-4AC65E1B71E8}
+		{2E70A971-648E-4D93-A717-8B6974160A3C} = {02EA681E-C7D8-13C7-8484-4AC65E1B71E8}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {C117A897-A1ED-4783-8937-F9378E58B728}

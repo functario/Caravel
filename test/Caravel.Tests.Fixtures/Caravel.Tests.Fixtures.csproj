@@ -1,0 +1,11 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+    <PropertyGroup>
+        <TargetFramework>$(SdkTargetFramework)</TargetFramework>
+    </PropertyGroup>
+    <ItemGroup>
+      <PackageReference Include="AutoFixture.Xunit3" />
+    </ItemGroup>
+    <ItemGroup>
+      <ProjectReference Include="..\..\src\Caravel.Abstractions\Caravel.Abstractions.csproj" />
+    </ItemGroup>
+</Project>
