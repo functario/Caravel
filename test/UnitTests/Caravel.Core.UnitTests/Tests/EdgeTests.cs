@@ -1,4 +1,5 @@
-﻿using Caravel.Tests.Fixtures;
+﻿using Caravel.Abstractions;
+using Caravel.Tests.Fixtures;
 
 namespace Caravel.Core.UnitTests.Tests;
 
@@ -10,7 +11,7 @@ public class EdgeTests
     public void Test1(Node origin, Node neighbor, int weight)
     {
         // Arrange
-        var edge = new Edge(origin, neighbor, weight);
+        var edge = new Edge(origin, neighbor, (_) => Task.FromResult<INode>(neighbor), weight);
 
         // Act
         var sut = edge.ToString();
