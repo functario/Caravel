@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using AutoFixture;
 using Caravel.Abstractions;
+using Caravel.Core;
 
 namespace Caravel.Tests.Fixtures.GraphsData;
 
@@ -12,11 +13,11 @@ public sealed class Graph_3_Nodes_NoWeight
     public Graph_3_Nodes_NoWeight()
     {
         var fixture = CaravelDataAttribute.CreateFixture();
-        var node1 = fixture.Create<Node>();
-        var node2 = fixture.Create<Node>();
-        var node3 = fixture.Create<Node>();
+        var node1 = fixture.Create<INode>();
+        var node2 = fixture.Create<INode>();
+        var node3 = fixture.Create<INode>();
 
-        var map = new Dictionary<Node, List<Edge>>
+        var map = new Dictionary<INode, List<Edge>>
         {
             { node1, [new(node1, node2)] },
             { node2, [new(node2, node3)] },

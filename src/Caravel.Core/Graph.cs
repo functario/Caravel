@@ -1,23 +1,29 @@
 ﻿using System.Collections.Frozen;
+using System.Collections.Generic;
+using System.Linq;
+using Caravel.Abstractions;
 
-namespace Caravel.Abstractions;
+namespace Caravel.Core;
 
 public class Graph
 {
-    private readonly FrozenDictionary<Node, List<Edge>> _map = new Dictionary<Node, List<Edge>>().ToFrozenDictionary();
+    private readonly FrozenDictionary<INode, List<Edge>> _map = new Dictionary<
+        INode,
+        List<Edge>
+    >().ToFrozenDictionary();
 
-    public Graph(FrozenDictionary<Node, List<Edge>> map)
+    public Graph(FrozenDictionary<INode, List<Edge>> map)
     {
         _map = map;
     }
 
-    public FrozenDictionary<Node, List<Edge>> Map => _map;
+    public FrozenDictionary<INode, List<Edge>> Map => _map;
 
-    public ICollection<Node> GetShortestPath(Node start, Node end)
+    public ICollection<INode> GetShortestPath(INode start, INode end)
     {
-        var distances = new Dictionary<Node, int>();
-        var previous = new Dictionary<Node, Node?>();
-        var queue = new PriorityQueue<Node, int>();
+        var distances = new Dictionary<INode, int>();
+        var previous = new Dictionary<INode, INode>();
+        var queue = new PriorityQueue<INode, int>();
 
         foreach (var node in _map.Keys)
         {
@@ -50,21 +56,21 @@ public class Graph
         }
 
         // Reconstruct path
-        var path = new List<Node>();
+        var path = new List<INode>();
         for (var at = end; at != null; at = previous[at])
             path.Insert(0, at);
 
         return distances[end] == int.MaxValue ? [] : path;
     }
 
-    public ICollection<Node> GetShortestPathWithWayNodes(
-        Node start,
-        ICollection<Node> wayNodes,
-        Node end
+    public ICollection<INode> GetShortestPathWithWayNodes(
+        INode start,
+        ICollection<INode> wayNodes,
+        INode end
     )
     {
-        var fullPath = new List<Node>();
-        var pathNodes = new List<Node> { start };
+        var fullPath = new List<INode>();
+        var pathNodes = new List<INode> { start };
         pathNodes.AddRange(wayNodes);
         pathNodes.Add(end);
 

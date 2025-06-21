@@ -7,5 +7,6 @@
     </ItemGroup>
     <ItemGroup>
       <ProjectReference Include="..\..\src\Caravel.Abstractions\Caravel.Abstractions.csproj" />
+      <ProjectReference Include="..\..\src\Caravel.Core\Caravel.Core.csproj" />
     </ItemGroup>
 </Project>
