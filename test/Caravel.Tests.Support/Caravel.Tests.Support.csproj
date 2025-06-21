@@ -2,7 +2,4 @@
     <PropertyGroup>
         <TargetFramework>$(SdkTargetFramework)</TargetFramework>
     </PropertyGroup>
-    <ItemGroup>
-        <ProjectReference Include="..\Caravel.Abstractions\Caravel.Abstractions.csproj" />
-    </ItemGroup>
 </Project>
