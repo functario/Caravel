@@ -1,91 +1,100 @@
 ﻿using System.Collections.Frozen;
-using System.Collections.Generic;
-using System.Linq;
 using Caravel.Abstractions;
 
 namespace Caravel.Core;
 
-public class Graph
+public class Graph : IGraph
 {
-    private readonly FrozenDictionary<INode, List<Edge>> _map = new Dictionary<
-        INode,
-        List<Edge>
-    >().ToFrozenDictionary();
-
-    public Graph(FrozenDictionary<INode, List<Edge>> map)
+    public IRoute GetShortestRoute(INode origin, INode destination)
     {
-        _map = map;
+        return GetShortestRoute(origin, Array.Empty<INode>(), destination);
     }
 
-    public FrozenDictionary<INode, List<Edge>> Map => _map;
-
-    public ICollection<INode> GetShortestPath(INode start, INode end)
+    public IRoute GetShortestRoute(INode origin, ICollection<INode> waypoints, INode destination)
     {
-        var distances = new Dictionary<INode, int>();
-        var previous = new Dictionary<INode, INode>();
-        var queue = new PriorityQueue<INode, int>();
+        ArgumentNullException.ThrowIfNull(origin);
+        ArgumentNullException.ThrowIfNull(destination);
+        ArgumentNullException.ThrowIfNull(waypoints);
+        var allEdges = new List<IEdge>();
+        var current = origin;
 
-        foreach (var node in _map.Keys)
+        foreach (var waypoint in waypoints)
         {
-            distances[node] = int.MaxValue;
-            previous[node] = null;
+            var route = Dijkstra(current, waypoint) ?? throw new InvalidOperationException($"No route from {current.Name} to waypoint {waypoint.Name}.");
+            allEdges.AddRange(route.Edges);
+            current = waypoint;
         }
 
-        distances[start] = 0;
+        var finalRoute = Dijkstra(current, destination) ?? throw new InvalidOperationException($"No route from {current.Name} to destination {destination.Name}.");
+        allEdges.AddRange(finalRoute.Edges);
+
+        return new Route(allEdges.ToFrozenSet());
+    }
+
+    private static Route Dijkstra(INode start, INode destination)
+    {
+        var visited = new HashSet<INode>();
+        var distances = new Dictionary<INode, int> { [start] = 0 };
+        var previous = new Dictionary<INode, IEdge>();
+
+        var queue = new PriorityQueue<INode, int>();
         queue.Enqueue(start, 0);
 
-        while (queue.Count > 0)
+        while (queue.TryDequeue(out var current, out _))
         {
-            var current = queue.Dequeue();
+            if (visited.Contains(current))
+                continue;
 
-            if (current.Equals(end))
+            if (current == destination)
                 break;
 
-            foreach (var edge in _map[current])
+            visited.Add(current);
+
+            var edges = current.GetEdges();
+            foreach (var edge in edges)
             {
                 var neighbor = edge.Neighbor;
-                var alt = distances[current] + edge.Weight;
+                var newDist = distances[current] + edge.Weight;
 
-                if (alt < distances[neighbor])
+                if (!distances.TryGetValue(neighbor, out var value) || newDist < value)
                 {
-                    distances[neighbor] = alt;
-                    previous[neighbor] = current;
-                    queue.Enqueue(neighbor, alt);
+                    value = newDist;
+                    distances[neighbor] = value;
+                    previous[neighbor] = edge;
+                    queue.Enqueue(neighbor, newDist);
                 }
             }
         }
 
         // Reconstruct path
-        var path = new List<INode>();
-        for (var at = end; at != null; at = previous[at])
-            path.Insert(0, at);
+        if (!previous.ContainsKey(destination))
+            throw new InvalidOperationException("Does not contains node");
 
-        return distances[end] == int.MaxValue ? [] : path;
-    }
+        var pathEdges = new List<IEdge>();
+        var node = destination;
 
-    public ICollection<INode> GetShortestPathWithWayNodes(
-        INode start,
-        ICollection<INode> wayNodes,
-        INode end
-    )
-    {
-        var fullPath = new List<INode>();
-        var pathNodes = new List<INode> { start };
-        pathNodes.AddRange(wayNodes);
-        pathNodes.Add(end);
-
-        for (var i = 0; i < pathNodes.Count - 1; i++)
+        while (node != start)
         {
-            var segment = GetShortestPath(pathNodes[i], pathNodes[i + 1]).ToList();
-            if (segment.Count == 0)
-                return []; // No path
+            var edge = previous[node];
+            if (edge == null)
+                break;
 
-            if (i > 0)
-                segment.RemoveAt(0); // avoid duplicate
-
-            fullPath.AddRange(segment);
+            pathEdges.Insert(0, edge);
+            node = edge.Origin;
         }
 
-        return fullPath;
+        return new Route(pathEdges.ToFrozenSet());
+    }
+
+}
+
+// Simple implementation of IRoute
+public class Route : IRoute
+{
+    public FrozenSet<IEdge> Edges { get; }
+
+    public Route(FrozenSet<IEdge> edges)
+    {
+        Edges = edges;
     }
 }

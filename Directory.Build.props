@@ -1,6 +1,8 @@
 <Project>
   <PropertyGroup>
     <SdkTargetFramework>net9.0</SdkTargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <CopyToBinFolder>true</CopyToBinFolder>
     <AnalysisLevel>latest</AnalysisLevel>

@@ -4,5 +4,5 @@ namespace Caravel.Abstractions;
 public interface INode
 {
     string Name { get; }
-    FrozenSet<IEdge> Edges { get; }
+    public FrozenSet<IEdge> GetEdges();
 }
