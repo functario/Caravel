@@ -19,7 +19,7 @@ public sealed class NodeA : INode
     {
         return new List<IEdge>()
         {
-            new Edge(this, _map.NodeB, (ct) => Task.FromResult<INode>(_map.NodeB)),
+            _map.CreateEdge<NodeB>(this, (ct) => Task.FromResult(_map.NodeB))
         }.ToFrozenSet();
     }
 }

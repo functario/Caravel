@@ -22,5 +22,5 @@ public sealed class MapA : Map
     }
 
     public NodeA NodeA => throw new NotImplementedException();
-    public NodeA NodeB => throw new NotImplementedException();
+    public NodeB NodeB => throw new NotImplementedException();
 }
