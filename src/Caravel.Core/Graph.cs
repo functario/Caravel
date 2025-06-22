@@ -87,14 +87,3 @@ public class Graph : IGraph
     }
 
 }
-
-// Simple implementation of IRoute
-public class Route : IRoute
-{
-    public FrozenSet<IEdge> Edges { get; }
-
-    public Route(FrozenSet<IEdge> edges)
-    {
-        Edges = edges;
-    }
-}
