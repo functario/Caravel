@@ -1,25 +1,27 @@
 ﻿using System.Collections.Frozen;
+using System.Diagnostics;
 using Caravel.Abstractions;
-using Caravel.Core;
+using Caravel.Core.Extensions;
 
 namespace Caravel.Tests.Fixtures.GraphsData.Nodes;
 
 public sealed class NodeB : INode
 {
-    private readonly MapA _map;
-
-    public NodeB(MapA map)
+    public NodeB()
     {
-        _map = map;
     }
-
-    public string Name => nameof(NodeA);
 
     public FrozenSet<IEdge> GetEdges()
     {
         return new List<IEdge>()
         {
-            _map.CreateEdge<NodeA>(this, (ct) => Task.FromResult(_map.NodeA))
+            this.CreateEdge<NodeC>(OpenNodeC)
         }.ToFrozenSet();
+    }
+
+    public Task OpenNodeC(CancellationToken _)
+    {
+        Debug.WriteLine($"{GetType().Name} to {typeof(NodeC).Name}");
+        return Task.CompletedTask;
     }
 }

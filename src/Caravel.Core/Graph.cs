@@ -1,43 +1,49 @@
 ﻿using System.Collections.Frozen;
+using System.Collections.Immutable;
 using Caravel.Abstractions;
 
 namespace Caravel.Core;
-
-public class Graph : IGraph
+public sealed class Graph : IGraph
 {
-    public IRoute GetShortestRoute(INode origin, INode destination)
+    private readonly FrozenDictionary<Type, INode> _nodes;
+
+    public Graph(ImmutableHashSet<INode> nodes)
     {
-        return GetShortestRoute(origin, Array.Empty<INode>(), destination);
+        _nodes = nodes.ToDictionary(n => n.GetType(), n => n).ToFrozenDictionary();
     }
 
-    public IRoute GetShortestRoute(INode origin, ICollection<INode> waypoints, INode destination)
+    public IRoute GetShortestRoute(Type origin, Type destination)
+        => GetShortestRoute(origin, Array.Empty<Type>(), destination);
+
+    public IRoute GetShortestRoute(Type origin, ICollection<Type> waypoints, Type destination)
     {
         ArgumentNullException.ThrowIfNull(origin);
         ArgumentNullException.ThrowIfNull(destination);
         ArgumentNullException.ThrowIfNull(waypoints);
+
         var allEdges = new List<IEdge>();
         var current = origin;
 
         foreach (var waypoint in waypoints)
         {
-            var route = Dijkstra(current, waypoint) ?? throw new InvalidOperationException($"No route from {current.Name} to waypoint {waypoint.Name}.");
-            allEdges.AddRange(route.Edges);
+            var segment = Dijkstra(current, waypoint);
+            allEdges.AddRange(segment);
             current = waypoint;
         }
 
-        var finalRoute = Dijkstra(current, destination) ?? throw new InvalidOperationException($"No route from {current.Name} to destination {destination.Name}.");
-        allEdges.AddRange(finalRoute.Edges);
+        var finalSegment = Dijkstra(current, destination);
+        allEdges.AddRange(finalSegment);
 
         return new Route(allEdges.ToFrozenSet());
     }
 
-    private static Route Dijkstra(INode start, INode destination)
+    private List<IEdge> Dijkstra(Type start, Type end)
     {
-        var visited = new HashSet<INode>();
-        var distances = new Dictionary<INode, int> { [start] = 0 };
-        var previous = new Dictionary<INode, IEdge>();
+        var distances = new Dictionary<Type, int> { [start] = 0 };
+        var previous = new Dictionary<Type, IEdge>();
+        var visited = new HashSet<Type>();
 
-        var queue = new PriorityQueue<INode, int>();
+        var queue = new PriorityQueue<Type, int>();
         queue.Enqueue(start, 0);
 
         while (queue.TryDequeue(out var current, out _))
@@ -45,45 +51,42 @@ public class Graph : IGraph
             if (visited.Contains(current))
                 continue;
 
-            if (current == destination)
+            if (current == end)
                 break;
 
             visited.Add(current);
 
-            var edges = current.GetEdges();
-            foreach (var edge in edges)
+            if (!_nodes.TryGetValue(current, out var currentNode))
+                throw new InvalidOperationException($"Node of type {current.Name} not found in graph.");
+
+            foreach (var edge in currentNode.GetEdges())
             {
                 var neighbor = edge.Neighbor;
-                var newDist = distances[current] + edge.Weight;
+                var newDistance = distances[current] + edge.Weight;
 
-                if (!distances.TryGetValue(neighbor, out var value) || newDist < value)
+                if (!distances.TryGetValue(neighbor, out var knownDistance) || newDistance < knownDistance)
                 {
-                    value = newDist;
-                    distances[neighbor] = value;
+                    distances[neighbor] = newDistance;
                     previous[neighbor] = edge;
-                    queue.Enqueue(neighbor, newDist);
+                    queue.Enqueue(neighbor, newDistance);
                 }
             }
         }
 
-        // Reconstruct path
-        if (!previous.ContainsKey(destination))
-            throw new InvalidOperationException("Does not contains node");
+        if (!previous.ContainsKey(end))
+            throw new InvalidOperationException($"No route found from {start.Name} to {end.Name}");
 
-        var pathEdges = new List<IEdge>();
-        var node = destination;
+        // Reconstruct path
+        var path = new List<IEdge>();
+        var node = end;
 
         while (node != start)
         {
             var edge = previous[node];
-            if (edge == null)
-                break;
-
-            pathEdges.Insert(0, edge);
+            path.Insert(0, edge);
             node = edge.Origin;
         }
 
-        return new Route(pathEdges.ToFrozenSet());
+        return path;
     }
-
 }

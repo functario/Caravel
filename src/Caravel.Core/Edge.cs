@@ -3,9 +3,9 @@
 namespace Caravel.Core;
 
 public record Edge(
-    INode Origin,
-    INode Neighbor,
-    Func<CancellationToken, Task<INode>> GetNext,
+    Type Origin,
+    Type Neighbor,
+    Func<CancellationToken, Task> GetNext,
     int Weight = 0
 ) : IEdge
 {

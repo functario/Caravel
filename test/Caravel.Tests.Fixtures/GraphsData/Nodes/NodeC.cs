@@ -5,16 +5,16 @@ using Caravel.Core.Extensions;
 
 namespace Caravel.Tests.Fixtures.GraphsData.Nodes;
 
-public sealed class NodeA : INode
+public sealed class NodeC : INode
 {
-    public NodeA() { }
+    public NodeC() { }
 
     public FrozenSet<IEdge> GetEdges()
     {
-        return new List<IEdge>() { this.CreateEdge<NodeB>(OpenNodeB) }.ToFrozenSet();
+        return new List<IEdge>() { this.CreateEdge<NodeA>(OpenNodeA) }.ToFrozenSet();
     }
 
-    public Task OpenNodeB(CancellationToken _)
+    public Task OpenNodeA(CancellationToken _)
     {
         Debug.WriteLine($"{GetType().Name} to {typeof(NodeB).Name}");
         return Task.CompletedTask;
