@@ -11,15 +11,15 @@ public sealed class NodeB : INode
     {
     }
 
-    public ImmutableHashSet<IEdge> GetEdges()
+    public ImmutableHashSet<IEdge> GetEdges(Lazy<IJourney> journey)
     {
         return
         [
-            this.CreateEdge<NodeC>(OpenNodeC)
+            this.CreateEdge<NodeC>(journey, OpenNodeC)
         ];
     }
 
-    public Task<NodeC> OpenNodeC(CancellationToken _)
+    public Task<NodeC> OpenNodeC(IJourney journey, CancellationToken _)
     {
         Debug.WriteLine($"{GetType().Name} to {typeof(NodeC).Name}");
         return Task.FromResult(new NodeC());

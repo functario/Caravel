@@ -35,7 +35,7 @@ public record Journey : IJourney
 
         var originType = Current.GetType();
         var destinationType = typeof(TDestination);
-        var shortestRoute = Graph.GetShortestRoute(originType, destinationType);
+        var shortestRoute = Graph.GetShortestRoute(new Lazy<IJourney>(() => this), originType, destinationType);
         var edges = shortestRoute.Edges;
 
         if (edges.Any(x => x is null))
@@ -46,7 +46,7 @@ public record Journey : IJourney
         foreach (var edge in edges)
         {
             linkedCancellationTokenSource.Token.ThrowExceptionIfCancellationRequested();
-            Current = await edge.MoveNext(linkedCancellationTokenSource.Token).ConfigureAwait(false);
+            Current = await edge.MoveNext(this, linkedCancellationTokenSource.Token).ConfigureAwait(false);
             Log.History.Enqueue(Current.GetType());
         }
 

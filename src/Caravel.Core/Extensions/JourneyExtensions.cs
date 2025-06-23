@@ -4,6 +4,8 @@ namespace Caravel.Core.Extensions;
 
 public static class JourneyExtensions
 {
+    public static Lazy<IJourney> LazyJourney => new();
+
     public static async Task<IJourney> GotoAsync<TDestination>(
         this Task<IJourney> journeyTask,
         CancellationToken localCancellationToken = default

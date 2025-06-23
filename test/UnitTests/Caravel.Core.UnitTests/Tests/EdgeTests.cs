@@ -13,7 +13,10 @@ public class EdgeTests
         var nodeA = new NodeA();
         var origin = typeof(NodeA);
         var neighbor = typeof(NodeB);
-        var edge = nodeA.CreateEdge<NodeB>((ct) => Task.FromResult(new NodeB()));
+        var edge = nodeA.CreateEdge<NodeB>(
+            LazyJourney,
+            (j, ct) => Task.FromResult(new NodeB())
+        );
 
         // Act
         var sut = edge.ToString();

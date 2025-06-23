@@ -9,12 +9,12 @@ public sealed class NodeC : INode
 {
     public NodeC() { }
 
-    public ImmutableHashSet<IEdge> GetEdges()
+    public ImmutableHashSet<IEdge> GetEdges(Lazy<IJourney> journey)
     {
-        return [this.CreateEdge<NodeA>(OpenNodeA)];
+        return [this.CreateEdge<NodeA>(journey, OpenNodeA)];
     }
 
-    public Task<NodeA> OpenNodeA(CancellationToken _)
+    public Task<NodeA> OpenNodeA(IJourney journey, CancellationToken _)
     {
         Debug.WriteLine($"{GetType().Name} to {typeof(NodeA).Name}");
         return Task.FromResult(new NodeA());

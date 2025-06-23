@@ -1,4 +1,5 @@
 ﻿using System.Collections.Immutable;
+using Caravel.Abstractions;
 using Caravel.Core.Extensions;
 using Caravel.Tests.Fixtures.GraphsData;
 using Caravel.Tests.Fixtures.GraphsData.Nodes;
@@ -22,7 +23,7 @@ public class GraphTests
         var expectedRoute = new Route(edges);
 
         // Act
-        var sut = graph.GetShortestRoute(origin, destination);
+        var sut = graph.GetShortestRoute(new Lazy<IJourney>(), origin, destination);
 
         // Assert
         sut.GetPath().Should().BeEquivalentTo(expectedRoute.GetPath());
