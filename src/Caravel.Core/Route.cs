@@ -11,4 +11,15 @@ public class Route : IRoute
     {
         Edges = edges;
     }
+
+    public string[] GetPath()
+    {
+        var path = new List<string>();
+        foreach (var edge in Edges)
+        {
+            path.Add(edge.ToString() ?? "");
+        }
+
+        return [.. path];
+    }
 }

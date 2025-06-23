@@ -25,7 +25,7 @@ public class GraphTests
         var sut = graph.GetShortestRoute(origin, destination);
 
         // Assert
-        sut.Should().BeEquivalentTo(expectedRoute);
+        sut.GetPath().Should().BeEquivalentTo(expectedRoute.GetPath());
     }
 
     [Fact(DisplayName = "Run")]
