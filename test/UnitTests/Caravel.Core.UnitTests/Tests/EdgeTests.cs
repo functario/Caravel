@@ -1,4 +1,5 @@
-﻿using Caravel.Tests.Fixtures.GraphsData.Nodes;
+﻿using Caravel.Core.Extensions;
+using Caravel.Tests.Fixtures.GraphsData.Nodes;
 
 namespace Caravel.Core.UnitTests.Tests;
 
@@ -9,9 +10,10 @@ public class EdgeTests
     public void Test1()
     {
         // Arrange
+        var nodeA = new NodeA();
         var origin = typeof(NodeA);
         var neighbor = typeof(NodeB);
-        var edge = new Edge(origin, neighbor, (_) => Task.CompletedTask);
+        var edge = nodeA.CreateEdge<NodeB>((ct) => Task.FromResult(new NodeB()));
 
         // Act
         var sut = edge.ToString();

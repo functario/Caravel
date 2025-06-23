@@ -14,9 +14,9 @@ public sealed class NodeC : INode
         return new List<IEdge>() { this.CreateEdge<NodeA>(OpenNodeA) }.ToFrozenSet();
     }
 
-    public Task OpenNodeA(CancellationToken _)
+    public Task<NodeA> OpenNodeA(CancellationToken _)
     {
-        Debug.WriteLine($"{GetType().Name} to {typeof(NodeB).Name}");
-        return Task.CompletedTask;
+        Debug.WriteLine($"{GetType().Name} to {typeof(NodeA).Name}");
+        return Task.FromResult(new NodeA());
     }
 }

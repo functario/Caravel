@@ -19,9 +19,9 @@ public sealed class NodeB : INode
         }.ToFrozenSet();
     }
 
-    public Task OpenNodeC(CancellationToken _)
+    public Task<NodeC> OpenNodeC(CancellationToken _)
     {
         Debug.WriteLine($"{GetType().Name} to {typeof(NodeC).Name}");
-        return Task.CompletedTask;
+        return Task.FromResult(new NodeC());
     }
 }
