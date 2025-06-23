@@ -11,10 +11,10 @@ public sealed class Graph : IGraph
         _nodes = nodes.ToDictionary(n => n.GetType(), n => n).ToFrozenDictionary();
     }
 
-    public IRoute GetShortestRoute(Lazy<IJourney> journey, Type origin, Type destination)
-        => GetShortestRoute(journey, origin, Array.Empty<Type>(), destination);
+    public IRoute GetShortestRoute(Type origin, Type destination)
+        => GetShortestRoute(origin, Array.Empty<Type>(), destination);
 
-    public IRoute GetShortestRoute(Lazy<IJourney> journey, Type origin, ICollection<Type> waypoints, Type destination)
+    public IRoute GetShortestRoute(Type origin, ICollection<Type> waypoints, Type destination)
     {
         ArgumentNullException.ThrowIfNull(origin);
         ArgumentNullException.ThrowIfNull(destination);
@@ -25,18 +25,18 @@ public sealed class Graph : IGraph
 
         foreach (var waypoint in waypoints)
         {
-            var segment = Dijkstra(journey, current, waypoint);
+            var segment = Dijkstra(current, waypoint);
             allEdges.AddRange(segment);
             current = waypoint;
         }
 
-        var finalSegment = Dijkstra(journey, current, destination);
+        var finalSegment = Dijkstra(current, destination);
         allEdges.AddRange(finalSegment);
 
         return new Route([.. allEdges]);
     }
 
-    private List<IEdge> Dijkstra(Lazy<IJourney> journey, Type start, Type end)
+    private List<IEdge> Dijkstra(Type start, Type end)
     {
         var distances = new Dictionary<Type, int> { [start] = 0 };
         var previous = new Dictionary<Type, IEdge>();
@@ -58,7 +58,7 @@ public sealed class Graph : IGraph
             if (!_nodes.TryGetValue(current, out var currentNode))
                 throw new InvalidOperationException($"Node of type {current.Name} not found in graph.");
 
-            foreach (var edge in currentNode.GetEdges(journey))
+            foreach (var edge in currentNode.GetEdges())
             {
                 var neighbor = edge.Neighbor;
                 var newDistance = distances[current] + edge.Weight;

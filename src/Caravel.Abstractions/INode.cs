@@ -3,5 +3,5 @@
 namespace Caravel.Abstractions;
 public interface INode
 {
-    public ImmutableHashSet<IEdge> GetEdges(Lazy<IJourney> journey);
+    public ImmutableHashSet<IEdge> GetEdges();
 }

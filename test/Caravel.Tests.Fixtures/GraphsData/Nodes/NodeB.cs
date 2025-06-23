@@ -11,11 +11,11 @@ public sealed class NodeB : INode
     {
     }
 
-    public ImmutableHashSet<IEdge> GetEdges(Lazy<IJourney> journey)
+    public ImmutableHashSet<IEdge> GetEdges()
     {
         return
         [
-            this.CreateEdge<NodeC>(journey, OpenNodeC)
+            this.CreateEdge<NodeC>(OpenNodeC)
         ];
     }
 

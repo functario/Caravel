@@ -35,7 +35,7 @@ public record Journey : IJourney
 
         var originType = Current.GetType();
         var destinationType = typeof(TDestination);
-        var shortestRoute = Graph.GetShortestRoute(new Lazy<IJourney>(() => this), originType, destinationType);
+        var shortestRoute = Graph.GetShortestRoute(originType, destinationType);
         var edges = shortestRoute.Edges;
 
         if (edges.Any(x => x is null))

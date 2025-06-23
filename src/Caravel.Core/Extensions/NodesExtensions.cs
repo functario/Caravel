@@ -11,7 +11,7 @@ public static class NodesExtensions
 
         var edges = nodeMatches.Length switch
         {
-            1 => nodeMatches[0].GetEdges(new Lazy<IJourney>()),
+            1 => nodeMatches[0].GetEdges(),
             < 1 => throw new InvalidOperationException(
                 $"There is no orign {nameof(INode)} of type '{typeof(TOrigin)}'."
             ),

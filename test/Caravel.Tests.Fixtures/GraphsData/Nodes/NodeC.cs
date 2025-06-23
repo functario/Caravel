@@ -9,9 +9,9 @@ public sealed class NodeC : INode
 {
     public NodeC() { }
 
-    public ImmutableHashSet<IEdge> GetEdges(Lazy<IJourney> journey)
+    public ImmutableHashSet<IEdge> GetEdges()
     {
-        return [this.CreateEdge<NodeA>(journey, OpenNodeA)];
+        return [this.CreateEdge<NodeA>(OpenNodeA)];
     }
 
     public Task<NodeA> OpenNodeA(IJourney journey, CancellationToken _)
