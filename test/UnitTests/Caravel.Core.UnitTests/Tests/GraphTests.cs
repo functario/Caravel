@@ -28,28 +28,35 @@ public class GraphTests
         sut.GetPath().Should().BeEquivalentTo(expectedRoute.GetPath());
     }
 
+    [System.Diagnostics.CodeAnalysis.SuppressMessage(
+        "Usage",
+        "xUnit1051:Calls to methods which accept CancellationToken should use TestContext.Current.CancellationToken",
+        Justification = "<Pending>"
+    )]
     [Fact(DisplayName = "Run")]
-    public void Test2()
+    public async Task Test2()
     {
+        // csharpier-ignore-start
         // Arrange
         var graphData = new Graph_3_Nodes_NoWeight();
         var graph = graphData.Graph;
-        var edgeAtoB = graphData.Nodes.GetEdge<NodeA, NodeB>();
-        var edgeBtoC = graphData.Nodes.GetEdge<NodeB, NodeC>();
-        var origin = typeof(NodeA);
-        var destination = typeof(NodeC);
-        var edges = FrozenSet.Create(edgeAtoB, edgeBtoC);
-        var expectedRoute = new Route(edges);
-        var route = graph.GetShortestRoute(origin, destination);
+        var nodeA = new NodeA();
+        var journey = new Journey(nodeA, graph);
 
         // Act
-        var sut = route.Edges.Select(e => e.GetNext);
-        foreach (var next in sut)
-        {
-            next(CancellationToken.None);
-        }
+        var sut = await journey
+            .GotoAsync<NodeC>()
+            .GotoAsync<NodeB>();
 
         // Assert
-        //sut.Should().BeEquivalentTo(expectedRoute);
+        sut.Log.History.Should()
+            .ContainInConsecutiveOrder(
+                [typeof(NodeA),
+                typeof(NodeB),
+                typeof(NodeC),
+                typeof(NodeA),
+                typeof(NodeB)]
+            );
+        // csharpier-ignore-end
     }
 }
