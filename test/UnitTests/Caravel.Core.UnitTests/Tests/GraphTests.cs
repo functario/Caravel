@@ -41,11 +41,12 @@ public class GraphTests
         var graphData = new Graph_3_Nodes_NoWeight();
         var graph = graphData.Graph;
         var nodeA = new NodeA();
-        var journey = new Journey(nodeA, graph);
+        var journey = new Journey(nodeA, graph, TestContext.Current.CancellationToken);
+        using var localCancellationTokenSource = new CancellationTokenSource(TimeSpan.FromMinutes(10));
 
         // Act
         var sut = await journey
-            .GotoAsync<NodeC>()
+            .GotoAsync<NodeC>(localCancellationTokenSource.Token)
             .GotoAsync<NodeB>();
 
         // Assert
@@ -73,15 +74,16 @@ public class GraphTests
         var graphData = new Graph_3_Nodes_NoWeight();
         var graph = graphData.Graph;
         var nodeA = new NodeA();
-        var journey = new Journey(nodeA, graph);
+        var journey = new Journey(nodeA, graph, TestContext.Current.CancellationToken);
+        using var localCancellationTokenSource = new CancellationTokenSource(TimeSpan.FromMinutes(10));
 
         // Act
         var sut = await journey
             .GotoAsync<NodeC>()
-            .DoAsync<NodeC>((n, ct) =>
+            .DoAsync<NodeC>((n, _) =>
             {
                 return Task.FromResult(n);
-            }, CancellationToken.None);
+            }, localCancellationTokenSource.Token);
 
         // Assert
         sut.Current.GetType().Should().Be<NodeC>();
