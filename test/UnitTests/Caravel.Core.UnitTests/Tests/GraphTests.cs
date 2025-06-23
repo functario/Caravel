@@ -33,7 +33,7 @@ public class GraphTests
         "xUnit1051:Calls to methods which accept CancellationToken should use TestContext.Current.CancellationToken",
         Justification = "<Pending>"
     )]
-    [Fact(DisplayName = "Run")]
+    [Fact(DisplayName = "GotoAsync")]
     public async Task Test2()
     {
         // csharpier-ignore-start
@@ -57,6 +57,34 @@ public class GraphTests
                 typeof(NodeA),
                 typeof(NodeB)]
             );
+        // csharpier-ignore-end
+    }
+
+    [System.Diagnostics.CodeAnalysis.SuppressMessage(
+        "Usage",
+        "xUnit1051:Calls to methods which accept CancellationToken should use TestContext.Current.CancellationToken",
+        Justification = "<Pending>"
+    )]
+    [Fact(DisplayName = "DoAsync")]
+    public async Task Test3()
+    {
+        // csharpier-ignore-start
+        // Arrange
+        var graphData = new Graph_3_Nodes_NoWeight();
+        var graph = graphData.Graph;
+        var nodeA = new NodeA();
+        var journey = new Journey(nodeA, graph);
+
+        // Act
+        var sut = await journey
+            .GotoAsync<NodeC>()
+            .DoAsync<NodeC>((n, ct) =>
+            {
+                return Task.FromResult(n);
+            }, CancellationToken.None);
+
+        // Assert
+        sut.Current.GetType().Should().Be<NodeC>();
         // csharpier-ignore-end
     }
 }
