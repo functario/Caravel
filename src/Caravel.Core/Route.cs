@@ -1,13 +1,13 @@
-﻿using System.Collections.Frozen;
+﻿using System.Collections.Immutable;
 using Caravel.Abstractions;
 
 namespace Caravel.Core;
 
 public class Route : IRoute
 {
-    public FrozenSet<IEdge> Edges { get; }
+    public ImmutableList<IEdge> Edges { get; }
 
-    public Route(FrozenSet<IEdge> edges)
+    public Route(ImmutableList<IEdge> edges)
     {
         Edges = edges;
     }

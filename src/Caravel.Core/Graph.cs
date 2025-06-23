@@ -1,5 +1,4 @@
 ﻿using System.Collections.Frozen;
-using System.Collections.Immutable;
 using Caravel.Abstractions;
 
 namespace Caravel.Core;
@@ -7,7 +6,7 @@ public sealed class Graph : IGraph
 {
     private readonly FrozenDictionary<Type, INode> _nodes;
 
-    public Graph(ImmutableHashSet<INode> nodes)
+    public Graph(ICollection<INode> nodes)
     {
         _nodes = nodes.ToDictionary(n => n.GetType(), n => n).ToFrozenDictionary();
     }
@@ -34,7 +33,7 @@ public sealed class Graph : IGraph
         var finalSegment = Dijkstra(current, destination);
         allEdges.AddRange(finalSegment);
 
-        return new Route(allEdges.ToFrozenSet());
+        return new Route([.. allEdges]);
     }
 
     private List<IEdge> Dijkstra(Type start, Type end)

@@ -46,7 +46,7 @@ public record Journey : IJourney
         foreach (var edge in edges)
         {
             linkedCancellationTokenSource.Token.ThrowExceptionIfCancellationRequested();
-            Current = await edge.GetNext(linkedCancellationTokenSource.Token).ConfigureAwait(false);
+            Current = await edge.MoveNext(linkedCancellationTokenSource.Token).ConfigureAwait(false);
             Log.History.Enqueue(Current.GetType());
         }
 

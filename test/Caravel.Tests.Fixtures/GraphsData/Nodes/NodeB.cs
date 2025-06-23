@@ -1,4 +1,4 @@
-﻿using System.Collections.Frozen;
+﻿using System.Collections.Immutable;
 using System.Diagnostics;
 using Caravel.Abstractions;
 using Caravel.Core.Extensions;
@@ -11,12 +11,12 @@ public sealed class NodeB : INode
     {
     }
 
-    public FrozenSet<IEdge> GetEdges()
+    public ImmutableHashSet<IEdge> GetEdges()
     {
-        return new List<IEdge>()
-        {
+        return
+        [
             this.CreateEdge<NodeC>(OpenNodeC)
-        }.ToFrozenSet();
+        ];
     }
 
     public Task<NodeC> OpenNodeC(CancellationToken _)

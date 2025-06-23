@@ -1,7 +1,7 @@
-﻿using System.Collections.Frozen;
+﻿using System.Collections.Immutable;
 
 namespace Caravel.Abstractions;
 public interface INode
 {
-    public FrozenSet<IEdge> GetEdges();
+    public ImmutableHashSet<IEdge> GetEdges();
 }

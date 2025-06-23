@@ -1,8 +1,8 @@
-﻿using System.Collections.Frozen;
+﻿using System.Collections.Immutable;
 
 namespace Caravel.Abstractions;
 public interface IRoute
 {
-    FrozenSet<IEdge> Edges { get; }
+    ImmutableList<IEdge> Edges { get; }
     public string[] GetPath();
 }

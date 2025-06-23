@@ -1,4 +1,4 @@
-﻿using System.Collections.Frozen;
+﻿using System.Collections.Immutable;
 using Caravel.Core.Extensions;
 using Caravel.Tests.Fixtures.GraphsData;
 using Caravel.Tests.Fixtures.GraphsData.Nodes;
@@ -18,7 +18,7 @@ public class GraphTests
         var edgeBtoC = graphData.Nodes.GetEdge<NodeB, NodeC>();
         var origin = typeof(NodeA);
         var destination = typeof(NodeC);
-        var edges = FrozenSet.Create(edgeAtoB, edgeBtoC);
+        var edges = ImmutableList.Create(edgeAtoB, edgeBtoC);
         var expectedRoute = new Route(edges);
 
         // Act
