@@ -12,7 +12,7 @@ public class GraphTests
     public void Test1()
     {
         // Arrange
-        var graphData = new Graph_3_Nodes_NoWeight();
+        var graphData = new Graph_4_Nodes_WithWeight();
         var graph = graphData.Graph;
         var edgeAtoB = graphData.Nodes.GetEdge<NodeA, NodeB>();
         var edgeBtoC = graphData.Nodes.GetEdge<NodeB, NodeC>();
@@ -33,12 +33,71 @@ public class GraphTests
         "xUnit1051:Calls to methods which accept CancellationToken should use TestContext.Current.CancellationToken",
         Justification = "<Pending>"
     )]
-    [Fact(DisplayName = "GotoAsync")]
+    [Fact(DisplayName = "GotoAsync with waypoints")]
     public async Task Test2()
     {
         // csharpier-ignore-start
         // Arrange
-        var graphData = new Graph_3_Nodes_NoWeight();
+        var graphData = new Graph_4_Nodes_WithWeight();
+        var graph = graphData.Graph;
+        var nodeA = new NodeA();
+        var journey = new Journey(nodeA, graph, TestContext.Current.CancellationToken);
+        using var localCancellationTokenSource = new CancellationTokenSource(TimeSpan.FromMinutes(10));
+
+        // Act
+        var sut = await journey
+            .GotoAsync<NodeC>([typeof(NodeD)], localCancellationTokenSource.Token);
+
+        // Assert
+        sut.Log.History.Should()
+            .ContainInConsecutiveOrder(
+                [typeof(NodeA),
+                typeof(NodeD),
+                typeof(NodeC)]
+            );
+        // csharpier-ignore-end
+    }
+
+    [System.Diagnostics.CodeAnalysis.SuppressMessage(
+        "Usage",
+        "xUnit1051:Calls to methods which accept CancellationToken should use TestContext.Current.CancellationToken",
+        Justification = "<Pending>"
+    )]
+    [Fact(DisplayName = "DoAsync")]
+    public async Task Test3()
+    {
+        // csharpier-ignore-start
+        // Arrange
+        var graphData = new Graph_4_Nodes_WithWeight();
+        var graph = graphData.Graph;
+        var nodeA = new NodeA();
+        var journey = new Journey(nodeA, graph, TestContext.Current.CancellationToken);
+        using var localCancellationTokenSource = new CancellationTokenSource(TimeSpan.FromMinutes(10));
+
+        // Act
+        var sut = await journey
+            .GotoAsync<NodeC>()
+            .DoAsync<NodeC>((n, _) =>
+            {
+                return Task.FromResult(n);
+            }, localCancellationTokenSource.Token);
+
+        // Assert
+        sut.Current.GetType().Should().Be<NodeC>();
+        // csharpier-ignore-end
+    }
+
+    [System.Diagnostics.CodeAnalysis.SuppressMessage(
+        "Usage",
+        "xUnit1051:Calls to methods which accept CancellationToken should use TestContext.Current.CancellationToken",
+        Justification = "<Pending>"
+    )]
+    [Fact(DisplayName = "GotoAsync")]
+    public async Task Test4()
+    {
+        // csharpier-ignore-start
+        // Arrange
+        var graphData = new Graph_4_Nodes_WithWeight();
         var graph = graphData.Graph;
         var nodeA = new NodeA();
         var journey = new Journey(nodeA, graph, TestContext.Current.CancellationToken);
@@ -58,35 +117,6 @@ public class GraphTests
                 typeof(NodeA),
                 typeof(NodeB)]
             );
-        // csharpier-ignore-end
-    }
-
-    [System.Diagnostics.CodeAnalysis.SuppressMessage(
-        "Usage",
-        "xUnit1051:Calls to methods which accept CancellationToken should use TestContext.Current.CancellationToken",
-        Justification = "<Pending>"
-    )]
-    [Fact(DisplayName = "DoAsync")]
-    public async Task Test3()
-    {
-        // csharpier-ignore-start
-        // Arrange
-        var graphData = new Graph_3_Nodes_NoWeight();
-        var graph = graphData.Graph;
-        var nodeA = new NodeA();
-        var journey = new Journey(nodeA, graph, TestContext.Current.CancellationToken);
-        using var localCancellationTokenSource = new CancellationTokenSource(TimeSpan.FromMinutes(10));
-
-        // Act
-        var sut = await journey
-            .GotoAsync<NodeC>()
-            .DoAsync<NodeC>((n, _) =>
-            {
-                return Task.FromResult(n);
-            }, localCancellationTokenSource.Token);
-
-        // Assert
-        sut.Current.GetType().Should().Be<NodeC>();
         // csharpier-ignore-end
     }
 }

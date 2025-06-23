@@ -23,9 +23,9 @@ public record Journey : IJourney
     public IJourneyLog Log { get; init; }
 
     public async Task<IJourney> GotoAsync<TDestination>(
+        ICollection<Type> waypoints,
         CancellationToken localCancellationToken = default
     )
-        where TDestination : INode
     {
         using var linkedCancellationTokenSource = this.LinkJourneyAndLocalCancellationTokens(
             localCancellationToken
@@ -35,7 +35,7 @@ public record Journey : IJourney
 
         var originType = Current.GetType();
         var destinationType = typeof(TDestination);
-        var shortestRoute = Graph.GetShortestRoute(originType, destinationType);
+        var shortestRoute = Graph.GetShortestRoute(originType, waypoints, destinationType);
         var edges = shortestRoute.Edges;
 
         if (edges.Any(x => x is null))
@@ -46,7 +46,8 @@ public record Journey : IJourney
         foreach (var edge in edges)
         {
             linkedCancellationTokenSource.Token.ThrowExceptionIfCancellationRequested();
-            Current = await edge.MoveNext(this, linkedCancellationTokenSource.Token).ConfigureAwait(false);
+            Current = await edge.MoveNext(this, linkedCancellationTokenSource.Token)
+                .ConfigureAwait(false);
             Log.History.Enqueue(Current.GetType());
         }
 
@@ -57,4 +58,10 @@ public record Journey : IJourney
 
         return this;
     }
+
+    public async Task<IJourney> GotoAsync<TDestination>(
+        CancellationToken localCancellationToken = default
+    )
+        where TDestination : INode =>
+        await GotoAsync<TDestination>([], localCancellationToken).ConfigureAwait(false);
 }

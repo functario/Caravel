@@ -11,12 +11,23 @@ public sealed class NodeA : INode
 
     public ImmutableHashSet<IEdge> GetEdges()
     {
-        return [this.CreateEdge<NodeB>(OpenNodeB)];
+        // csharpier-ignore
+        return
+            [
+            this.CreateEdge<NodeB>(OpenNodeB),
+            this.CreateEdge<NodeD>(OpenNodeD, 1)
+            ];
     }
 
     public Task<NodeB> OpenNodeB(IJourney journey, CancellationToken _)
     {
         Debug.WriteLine($"{GetType().Name} to {typeof(NodeB).Name}");
         return Task.FromResult(new NodeB());
+    }
+
+    public Task<NodeD> OpenNodeD(IJourney journey, CancellationToken _)
+    {
+        Debug.WriteLine($"{GetType().Name} to {typeof(NodeB).Name}");
+        return Task.FromResult(new NodeD());
     }
 }
