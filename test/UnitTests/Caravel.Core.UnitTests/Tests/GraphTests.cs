@@ -119,4 +119,58 @@ public class GraphTests
             );
         // csharpier-ignore-end
     }
+
+    [Fact(
+        DisplayName = $"IAuditableNode GotoAsync throws exception if does not exist in the current context of journey."
+    )]
+    public async Task Test5()
+    {
+        // Arrange
+        var graphData = new Graph_4_Nodes_WithWeight();
+        var graph = graphData.Graph;
+        var nodeA = new NodeA(false);
+        var journey = new Journey(nodeA, graph, TestContext.Current.CancellationToken);
+
+        // Act
+        var sut = async () =>
+        {
+            await journey
+                .GotoAsync<NodeB>(TestContext.Current.CancellationToken)
+                .ConfigureAwait(false);
+        };
+
+        await sut.Should()
+            .ThrowAsync<InvalidOperationException>()
+            .WithMessage("The Node audit has failed");
+    }
+
+    [Fact(
+        DisplayName = $"IAuditableNode DoAsync throws exception if does not exist in the current context of journey."
+    )]
+    public async Task Test6()
+    {
+        // Arrange
+        var graphData = new Graph_4_Nodes_WithWeight();
+        var graph = graphData.Graph;
+        var nodeA = new NodeA();
+        var journey = new Journey(nodeA, graph, TestContext.Current.CancellationToken);
+
+        // Act
+        var sut = async () =>
+        {
+            await journey
+                .GotoAsync<NodeC>(TestContext.Current.CancellationToken)
+                .DoAsync<NodeC>(
+                    (n, _) =>
+                    {
+                        return Task.FromResult(new NodeC(false));
+                    }
+                )
+                .ConfigureAwait(false);
+        };
+
+        await sut.Should()
+            .ThrowAsync<InvalidOperationException>()
+            .WithMessage("The Node audit has failed");
+    }
 }

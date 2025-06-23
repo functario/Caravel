@@ -5,14 +5,21 @@ using Caravel.Core.Extensions;
 
 namespace Caravel.Tests.Fixtures.GraphsData.Nodes;
 
-public sealed class NodeC : INode
+public sealed class NodeC : IAuditableNode
 {
-    public NodeC() { }
+    private readonly bool _existValue;
+
+    public NodeC(bool existValue = true)
+    {
+        _existValue = existValue;
+    }
 
     public ImmutableHashSet<IEdge> GetEdges()
     {
         return [this.CreateEdge<NodeA>(OpenNodeA)];
     }
+
+    public Task<bool> Audit(IJourney journey, CancellationToken cancellationToken) => Task.FromResult(_existValue);
 
     public Task<NodeA> OpenNodeA(IJourney journey, CancellationToken _)
     {

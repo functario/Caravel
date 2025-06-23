@@ -43,9 +43,16 @@ public static class JourneyExtensions
 
         linkedCancellationTokenSource.Token.ThrowExceptionIfCancellationRequested();
 
+        await journey.Current.ThrowExceptionIfNodeAuditFails(journey, linkedCancellationTokenSource.Token)
+            .ConfigureAwait(false);
+
         if (journey.Current is TCurrentNode current)
         {
             var funcNode = await func(current, localCancellationToken).ConfigureAwait(false);
+
+            await funcNode.ThrowExceptionIfNodeAuditFails(journey, linkedCancellationTokenSource.Token)
+                .ConfigureAwait(false);
+
             return funcNode is null
                 ? throw new InvalidOperationException(
                     "The current node has been changed after function called."

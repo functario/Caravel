@@ -33,6 +33,9 @@ public record Journey : IJourney
 
         linkedCancellationTokenSource.Token.ThrowExceptionIfCancellationRequested();
 
+        await this.Current.ThrowExceptionIfNodeAuditFails(this, linkedCancellationTokenSource.Token)
+            .ConfigureAwait(false);
+
         var originType = Current.GetType();
         var destinationType = typeof(TDestination);
         var shortestRoute = Graph.GetShortestRoute(originType, waypoints, destinationType);
@@ -55,6 +58,9 @@ public record Journey : IJourney
         {
             throw new InvalidOperationException("The last INode is not the destination.");
         }
+
+        await this.Current.ThrowExceptionIfNodeAuditFails(this, linkedCancellationTokenSource.Token)
+            .ConfigureAwait(false);
 
         return this;
     }
