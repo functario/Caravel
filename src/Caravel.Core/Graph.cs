@@ -11,15 +11,6 @@ public sealed class Graph : IGraph
         _nodes = nodes.ToDictionary(n => n.GetType(), n => n).ToFrozenDictionary();
     }
 
-    public IRoute GetShortestRoute(Type origin, Type destination)
-        => GetShortestRoute(origin, destination, Waypoints.Empty(), ExcludedNodes.Empty());
-
-    public IRoute GetShortestRoute(Type origin, Type destination, IExcludedNodes excludedNodes)
-    => GetShortestRoute(origin, destination, Waypoints.Empty(), excludedNodes);
-
-    public IRoute GetShortestRoute(Type origin, Type destination, IWaypoints waypoints)
-    => GetShortestRoute(origin, destination, waypoints, ExcludedNodes.Empty());
-
     public IRoute GetShortestRoute(Type origin, Type destination, IWaypoints waypoints, IExcludedNodes excludedNodes)
     {
         ArgumentNullException.ThrowIfNull(origin);

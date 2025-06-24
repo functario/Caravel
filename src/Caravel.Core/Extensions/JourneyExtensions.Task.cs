@@ -14,12 +14,6 @@ public static partial class JourneyExtensions
 
         var journey = await journeyTask.ConfigureAwait(false);
 
-        using var linkedCancellationTokenSource = journey.LinkJourneyAndLocalCancellationTokens(
-            localCancellationToken
-        );
-
-        linkedCancellationTokenSource.Token.ThrowExceptionIfCancellationRequested();
-
         return await journey
             .GotoAsync<TDestination>(
                 Waypoints.Empty(),
@@ -40,12 +34,6 @@ public static partial class JourneyExtensions
 
         var journey = await journeyTask.ConfigureAwait(false);
 
-        using var linkedCancellationTokenSource = journey.LinkJourneyAndLocalCancellationTokens(
-            localCancellationToken
-        );
-
-        linkedCancellationTokenSource.Token.ThrowExceptionIfCancellationRequested();
-
         return await journey
             .GotoAsync<TDestination>(Waypoints.Empty(), excludedNodes, localCancellationToken)
             .ConfigureAwait(false);
@@ -63,12 +51,6 @@ public static partial class JourneyExtensions
 
         var journey = await journeyTask.ConfigureAwait(false);
 
-        using var linkedCancellationTokenSource = journey.LinkJourneyAndLocalCancellationTokens(
-            localCancellationToken
-        );
-
-        linkedCancellationTokenSource.Token.ThrowExceptionIfCancellationRequested();
-
         return await journey
             .GotoAsync<TDestination>(waypoints, ExcludedNodes.Empty(), localCancellationToken)
             .ConfigureAwait(false);
@@ -85,12 +67,6 @@ public static partial class JourneyExtensions
         ArgumentNullException.ThrowIfNull(journeyTask, nameof(journeyTask));
 
         var journey = await journeyTask.ConfigureAwait(false);
-
-        using var linkedCancellationTokenSource = journey.LinkJourneyAndLocalCancellationTokens(
-            localCancellationToken
-        );
-
-        linkedCancellationTokenSource.Token.ThrowExceptionIfCancellationRequested();
 
         return await journey
             .GotoAsync<TDestination>(waypoints, excludeNodes, localCancellationToken)
@@ -121,7 +97,7 @@ public static partial class JourneyExtensions
 
         if (journey.Current is TCurrentNode current)
         {
-            var funcNode = await func(current, localCancellationToken).ConfigureAwait(false);
+            var funcNode = await func(current, linkedCancellationTokenSource.Token).ConfigureAwait(false);
 
             await funcNode
                 .ThrowExceptionIfNodeAuditFails(journey, linkedCancellationTokenSource.Token)

@@ -5,7 +5,7 @@ namespace Caravel.Core.Extensions;
 public static partial class JourneyExtensions
 {
     public static async Task<IJourney> GotoAsync<TDestination>(
-        this Journey journey,
+        this IJourney journey,
         CancellationToken localCancellationToken = default
     )
         where TDestination : INode
@@ -22,7 +22,7 @@ public static partial class JourneyExtensions
     }
 
     public static async Task<IJourney> GotoAsync<TDestination>(
-        this Journey journey,
+        this IJourney journey,
         ExcludedNodes excludedNodes,
         CancellationToken localCancellationToken = default
     )
@@ -35,7 +35,7 @@ public static partial class JourneyExtensions
     }
 
     public static async Task<IJourney> GotoAsync<TDestination>(
-        this Journey journey,
+        this IJourney journey,
         Waypoints waypoints,
         CancellationToken localCancellationToken = default
     )
@@ -56,13 +56,6 @@ public static partial class JourneyExtensions
         where TDestination : INode
     {
         ArgumentNullException.ThrowIfNull(journey, nameof(journey));
-
-        using var linkedCancellationTokenSource = journey.LinkJourneyAndLocalCancellationTokens(
-            localCancellationToken
-        );
-
-        linkedCancellationTokenSource.Token.ThrowExceptionIfCancellationRequested();
-
         return await journey
             .GotoAsync<TDestination>(waypoints, excludeNodes, localCancellationToken)
             .ConfigureAwait(false);
