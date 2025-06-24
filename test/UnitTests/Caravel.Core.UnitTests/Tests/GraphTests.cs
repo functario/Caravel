@@ -46,7 +46,7 @@ public class GraphTests
 
         // Act
         var sut = await journey
-            .GotoAsync<NodeC>(localCancellationTokenSource.Token, typeof(NodeD));
+            .GotoAsync<NodeC>([typeof(NodeD)], localCancellationTokenSource.Token);
 
         // Assert
         sut.Log.History.Should()

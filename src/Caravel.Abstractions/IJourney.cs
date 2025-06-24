@@ -8,8 +8,4 @@ public interface IJourney
     INode Current { get; }
     Task<IJourney> GotoAsync<TDestination>(CancellationToken localCancellationToken)
         where TDestination : INode;
-    Task<IJourney> GotoAsync<TDestination>(
-        CancellationToken localCancellationToken = default,
-        params Type[] waypoints
-    );
 }
