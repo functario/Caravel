@@ -3,16 +3,16 @@ using Caravel.Core.Extensions;
 using Caravel.Tests.Fixtures.GraphsData;
 using Caravel.Tests.Fixtures.GraphsData.Nodes;
 
-namespace Caravel.Core.UnitTests.Tests;
+namespace Caravel.Core.UnitTests.Tests.GraphTests;
 
 [Trait(TestType, Unit)]
-public class GraphTests
+public class GotoAsyncTests
 {
     [Fact(DisplayName = "Get the shortest route without waypoints or weights")]
     public void Test1()
     {
         // Arrange
-        var graphData = new Graph_4_Nodes_WithWeight();
+        var graphData = new Graph_5_Nodes_WithWeight();
         var graph = graphData.Graph;
         var edgeAtoB = graphData.Nodes.GetEdge<NodeA, NodeB>();
         var edgeBtoC = graphData.Nodes.GetEdge<NodeB, NodeC>();
@@ -28,35 +28,7 @@ public class GraphTests
         sut.GetPath().Should().BeEquivalentTo(expectedRoute.GetPath());
     }
 
-    [System.Diagnostics.CodeAnalysis.SuppressMessage(
-        "Usage",
-        "xUnit1051:Calls to methods which accept CancellationToken should use TestContext.Current.CancellationToken",
-        Justification = "<Pending>"
-    )]
-    [Fact(DisplayName = "GotoAsync with waypoints")]
-    public async Task Test2()
-    {
-        // csharpier-ignore-start
-        // Arrange
-        var graphData = new Graph_4_Nodes_WithWeight();
-        var graph = graphData.Graph;
-        var nodeA = new NodeA();
-        var journey = new Journey(nodeA, graph, TestContext.Current.CancellationToken);
-        using var localCancellationTokenSource = new CancellationTokenSource(TimeSpan.FromMinutes(10));
 
-        // Act
-        var sut = await journey
-            .GotoAsync<NodeC>([typeof(NodeD)], localCancellationTokenSource.Token);
-
-        // Assert
-        sut.Log.History.Should()
-            .ContainInConsecutiveOrder(
-                [typeof(NodeA),
-                typeof(NodeD),
-                typeof(NodeC)]
-            );
-        // csharpier-ignore-end
-    }
 
     [System.Diagnostics.CodeAnalysis.SuppressMessage(
         "Usage",
@@ -68,7 +40,7 @@ public class GraphTests
     {
         // csharpier-ignore-start
         // Arrange
-        var graphData = new Graph_4_Nodes_WithWeight();
+        var graphData = new Graph_5_Nodes_WithWeight();
         var graph = graphData.Graph;
         var nodeA = new NodeA();
         var journey = new Journey(nodeA, graph, TestContext.Current.CancellationToken);
@@ -97,7 +69,7 @@ public class GraphTests
     {
         // csharpier-ignore-start
         // Arrange
-        var graphData = new Graph_4_Nodes_WithWeight();
+        var graphData = new Graph_5_Nodes_WithWeight();
         var graph = graphData.Graph;
         var nodeA = new NodeA();
         var journey = new Journey(nodeA, graph, TestContext.Current.CancellationToken);
@@ -126,7 +98,7 @@ public class GraphTests
     public async Task Test5()
     {
         // Arrange
-        var graphData = new Graph_4_Nodes_WithWeight();
+        var graphData = new Graph_5_Nodes_WithWeight();
         var graph = graphData.Graph;
         var nodeA = new NodeA(false);
         var journey = new Journey(nodeA, graph, TestContext.Current.CancellationToken);
@@ -150,7 +122,7 @@ public class GraphTests
     public async Task Test6()
     {
         // Arrange
-        var graphData = new Graph_4_Nodes_WithWeight();
+        var graphData = new Graph_5_Nodes_WithWeight();
         var graph = graphData.Graph;
         var nodeA = new NodeA();
         var journey = new Journey(nodeA, graph, TestContext.Current.CancellationToken);

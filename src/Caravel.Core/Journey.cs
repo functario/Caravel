@@ -23,9 +23,11 @@ public record Journey : IJourney
     public IJourneyLog Log { get; init; }
 
     public async Task<IJourney> GotoAsync<TDestination>(
-        Waypoints waypoints,
-        CancellationToken localCancellationToken = default
+        IWaypoints waypoints,
+        IExcludedNodes excludeNodes,
+        CancellationToken localCancellationToken
     )
+        where TDestination : INode
     {
         using var linkedCancellationTokenSource = this.LinkJourneyAndLocalCancellationTokens(
             localCancellationToken
@@ -33,12 +35,18 @@ public record Journey : IJourney
 
         linkedCancellationTokenSource.Token.ThrowExceptionIfCancellationRequested();
 
-        await this.Current.ThrowExceptionIfNodeAuditFails(this, linkedCancellationTokenSource.Token)
+        await this
+            .Current.ThrowExceptionIfNodeAuditFails(this, linkedCancellationTokenSource.Token)
             .ConfigureAwait(false);
 
         var originType = Current.GetType();
         var destinationType = typeof(TDestination);
-        var shortestRoute = Graph.GetShortestRoute(originType, destinationType, waypoints);
+        var shortestRoute = Graph.GetShortestRoute(
+            originType,
+            destinationType,
+            waypoints,
+            excludeNodes
+        );
         var edges = shortestRoute.Edges;
 
         if (edges.Any(x => x is null))
@@ -59,15 +67,10 @@ public record Journey : IJourney
             throw new InvalidOperationException("The last INode is not the destination.");
         }
 
-        await this.Current.ThrowExceptionIfNodeAuditFails(this, linkedCancellationTokenSource.Token)
+        await this
+            .Current.ThrowExceptionIfNodeAuditFails(this, linkedCancellationTokenSource.Token)
             .ConfigureAwait(false);
 
         return this;
     }
-
-    public async Task<IJourney> GotoAsync<TDestination>(
-        CancellationToken localCancellationToken = default
-    )
-        where TDestination : INode =>
-        await GotoAsync<TDestination>(Waypoints.Empty(), localCancellationToken).ConfigureAwait(false);
 }

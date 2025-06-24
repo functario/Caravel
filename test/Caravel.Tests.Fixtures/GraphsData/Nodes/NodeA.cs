@@ -34,7 +34,7 @@ public sealed class NodeA : IAuditableNode
 
     public Task<NodeD> OpenNodeD(IJourney journey, CancellationToken _)
     {
-        Debug.WriteLine($"{GetType().Name} to {typeof(NodeB).Name}");
+        Debug.WriteLine($"{GetType().Name} to {typeof(NodeD).Name}");
         return Task.FromResult(new NodeD());
     }
 }

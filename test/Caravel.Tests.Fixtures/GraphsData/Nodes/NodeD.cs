@@ -16,7 +16,7 @@ public sealed class NodeD : INode
 
     public Task<NodeC> OpenNodeC(IJourney journey, CancellationToken _)
     {
-        Debug.WriteLine($"{GetType().Name} to {typeof(NodeA).Name}");
+        Debug.WriteLine($"{GetType().Name} to {typeof(NodeC).Name}");
         return Task.FromResult(new NodeC());
     }
 }

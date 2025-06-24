@@ -2,40 +2,60 @@
 
 namespace Caravel.Core.Extensions;
 
-public static class JourneyExtensions
+public static partial class JourneyExtensions
 {
-    public static Lazy<IJourney> LazyJourney => new();
-
     public static async Task<IJourney> GotoAsync<TDestination>(
-        this Task<IJourney> journeyTask,
+        this Journey journey,
         CancellationToken localCancellationToken = default
     )
         where TDestination : INode
     {
-        ArgumentNullException.ThrowIfNull(journeyTask, nameof(journeyTask));
+        ArgumentNullException.ThrowIfNull(journey, nameof(journey));
 
-        var journey = await journeyTask.ConfigureAwait(false);
-
-        using var linkedCancellationTokenSource = journey.LinkJourneyAndLocalCancellationTokens(
-            localCancellationToken
-        );
-
-        linkedCancellationTokenSource.Token.ThrowExceptionIfCancellationRequested();
-
-        return await journey.GotoAsync<TDestination>(localCancellationToken).ConfigureAwait(false);
+        return await journey
+            .GotoAsync<TDestination>(
+                Waypoints.Empty(),
+                ExcludedNodes.Empty(),
+                localCancellationToken
+            )
+            .ConfigureAwait(false);
     }
 
-    public static async Task<IJourney> DoAsync<TCurrentNode>(
-        this Task<IJourney> journeyTask,
-        Func<TCurrentNode, CancellationToken, Task<TCurrentNode>> func,
+    public static async Task<IJourney> GotoAsync<TDestination>(
+        this Journey journey,
+        ExcludedNodes excludedNodes,
         CancellationToken localCancellationToken = default
     )
-        where TCurrentNode : INode
+        where TDestination : INode
     {
-        ArgumentNullException.ThrowIfNull(journeyTask, nameof(journeyTask));
-        ArgumentNullException.ThrowIfNull(func, nameof(func));
+        ArgumentNullException.ThrowIfNull(journey, nameof(journey));
+        return await journey
+            .GotoAsync<TDestination>(Waypoints.Empty(), excludedNodes, localCancellationToken)
+            .ConfigureAwait(false);
+    }
 
-        var journey = await journeyTask.ConfigureAwait(false);
+    public static async Task<IJourney> GotoAsync<TDestination>(
+        this Journey journey,
+        Waypoints waypoints,
+        CancellationToken localCancellationToken = default
+    )
+        where TDestination : INode
+    {
+        ArgumentNullException.ThrowIfNull(journey, nameof(journey));
+        return await journey
+            .GotoAsync<TDestination>(waypoints, ExcludedNodes.Empty(), localCancellationToken)
+            .ConfigureAwait(false);
+    }
+
+    public static async Task<IJourney> GotoAsync<TDestination>(
+        this IJourney journey,
+        Waypoints waypoints,
+        ExcludedNodes excludeNodes,
+        CancellationToken localCancellationToken = default
+    )
+        where TDestination : INode
+    {
+        ArgumentNullException.ThrowIfNull(journey, nameof(journey));
 
         using var linkedCancellationTokenSource = journey.LinkJourneyAndLocalCancellationTokens(
             localCancellationToken
@@ -43,37 +63,8 @@ public static class JourneyExtensions
 
         linkedCancellationTokenSource.Token.ThrowExceptionIfCancellationRequested();
 
-        await journey.Current.ThrowExceptionIfNodeAuditFails(journey, linkedCancellationTokenSource.Token)
+        return await journey
+            .GotoAsync<TDestination>(waypoints, excludeNodes, localCancellationToken)
             .ConfigureAwait(false);
-
-        if (journey.Current is TCurrentNode current)
-        {
-            var funcNode = await func(current, localCancellationToken).ConfigureAwait(false);
-
-            await funcNode.ThrowExceptionIfNodeAuditFails(journey, linkedCancellationTokenSource.Token)
-                .ConfigureAwait(false);
-
-            return funcNode is null
-                ? throw new InvalidOperationException(
-                    "The current node has been changed after function called."
-                )
-                : journey;
-        }
-
-        throw new InvalidOperationException("The current node is not the expected one.");
-    }
-
-    public static CancellationTokenSource LinkJourneyAndLocalCancellationTokens(
-        this IJourney journey,
-        CancellationToken localCancellationToken
-    )
-    {
-        ArgumentNullException.ThrowIfNull(journey, nameof(journey));
-        var linkedCancellationTokenSource = CancellationTokenSource.CreateLinkedTokenSource(
-            journey.JourneyCancellationToken,
-            localCancellationToken
-        );
-
-        return linkedCancellationTokenSource;
     }
 }
