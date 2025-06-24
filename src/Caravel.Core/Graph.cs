@@ -12,9 +12,9 @@ public sealed class Graph : IGraph
     }
 
     public IRoute GetShortestRoute(Type origin, Type destination)
-        => GetShortestRoute(origin, Array.Empty<Type>(), destination);
+        => GetShortestRoute(origin, destination, Waypoints.Empty());
 
-    public IRoute GetShortestRoute(Type origin, ICollection<Type> waypoints, Type destination)
+    public IRoute GetShortestRoute(Type origin, Type destination, IWaypoints waypoints)
     {
         ArgumentNullException.ThrowIfNull(origin);
         ArgumentNullException.ThrowIfNull(destination);
