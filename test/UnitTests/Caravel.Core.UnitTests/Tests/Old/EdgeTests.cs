@@ -1,7 +1,7 @@
 ﻿using Caravel.Core.Extensions;
 using Caravel.Tests.Fixtures.GraphsData.Nodes;
 
-namespace Caravel.Core.UnitTests.Tests;
+namespace Caravel.Core.UnitTests.Tests.Old;
 
 [Trait(TestType, Unit)]
 public class EdgeTests

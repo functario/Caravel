@@ -5,7 +5,7 @@ using Caravel.Tests.Fixtures.GraphsData;
 using Caravel.Tests.Fixtures.GraphsData.Nodes;
 using Caravel.Tests.Fixtures.NodeSpies;
 
-namespace Caravel.Core.UnitTests.Tests.GraphTests;
+namespace Caravel.Core.UnitTests.Tests.Old;
 
 [Trait(TestType, Unit)]
 public class GotoAsyncTests

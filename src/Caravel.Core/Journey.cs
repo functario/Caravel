@@ -14,6 +14,9 @@ public record Journey : IJourney
         JourneyCancellationToken = journeyCancellationToken;
         Current = current;
         Log = new JourneyLog();
+
+        // Set the history to the current node
+        Log.History.Enqueue(Current.GetType());
     }
 
     public INode Current { get; private set; }
@@ -58,6 +61,7 @@ public record Journey : IJourney
             linkedCancellationTokenSource.Token.ThrowExceptionIfCancellationRequested();
             Current = await edge.MoveNext(this, linkedCancellationTokenSource.Token)
                 .ConfigureAwait(false);
+
             Log.History.Enqueue(Current.GetType());
         }
 

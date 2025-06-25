@@ -2,7 +2,7 @@
 
 public static class TestTypes
 {
-    public const string TestType = "test-type";
+    public const string TestType = "TestType";
 
-    public const string Unit = "unit";
+    public const string Unit = "Unit";
 }

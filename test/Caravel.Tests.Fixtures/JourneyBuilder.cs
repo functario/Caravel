@@ -22,6 +22,9 @@ public sealed class JourneyBuilder
         return builder;
     }
 
+    public ImmutableDictionary<Type, NodeBuilder> Nodes => _nodes.ToImmutableDictionary();
+    public Type Node => _firstNodeType!;
+
     public IJourney Build(CancellationToken ct = default)
     {
         var nodeInstances = new Dictionary<Type, INodeSpy>();

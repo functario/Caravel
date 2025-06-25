@@ -5,4 +5,5 @@
 
 using System.Diagnostics.CodeAnalysis;
 
-[assembly: SuppressMessage("Design", "CA1062:Validate arguments of public methods", Justification = "Unnecessary for tests", Scope = "namespaceanddescendants", Target = "~N:Caravel.Core.UnitTests.Tests")]
+[assembly: SuppressMessage("Design", "CA1062:Validate arguments of public methods", Justification = "Unnecessary for tests",
+    Scope = "namespaceanddescendants", Target = "~N:Caravel.Core.UnitTests.Tests")]
