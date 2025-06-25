@@ -17,7 +17,12 @@ public class Route : IRoute
         var path = new List<string>();
         foreach (var edge in Edges)
         {
-            path.Add(edge.ToString() ?? "");
+            path.Add(
+                edge.ToString()
+                    ?? throw new InvalidOperationException(
+                        $"Could not format {edge.GetType()} to string."
+                    )
+            );
         }
 
         return [.. path];
