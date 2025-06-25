@@ -13,8 +13,7 @@ public record Journey : IJourney
         Graph = graph;
         JourneyCancellationToken = journeyCancellationToken;
         Current = current;
-        var history = new Queue<Type>([current.GetType()]);
-        Log = new DriverLog(history);
+        Log = new JourneyLog();
     }
 
     public INode Current { get; private set; }

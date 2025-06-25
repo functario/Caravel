@@ -1,28 +1,23 @@
-﻿using System.Collections.Immutable;
-using Caravel.Abstractions;
+﻿using Caravel.Abstractions;
 
 namespace Caravel.Tests.Fixtures.GraphsData.Nodes;
 
-public record Node1 : INode
+[System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "CA1040:Avoid empty interfaces", Justification = "<Pending>")]
+public interface INode1 : INode
 {
-    public ImmutableHashSet<IEdge> GetEdges()
-    {
-        throw new NotImplementedException();
-    }
 }
 
-public record Node2 : INode
+[System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "CA1040:Avoid empty interfaces", Justification = "<Pending>")]
+public interface INode2 : INode
 {
-    public ImmutableHashSet<IEdge> GetEdges()
-    {
-        throw new NotImplementedException();
-    }
 }
 
-public record Node3 : INode
+[System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "CA1040:Avoid empty interfaces", Justification = "<Pending>")]
+public interface INode3 : INode
 {
-    public ImmutableHashSet<IEdge> GetEdges()
-    {
-        throw new NotImplementedException();
-    }
+}
+
+[System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "CA1040:Avoid empty interfaces", Justification = "<Pending>")]
+public interface INode4 : INode
+{
 }

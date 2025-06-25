@@ -3,7 +3,15 @@
         <TargetFramework>$(SdkTargetFramework)</TargetFramework>
     </PropertyGroup>
     <ItemGroup>
+        <PackageReference Include="AutoFixture.AutoNSubstitute" />
         <PackageReference Include="AutoFixture.Xunit2" />
+        <PackageReference Include="System.ComponentModel.TypeConverter" />
+        <PackageReference Include="System.Net.Http" />
+        <PackageReference Include="System.Text.RegularExpressions" />
+        <PackageReference Include="NSubstitute.Analyzers.CSharp">
+            <PrivateAssets>all</PrivateAssets>
+            <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+        </PackageReference>
     </ItemGroup>
     <ItemGroup>
         <ProjectReference Include="..\..\src\Caravel.Abstractions\Caravel.Abstractions.csproj" />
