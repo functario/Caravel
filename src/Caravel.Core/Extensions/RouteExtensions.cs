@@ -6,26 +6,29 @@ namespace Caravel.Core.Extensions;
 
 public static class RouteExtensions
 {
-    private const string MermaidGraph = "graph ";
-
     public static string ToMermaidGraph(
         this IRoute route,
-        MermaidGraphDirections mermaidGraphDirection
+        MermaidGraphDirections mermaidGraphDirection = MermaidGraphDirections.TD
     )
     {
         ArgumentNullException.ThrowIfNull(route, nameof(route));
-        var stingBuilder = new StringBuilder();
-        stingBuilder.Append(
+        var stringBuilder = new StringBuilder();
+        stringBuilder.AppendLine(
             CultureInfo.InvariantCulture,
-            $"{MermaidGraph} {mermaidGraphDirection.ToString()}"
+            $"graph {mermaidGraphDirection.ToString()}"
         );
 
-        for (var i = 0; i < route.Edges.Count; i++)
+        IEdge[] edges = [.. route.Edges.OrderBy(x => x.Neighbor.Name)];
+
+        for (var i = 0; i < edges.Length; i++)
         {
-            var edgeStr = route.Edges[i].ToString();
-            stingBuilder.AppendLine(edgeStr);
+            var edgeStr = edges[i].ToString();
+            stringBuilder.AppendLine(edgeStr);
         }
 
-        return stingBuilder.ToString();
+        var result = stringBuilder.ToString();
+        return result.EndsWith(Environment.NewLine, StringComparison.OrdinalIgnoreCase)
+            ? result[..^Environment.NewLine.Length]
+            : result;
     }
 }

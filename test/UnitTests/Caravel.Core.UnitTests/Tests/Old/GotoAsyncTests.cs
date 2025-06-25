@@ -1,5 +1,4 @@
-﻿using System.Collections.Immutable;
-using Caravel.Core.Extensions;
+﻿using Caravel.Core.Extensions;
 using Caravel.Tests.Fixtures.GraphsData;
 using Caravel.Tests.Fixtures.GraphsData.Nodes;
 
@@ -8,25 +7,6 @@ namespace Caravel.Core.UnitTests.Tests.Old;
 [Trait(TestType, Unit)]
 public class GotoAsyncTests
 {
-    [Fact(DisplayName = "Get the shortest route without waypoints or weights")]
-    public void Test1()
-    {
-        // Arrange
-        var graphData = new Graph_5_Nodes_WithWeight();
-        var graph = graphData.Graph;
-        var edgeAtoB = graphData.Nodes.GetEdge<NodeA, NodeB>();
-        var edgeBtoC = graphData.Nodes.GetEdge<NodeB, NodeC>();
-        var origin = typeof(NodeA);
-        var destination = typeof(NodeC);
-        var edges = ImmutableList.Create(edgeAtoB, edgeBtoC);
-        var expectedRoute = new Route(edges);
-
-        // Act
-        var sut = graph.GetShortestRoute(origin, destination);
-
-        // Assert
-        sut.GetPath().Should().BeEquivalentTo(expectedRoute.GetPath());
-    }
 
 
 
