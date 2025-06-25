@@ -1,5 +1,6 @@
 ﻿using Caravel.Core.Extensions;
 using Caravel.Tests.Fixtures;
+using Caravel.Tests.Fixtures.Extensions;
 using Caravel.Tests.Fixtures.NodeSpies;
 
 namespace Caravel.Core.UnitTests.Tests.FormatGraph;
@@ -49,9 +50,9 @@ public class AsMermaidGraphHtml
         var journey = builder.Build();
 
         // Act
-        var sut = journey.AsMermaidHtml().ReplaceLineEndings();
+        var sut = journey.AsMermaidHtml().ReplaceLineEndingsToLinux();
 
         // Assert
-        sut.Should().BeEquivalentTo(HtlmGraph.ReplaceLineEndings());
+        sut.Should().BeEquivalentTo(HtlmGraph.ReplaceLineEndingsToLinux());
     }
 }

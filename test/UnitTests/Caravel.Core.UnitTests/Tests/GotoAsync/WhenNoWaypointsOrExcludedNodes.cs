@@ -131,30 +131,4 @@ public class WhenNoWaypointsOrExcludedNodes
 
         // csharpier-ignore-end
     }
-
-    //[Fact]
-    //public async Task MyTestMethod()
-    //{
-    //    var builder = new JourneyBuilder()
-    //        .AddNode<NodeSpy1>()
-    //        .WithEdge<NodeSpy2>(0)
-    //        .WithAudit(true)
-    //        .Done()
-    //        .AddNode<NodeSpy2>()
-    //        .WithEdge<NodeSpy3>()
-    //        .WithEdge<NodeSpy4>(99)
-    //        .Done()
-    //        .AddNode<NodeSpy3>()
-    //        .WithEdge<NodeSpy4>()
-    //        .Done()
-    //        .AddNode<NodeSpy4>()
-    //        .Done();
-
-    //    var journey = builder.Build();
-
-    //    var path = journey.Graph.GetShortestRoute(typeof(NodeSpy1), typeof(NodeSpy4));
-
-    //    await journey.GotoAsync<NodeSpy4>();
-
-    //}
 }
