@@ -43,7 +43,7 @@ public class GotoAsyncTests
         var graphData = new Graph_5_Nodes_WithWeight();
         var graph = graphData.Graph;
         var nodeA = new NodeA();
-        var journey = new Journey(nodeA, graph, TestContext.Current.CancellationToken);
+        var journey = new Journey(nodeA, graph, CancellationToken.None);
         using var localCancellationTokenSource = new CancellationTokenSource(TimeSpan.FromMinutes(10));
 
         // Act
@@ -72,7 +72,7 @@ public class GotoAsyncTests
         var graphData = new Graph_5_Nodes_WithWeight();
         var graph = graphData.Graph;
         var nodeA = new NodeA();
-        var journey = new Journey(nodeA, graph, TestContext.Current.CancellationToken);
+        var journey = new Journey(nodeA, graph, CancellationToken.None);
         using var localCancellationTokenSource = new CancellationTokenSource(TimeSpan.FromMinutes(10));
 
         // Act
@@ -101,13 +101,13 @@ public class GotoAsyncTests
         var graphData = new Graph_5_Nodes_WithWeight();
         var graph = graphData.Graph;
         var nodeA = new NodeA(false);
-        var journey = new Journey(nodeA, graph, TestContext.Current.CancellationToken);
+        var journey = new Journey(nodeA, graph, CancellationToken.None);
 
         // Act
         var sut = async () =>
         {
             await journey
-                .GotoAsync<NodeB>(TestContext.Current.CancellationToken)
+                .GotoAsync<NodeB>()
                 .ConfigureAwait(false);
         };
 
@@ -125,13 +125,13 @@ public class GotoAsyncTests
         var graphData = new Graph_5_Nodes_WithWeight();
         var graph = graphData.Graph;
         var nodeA = new NodeA();
-        var journey = new Journey(nodeA, graph, TestContext.Current.CancellationToken);
+        var journey = new Journey(nodeA, graph, CancellationToken.None);
 
         // Act
         var sut = async () =>
         {
             await journey
-                .GotoAsync<NodeC>(TestContext.Current.CancellationToken)
+                .GotoAsync<NodeC>()
                 .DoAsync<NodeC>(
                     (n, _) =>
                     {
@@ -145,4 +145,19 @@ public class GotoAsyncTests
             .ThrowAsync<InvalidOperationException>()
             .WithMessage("The Node audit has failed");
     }
+
+
+    //[Theory]
+    //[CaravelData]
+    //public void MyTestMethod(Node1 node1, Node2 node2)
+    //{
+    //    // Arrange
+
+
+    //    // Act
+
+
+    //    // Assert
+
+    //}
 }

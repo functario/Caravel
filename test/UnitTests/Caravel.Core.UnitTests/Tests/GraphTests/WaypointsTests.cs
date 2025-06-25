@@ -22,7 +22,7 @@ public class WaypointsTests
         var graphData = new Graph_5_Nodes_WithWeight();
         var graph = graphData.Graph;
         var nodeA = new NodeA();
-        var journey = new Journey(nodeA, graph, TestContext.Current.CancellationToken);
+        var journey = new Journey(nodeA, graph, CancellationToken.None);
         using var localCancellationTokenSource = new CancellationTokenSource(TimeSpan.FromMinutes(10));
 
         // Act
@@ -52,7 +52,7 @@ public class WaypointsTests
         var graphData = new Graph_5_Nodes_WithWeight();
         var graph = graphData.Graph;
         var nodeA = new NodeA();
-        var journey = new Journey(nodeA, graph, TestContext.Current.CancellationToken);
+        var journey = new Journey(nodeA, graph, CancellationToken.None);
         using var localCancellationTokenSource = new CancellationTokenSource(TimeSpan.FromMinutes(10));
         Type[] expectedHistory = [typeof(NodeA),
                 typeof(NodeD),
@@ -91,7 +91,7 @@ public class WaypointsTests
         var graphData = new Graph_5_Nodes_WithWeight();
         var graph = graphData.Graph;
         var nodeA = new NodeA();
-        var journey = new Journey(nodeA, graph, TestContext.Current.CancellationToken);
+        var journey = new Journey(nodeA, graph, CancellationToken.None);
         using var localCancellationTokenSource = new CancellationTokenSource(TimeSpan.FromMinutes(10));
 
         // Act
@@ -118,7 +118,7 @@ public class WaypointsTests
         var graphData = new Graph_5_Nodes_WithWeight();
         var graph = graphData.Graph;
         var nodeA = new NodeA();
-        var journey = new Journey(nodeA, graph, TestContext.Current.CancellationToken);
+        var journey = new Journey(nodeA, graph, CancellationToken.None);
         using var localCancellationTokenSource = new CancellationTokenSource(TimeSpan.FromMinutes(10));
         // Act
         Func<Task<IJourney>> sut = async () => await journey

@@ -1,5 +1,5 @@
 ﻿using AutoFixture;
-using AutoFixture.Xunit3;
+using AutoFixture.Xunit2;
 
 namespace Caravel.Tests.Fixtures;
 
@@ -18,6 +18,7 @@ public sealed class CaravelDataAttribute : AutoDataAttribute
     public static IFixture CreateFixture()
     {
         var fixture = new Fixture();
+        //fixture.
         //fixture.Customize<INode>(x =>
         //    x.FromFactory(() => new Node((++s_nodeNameCounter).ToString()))
         //);
