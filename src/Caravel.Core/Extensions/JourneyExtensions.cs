@@ -60,4 +60,38 @@ public static partial class JourneyExtensions
             .GotoAsync<TDestination>(waypoints, excludeNodes, localCancellationToken)
             .ConfigureAwait(false);
     }
+
+    public static string ToMermaidGraph(
+        this IJourney journey,
+        MermaidGraphDirections mermaidGraphDirection = default
+    )
+    {
+        ArgumentNullException.ThrowIfNull(journey, nameof(journey));
+        return journey.Graph.ToMermaidGraph(mermaidGraphDirection);
+    }
+
+    public static string AsMermaidHtml(
+        this IJourney journey,
+        MermaidGraphDirections mermaidGraphDirection = default
+    )
+    {
+        ArgumentNullException.ThrowIfNull(journey, nameof(journey));
+
+        var mermaid = journey.Graph.ToMermaidGraph(mermaidGraphDirection);
+
+        var html =
+            $$"""
+            <body>
+                <pre class="mermaid">
+                {{mermaid}}
+                </pre>
+                <script type="module">
+                    import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
+                    mermaid.initialize({ startOnLoad: true });
+                </script>
+            </body>
+            """;
+
+        return html;
+    }
 }

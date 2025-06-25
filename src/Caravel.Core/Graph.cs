@@ -2,6 +2,7 @@
 using Caravel.Abstractions;
 
 namespace Caravel.Core;
+
 public sealed class Graph : IGraph
 {
     private readonly FrozenDictionary<Type, INode> _nodes;
@@ -11,7 +12,14 @@ public sealed class Graph : IGraph
         _nodes = nodes.ToDictionary(n => n.GetType(), n => n).ToFrozenDictionary();
     }
 
-    public IRoute GetShortestRoute(Type origin, Type destination, IWaypoints waypoints, IExcludedNodes excludedNodes)
+    public FrozenDictionary<Type, INode> Nodes => _nodes;
+
+    public IRoute GetShortestRoute(
+        Type origin,
+        Type destination,
+        IWaypoints waypoints,
+        IExcludedNodes excludedNodes
+    )
     {
         ArgumentNullException.ThrowIfNull(origin);
         ArgumentNullException.ThrowIfNull(destination);
@@ -36,7 +44,10 @@ public sealed class Graph : IGraph
         return new Route([.. allEdges]);
     }
 
-    private static void ValidateWaypointsNotExcluded(IWaypoints waypoints, IExcludedNodes excludedNodes)
+    private static void ValidateWaypointsNotExcluded(
+        IWaypoints waypoints,
+        IExcludedNodes excludedNodes
+    )
     {
         if (excludedNodes.Any(x => waypoints.Contains(x)))
         {
@@ -44,21 +55,27 @@ public sealed class Graph : IGraph
         }
     }
 
-    private static void ValidateOriginAndDestinationNotExcluded(Type origin, Type destination, IExcludedNodes excludedNodes)
+    private static void ValidateOriginAndDestinationNotExcluded(
+        Type origin,
+        Type destination,
+        IExcludedNodes excludedNodes
+    )
     {
         var isOriginExcluded = IsExcluded(origin, excludedNodes);
         var isdestinationExcluded = IsExcluded(destination, excludedNodes);
         var _ = (isOriginExcluded, isdestinationExcluded) switch
         {
-            (true, true) => throw new NotSupportedException("Origin and Destination should not be excluded."),
+            (true, true) => throw new NotSupportedException(
+                "Origin and Destination should not be excluded."
+            ),
             (false, true) => throw new NotSupportedException("Origin should not be excluded."),
             (true, false) => throw new NotSupportedException("Destination should not be excluded."),
             (false, false) => false,
         };
     }
 
-    private static bool IsExcluded(Type node, IExcludedNodes excludedNodes)
-    => excludedNodes.Any(x => x == node);
+    private static bool IsExcluded(Type node, IExcludedNodes excludedNodes) =>
+        excludedNodes.Any(x => x == node);
 
     private List<IEdge> Dijkstra(Type start, Type end, IExcludedNodes excludedNodes)
     {
@@ -83,14 +100,19 @@ public sealed class Graph : IGraph
             visited.Add(current);
 
             if (!_nodes.TryGetValue(current, out var currentNode))
-                throw new InvalidOperationException($"Node of type {current.Name} not found in graph.");
+                throw new InvalidOperationException(
+                    $"Node of type {current.Name} not found in graph."
+                );
 
             foreach (var edge in currentNode.GetEdges())
             {
                 var neighbor = edge.Neighbor;
                 var newDistance = distances[current] + edge.Weight;
 
-                if (!distances.TryGetValue(neighbor, out var knownDistance) || newDistance < knownDistance)
+                if (
+                    !distances.TryGetValue(neighbor, out var knownDistance)
+                    || newDistance < knownDistance
+                )
                 {
                     distances[neighbor] = newDistance;
                     previous[neighbor] = edge;

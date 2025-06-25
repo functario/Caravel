@@ -9,5 +9,5 @@ public record Edge(
     int Weight = 0
 ) : IEdge
 {
-    public override string ToString() => $"{Origin.Name} *{Weight}=> {Neighbor.Name}";
+    public override string ToString() => $"{Origin.Name} -->|{Weight}| {Neighbor.Name}";
 }

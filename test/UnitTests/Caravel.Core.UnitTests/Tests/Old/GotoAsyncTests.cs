@@ -1,9 +1,7 @@
 ﻿using System.Collections.Immutable;
 using Caravel.Core.Extensions;
-using Caravel.Tests.Fixtures;
 using Caravel.Tests.Fixtures.GraphsData;
 using Caravel.Tests.Fixtures.GraphsData.Nodes;
-using Caravel.Tests.Fixtures.NodeSpies;
 
 namespace Caravel.Core.UnitTests.Tests.Old;
 
@@ -146,32 +144,5 @@ public class GotoAsyncTests
         await sut.Should()
             .ThrowAsync<InvalidOperationException>()
             .WithMessage("The Node audit has failed");
-    }
-
-
-    [Fact]
-    public async Task MyTestMethod()
-    {
-        var builder = new JourneyBuilder()
-            .AddNode<NodeSpy1>()
-            .WithEdge<NodeSpy2>(0)
-            .WithAudit(true)
-            .Done()
-            .AddNode<NodeSpy2>()
-            .WithEdge<NodeSpy3>()
-            .WithEdge<NodeSpy4>(99)
-            .Done()
-            .AddNode<NodeSpy3>()
-            .WithEdge<NodeSpy4>()
-            .Done()
-            .AddNode<NodeSpy4>()
-            .Done();
-
-        var journey = builder.Build();
-
-        var path = journey.Graph.GetShortestRoute(typeof(NodeSpy1), typeof(NodeSpy4));
-
-        await journey.GotoAsync<NodeSpy4>();
-
     }
 }

@@ -6,7 +6,7 @@ namespace Caravel.Core.UnitTests.Tests.Old;
 [Trait(TestType, Unit)]
 public class EdgeTests
 {
-    [Fact(DisplayName = $"Display the Edge link like 'Origin.Name =>Weight Neighbor.Name'")]
+    [Fact(DisplayName = $"Display the Edge link like 'Origin.Name -->|Weight| Neighbor.Name'")]
     public void Test1()
     {
         // Arrange
@@ -21,6 +21,6 @@ public class EdgeTests
         var sut = edge.ToString();
 
         // Assert
-        sut.Should().Be($"{origin?.Name} *{edge.Weight}=> {neighbor?.Name}");
+        sut.Should().Be($"{origin?.Name} -->|{edge.Weight}| {neighbor?.Name}");
     }
 }
