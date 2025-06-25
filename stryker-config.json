@@ -27,15 +27,14 @@
     "since": {
       "enabled": false,
       "ignore-changes-in": [],
-      "target": "master"
+      "target": "main"
     },
     "baseline": {
       "enabled": false,
       "provider": "disk",
       "azure-fileshare-url": "",
-      "fallback-version": "master"
+      "fallback-version": "main"
     },
-    "dashboard-url": "https://dashboard.stryker-mutator.io",
     "test-projects": [],
     "test-case-filter": "",
     "ignore-mutations": [],
