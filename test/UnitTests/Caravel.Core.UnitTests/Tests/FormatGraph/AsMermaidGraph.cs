@@ -1,38 +1,13 @@
-﻿using Caravel.Core.Extensions;
-using Caravel.Tests.Fixtures;
-using Caravel.Tests.Fixtures.Extensions;
-using Caravel.Tests.Fixtures.NodeSpies;
-
-namespace Caravel.Core.UnitTests.Tests.FormatGraph;
+﻿namespace Caravel.Core.UnitTests.Tests.FormatGraph;
 
 [Trait(TestType, Unit)]
 [Trait(FeatureUnderTest, FeatureFormatGraph)]
 public class AsMermaidGraph
 {
-    private const string GraphNode4Win =
-        """
-        graph TD
-        NodeSpy1 -->|0| NodeSpy2
-        NodeSpy2 -->|100| NodeSpy3
-        NodeSpy2 -->|50| NodeSpy4
-        NodeSpy3 -->|0| NodeSpy5
-        NodeSpy4 -->|0| NodeSpy5
-        """;
-
-    private const string GraphNode3Win =
-        """
-        graph TD
-        NodeSpy1 -->|0| NodeSpy2
-        NodeSpy2 -->|50| NodeSpy3
-        NodeSpy2 -->|100| NodeSpy4
-        NodeSpy3 -->|0| NodeSpy5
-        NodeSpy4 -->|0| NodeSpy5
-        """;
-
     [Theory(DisplayName = "Journey of 2 routes displays graph with weights")]
-    [InlineData(50, 100, GraphNode3Win)]
-    [InlineData(100, 50, GraphNode4Win)]
-    public void Test1(int node3Weight, int node4Weight, string expectedGraph)
+    [InlineData(50, 100)]
+    [InlineData(100, 50)]
+    public async Task Test1(int node3Weight, int node4Weight)
     {
         // csharpier-ignore-start
         // Arrange
@@ -56,10 +31,10 @@ public class AsMermaidGraph
         var journey = builder.Build();
 
         // Act
-        var sut = journey.ToMermaidGraph().ReplaceLineEndingsToLinux();
+        var sut = journey.ToMermaidGraph();
 
         // Assert
-        sut.Should().BeEquivalentTo(expectedGraph.ReplaceLineEndingsToLinux());
+        await sut.VerifyMermaidGraphAsync(node3Weight, node4Weight);
         // csharpier-ignore-end
     }
 }

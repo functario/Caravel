@@ -1,6 +1,6 @@
-﻿namespace Caravel.Tests.Fixtures.Extensions;
+﻿namespace Caravel.Core.UnitTests.Extensions;
 
-public static class LineEndingExtensions
+internal static class LineEndingExtensions
 {
     public static string ReplaceLineEndingsToLinux(this string text)
     {
