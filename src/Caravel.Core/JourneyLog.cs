@@ -6,8 +6,8 @@ public record JourneyLog : IJourneyLog
 {
     public JourneyLog()
     {
-        History = new Queue<Type>();
+        History = new Queue<IJourneyHistory>();
     }
 
-    public Queue<Type> History { get; init; }
+    public Queue<IJourneyHistory> History { get; init; }
 }

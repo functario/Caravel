@@ -39,12 +39,12 @@ public static class VerifyExtensions
         );
     }
 
-    public static SettingsTask VerifyMermaidGraphAsync(
+    public static SettingsTask VerifyMermaidMarkdownAsync(
         this string toVerify,
         params object?[] args
     ) => VerifyMermaidGraphAsync(toVerify, "mmd", args);
 
-    public static SettingsTask VerifyMermaidGraphHtmlAsync(
+    public static SettingsTask VerifyMermaidHtmlAsync(
         this string toVerify,
         params object?[] args
     ) => VerifyMermaidGraphAsync(toVerify, "html", args);

@@ -2,5 +2,5 @@
 
 public interface IJourneyLog
 {
-    Queue<Type> History { get; }
+    Queue<IJourneyHistory> History { get; }
 }

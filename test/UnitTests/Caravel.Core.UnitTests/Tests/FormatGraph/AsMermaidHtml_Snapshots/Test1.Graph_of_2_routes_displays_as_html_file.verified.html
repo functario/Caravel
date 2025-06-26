@@ -1,0 +1,53 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8" />
+    <title>Mermaid Graphs</title>
+    <style>
+        html, body {
+            background-color: black;
+            color: white;
+        }
+                            
+        .diagram-title {
+            text-align: center;
+            margin: 40px 0 10px;
+            font-size: 1.5em;
+            color: #ccc;
+        }
+
+        .mermaid {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .separator {
+            border: none;
+            border-top: 1px solid #444;
+            margin: 40px auto;
+            width: 80%;
+        }
+    </style>
+</head>
+<body>
+<div class="mermaid">graph TD
+NodeSpy1 -->|0| NodeSpy2
+NodeSpy2 -->|50| NodeSpy3
+NodeSpy2 -->|100| NodeSpy4
+NodeSpy3 -->|0| NodeSpy5
+NodeSpy4 -->|0| NodeSpy5</div>
+
+<script type="module">
+    import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs';
+
+    mermaid.initialize({
+        startOnLoad: true,
+        theme: 'dark',
+        themeVariables: {
+            darkMode: true
+        }
+    });
+</script>
+</body>
+</html>
