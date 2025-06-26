@@ -13,16 +13,24 @@ public static class MermaidGraphExtensions
                 <meta charset="UTF-8" />
                 <title>Mermaid Graph</title>
                 <style>
-                    body {
+                    html, body {
+                        height: 100%;
+                        margin: 0;
                         background-color: black;
                         color: white;
+                    }
+
+                    .mermaid {
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
                     }
                 </style>
             </head>
             <body>
-                <pre class="mermaid">
-            {{mermaid}}
-                </pre>
+                <div class="mermaid">
+                {{mermaid}}
+                </div>
 
                 <script type="module">
                     import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs';
@@ -37,6 +45,7 @@ public static class MermaidGraphExtensions
                 </script>
             </body>
             </html>
+            
             """;
 
     public static string AsMermaidHtml(
