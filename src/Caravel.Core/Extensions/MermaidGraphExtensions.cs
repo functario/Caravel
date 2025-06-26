@@ -4,10 +4,17 @@ namespace Caravel.Core.Extensions;
 
 public static class MermaidGraphExtensions
 {
+    // Note: Mermaid config is space sensitive. 
     private static string FormatHtml(string mermaid) =>
         $$"""
-            <body>
+            <body style="background-color:black;">
                 <pre class="mermaid">
+            ---
+            config:
+                theme: 'dark'
+                themeVariables:
+            darkMode: 'true'
+            ---
                 {{mermaid}}
                 </pre>
                 <script type="module">
