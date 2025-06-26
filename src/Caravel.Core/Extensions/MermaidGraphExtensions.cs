@@ -7,21 +7,36 @@ public static class MermaidGraphExtensions
     // Note: Mermaid config is space sensitive. 
     private static string FormatHtml(string mermaid) =>
         $$"""
-            <body style="background-color:black;">
+            <!DOCTYPE html>
+            <html>
+            <head>
+                <meta charset="UTF-8" />
+                <title>Mermaid Graph</title>
+                <style>
+                    body {
+                        background-color: black;
+                        color: white;
+                    }
+                </style>
+            </head>
+            <body>
                 <pre class="mermaid">
-            ---
-            config:
-                theme: 'dark'
-                themeVariables:
-            darkMode: 'true'
-            ---
-                {{mermaid}}
+            {{mermaid}}
                 </pre>
+
                 <script type="module">
-                    import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
-                    mermaid.initialize({ startOnLoad: true });
+                    import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs';
+
+                    mermaid.initialize({
+                        startOnLoad: true,
+                        theme: 'dark',
+                        themeVariables: {
+                            darkMode: true
+                        }
+                    });
                 </script>
             </body>
+            </html>
             """;
 
     public static string AsMermaidHtml(
