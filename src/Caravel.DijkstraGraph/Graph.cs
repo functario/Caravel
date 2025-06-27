@@ -1,7 +1,7 @@
 ﻿using System.Collections.Frozen;
 using Caravel.Abstractions;
 
-namespace Caravel.Core;
+namespace Caravel.DijkstraGraph;
 
 public sealed class Graph : IGraph
 {

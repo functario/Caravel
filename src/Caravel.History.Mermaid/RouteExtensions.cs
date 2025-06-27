@@ -2,7 +2,7 @@
 using System.Text;
 using Caravel.Abstractions;
 
-namespace Caravel.Core.Extensions;
+namespace Caravel.History.Mermaid;
 
 public static class RouteExtensions
 {

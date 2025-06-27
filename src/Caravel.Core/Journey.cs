@@ -1,5 +1,6 @@
 ﻿using Caravel.Abstractions;
 using Caravel.Core.Extensions;
+using Caravel.History.Mermaid;
 
 namespace Caravel.Core;
 
@@ -53,6 +54,8 @@ public record Journey : IJourney
             throw new InvalidOperationException("Edge should not be null.");
         }
 
+        // TODO: To replace by virtual method for publication of JourneyHistory
+        // Then remove dependency from Caravel.Histor.Mermaid
         var journeyHistory = new JourneyHistory();
         foreach (var edge in edges)
         {

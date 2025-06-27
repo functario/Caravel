@@ -1,6 +1,6 @@
 ﻿using System.Collections.Immutable;
 using Caravel.Abstractions;
-using Caravel.Core;
+using Caravel.DijkstraGraph;
 using Caravel.Tests.Fixtures.GraphsData.Nodes;
 
 namespace Caravel.Tests.Fixtures.GraphsData;

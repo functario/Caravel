@@ -60,13 +60,4 @@ public static partial class JourneyExtensions
             .GotoAsync<TDestination>(waypoints, excludeNodes, localCancellationToken)
             .ConfigureAwait(false);
     }
-
-    public static string ToMermaidGraph(
-        this IJourney journey,
-        MermaidGraphDirections mermaidGraphDirection = default
-    )
-    {
-        ArgumentNullException.ThrowIfNull(journey, nameof(journey));
-        return journey.Graph.ToMermaidGraph(mermaidGraphDirection);
-    }
 }
