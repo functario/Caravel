@@ -1,13 +1,13 @@
 ﻿using System.Collections.Immutable;
 using Caravel.Abstractions;
-using Caravel.DijkstraGraph;
+using Caravel.Graph.Dijkstra;
 using Caravel.Tests.Fixtures.GraphsData.Nodes;
 
 namespace Caravel.Tests.Fixtures.GraphsData;
 
 public sealed class Graph_5_Nodes_WithWeight
 {
-    private readonly Graph _graph;
+    private readonly DijkstraGraph _graph;
     private readonly ImmutableHashSet<INode> _nodes;
 
     public Graph_5_Nodes_WithWeight()
@@ -20,9 +20,9 @@ public sealed class Graph_5_Nodes_WithWeight
             new NodeE()
             ];
 
-        _graph = new Graph(_nodes);
+        _graph = new DijkstraGraph(_nodes);
     }
 
-    public Graph Graph => _graph;
+    public DijkstraGraph Graph => _graph;
     public ImmutableHashSet<INode> Nodes => _nodes;
 }

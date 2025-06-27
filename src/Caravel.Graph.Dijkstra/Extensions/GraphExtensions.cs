@@ -1,7 +1,7 @@
 ﻿using Caravel.Abstractions;
 using Caravel.Core;
 
-namespace Caravel.DijkstraGraph.Extensions;
+namespace Caravel.Graph.Dijkstra.Extensions;
 
 public static class GraphExtensions
 {

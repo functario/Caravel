@@ -1,6 +1,6 @@
 ﻿using Caravel.Abstractions;
 using Caravel.Core;
-using Caravel.DijkstraGraph;
+using Caravel.Graph.Dijkstra;
 using NSubstitute;
 
 namespace Caravel.Tests.Fixtures;
@@ -84,7 +84,7 @@ public sealed class GraphTestBuilder
 
     public IGraph CreateGraph()
     {
-        var graph = new Graph(_nodes);
+        var graph = new DijkstraGraph(_nodes);
         return graph;
     }
 }

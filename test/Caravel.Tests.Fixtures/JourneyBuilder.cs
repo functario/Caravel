@@ -1,7 +1,7 @@
 ﻿using System.Collections.Immutable;
 using Caravel.Abstractions;
 using Caravel.Core;
-using Caravel.DijkstraGraph;
+using Caravel.Graph.Dijkstra;
 using Caravel.Tests.Fixtures.NodeSpies;
 
 namespace Caravel.Tests.Fixtures;
@@ -46,7 +46,7 @@ public sealed class JourneyBuilder
             builder.ResolveMoveNext(nodeInstances);
         }
 
-        var graph = new Graph([.. nodeInstances.Values.Cast<INode>()]);
+        var graph = new DijkstraGraph([.. nodeInstances.Values.Cast<INode>()]);
         var startNode = nodeInstances[_firstNodeType!];
 
         return new Journey(startNode, graph, ct);

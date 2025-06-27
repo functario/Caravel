@@ -1,13 +1,13 @@
 ﻿using System.Collections.Frozen;
 using Caravel.Abstractions;
 
-namespace Caravel.DijkstraGraph;
+namespace Caravel.Graph.Dijkstra;
 
-public sealed class Graph : IGraph
+public sealed class DijkstraGraph : IGraph
 {
     private readonly FrozenDictionary<Type, INode> _nodes;
 
-    public Graph(ICollection<INode> nodes)
+    public DijkstraGraph(ICollection<INode> nodes)
     {
         _nodes = nodes.ToDictionary(n => n.GetType(), n => n).ToFrozenDictionary();
     }

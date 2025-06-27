@@ -25,7 +25,7 @@
     <ItemGroup>
         <ProjectReference Include="..\..\..\src\Caravel.Abstractions\Caravel.Abstractions.csproj" />
         <ProjectReference Include="..\..\..\src\Caravel.Core\Caravel.Core.csproj" />
-        <ProjectReference Include="..\..\..\src\Caravel.DijkstraGraph\Caravel.DijkstraGraph.csproj" />
+        <ProjectReference Include="..\..\..\src\Caravel.Graph.Dijkstra\Caravel.Graph.Dijkstra.csproj" />
         <ProjectReference Include="..\..\..\src\Caravel.History.Mermaid\Caravel.History.Mermaid.csproj" />
         <ProjectReference Include="..\..\Caravel.Tests.Fixtures\Caravel.Tests.Fixtures.csproj" />
         <ProjectReference Include="..\..\Caravel.Tests.Support\Caravel.Tests.Support.csproj" />

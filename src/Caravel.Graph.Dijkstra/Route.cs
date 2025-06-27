@@ -1,7 +1,7 @@
 ﻿using System.Collections.Immutable;
 using Caravel.Abstractions;
 
-namespace Caravel.DijkstraGraph;
+namespace Caravel.Graph.Dijkstra;
 
 public class Route : IRoute
 {
