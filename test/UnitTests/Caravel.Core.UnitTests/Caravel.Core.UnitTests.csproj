@@ -1,17 +1,21 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
     <PropertyGroup>
-        <TargetFramework>net9.0</TargetFramework>
+        <TargetFramework>$(SdkTargetFramework)</TargetFramework>
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
         <IsPackable>false</IsPackable>
     </PropertyGroup>
     <ItemGroup>
+        <PackageReference Include="AutoFixture.Xunit2" />
         <PackageReference Include="coverlet.collector">
             <PrivateAssets>all</PrivateAssets>
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
         <PackageReference Include="Microsoft.NET.Test.Sdk" />
-        <PackageReference Include="xunit.v3" />
+        <PackageReference Include="System.Net.Http" />
+        <PackageReference Include="System.Text.RegularExpressions" />
+        <PackageReference Include="Verify.Xunit" />
+        <PackageReference Include="xunit" />
         <PackageReference Include="xunit.runner.visualstudio">
             <PrivateAssets>all</PrivateAssets>
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
@@ -19,6 +23,19 @@
         <PackageReference Include="AwesomeAssertions" />
     </ItemGroup>
     <ItemGroup>
+        <ProjectReference Include="..\..\..\src\Caravel.Abstractions\Caravel.Abstractions.csproj" />
         <ProjectReference Include="..\..\..\src\Caravel.Core\Caravel.Core.csproj" />
+        <ProjectReference Include="..\..\..\src\Caravel.Graph.Dijkstra\Caravel.Graph.Dijkstra.csproj" />
+        <ProjectReference Include="..\..\..\src\Caravel.Mermaid\Caravel.Mermaid.csproj" />
+        <ProjectReference Include="..\..\Caravel.Tests.Fixtures\Caravel.Tests.Fixtures.csproj" />
+        <ProjectReference Include="..\..\Caravel.Tests.Support\Caravel.Tests.Support.csproj" />
+    </ItemGroup>
+    <ItemGroup>
+      <None Update="Tests\FormatGraph\AsMermaidMarkdown.Test1.verified.txt">
+        <DependentUpon>AsMermaidMarkdown.cs</DependentUpon>
+      </None>
+    </ItemGroup>
+    <ItemGroup>
+      <Folder Include="Tests\FormatGraph\AsMermaidHtml_Snapshots\" />
     </ItemGroup>
 </Project>

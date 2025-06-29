@@ -4,5 +4,7 @@
     </PropertyGroup>
     <ItemGroup>
         <ProjectReference Include="..\Caravel.Abstractions\Caravel.Abstractions.csproj" />
+        <ProjectReference Include="..\Caravel.Core\Caravel.Core.csproj" />
     </ItemGroup>
 </Project>
+

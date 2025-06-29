@@ -44,3 +44,7 @@ msbuild.wrn
 
 # Environments
 .env
+
+# Tests
+TestResults/
+StrykerOutput/
