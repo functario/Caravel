@@ -91,10 +91,10 @@ public static partial class JourneyExtensions
         linkedCancellationTokenSource.Token.ThrowExceptionIfCancellationRequested();
 
         await journey
-            .Current.OnNodeOpenedAsync(journey, linkedCancellationTokenSource.Token)
+            .CurrentNode.OnNodeOpenedAsync(journey, linkedCancellationTokenSource.Token)
             .ConfigureAwait(false);
 
-        if (journey.Current is TCurrentNode current)
+        if (journey.CurrentNode is TCurrentNode current)
         {
             var funcNode = await func(current, linkedCancellationTokenSource.Token)
                 .ConfigureAwait(false);

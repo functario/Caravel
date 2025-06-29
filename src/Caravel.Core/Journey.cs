@@ -12,10 +12,10 @@ public record Journey : IJourney, IJourneLegPublisher
 
         Graph = graph;
         JourneyCancellationToken = journeyCancellationToken;
-        Current = current;
+        CurrentNode = current;
     }
 
-    public INode Current { get; private set; }
+    public INode CurrentNode { get; private set; }
     public IGraph Graph { get; init; }
     public CancellationToken JourneyCancellationToken { get; }
 
@@ -52,33 +52,29 @@ public record Journey : IJourney, IJourneLegPublisher
         linkedCancellationTokenSource.Token.ThrowExceptionIfCancellationRequested();
 
         await this
-            .Current.OnNodeOpenedAsync(this, linkedCancellationTokenSource.Token).ConfigureAwait(false);
+            .CurrentNode.OnNodeOpenedAsync(this, linkedCancellationTokenSource.Token)
+            .ConfigureAwait(false);
 
-
-        var originType = Current.GetType();
+        var originType = CurrentNode.GetType();
         var destinationType = typeof(TDestination);
-        var shortestRoute = Graph.GetRoute(
-            originType,
-            destinationType,
-            waypoints,
-            excludeNodes
-        );
+        var route = Graph.GetRoute(originType, destinationType, waypoints, excludeNodes);
 
-        var edges = shortestRoute.Edges;
+        var edges = route.Edges;
 
         if (edges.Any(x => x is null))
         {
             throw new InvalidOperationException("Edge should not be null.");
         }
 
-        // TODO: To replace by virtual method for publication of JourneyHistory
-        // Then remove dependency from Caravel.Histor.Mermaid
-
         var legEdges = new Queue<IEdge>();
         foreach (var edge in edges)
         {
             linkedCancellationTokenSource.Token.ThrowExceptionIfCancellationRequested();
-            Current = await edge.MoveNext(this, linkedCancellationTokenSource.Token)
+            CurrentNode = await edge.MoveNext(this, linkedCancellationTokenSource.Token)
+                .ConfigureAwait(false);
+
+            await this
+                .CurrentNode.OnNodeOpenedAsync(this, linkedCancellationTokenSource.Token)
                 .ConfigureAwait(false);
 
             legEdges.Enqueue(edge);
@@ -88,14 +84,14 @@ public record Journey : IJourney, IJourneLegPublisher
         await PublishOnJourneyLegCompletedAsync(journeyLeg, localCancellationToken)
             .ConfigureAwait(false);
 
-        if (Current is not TDestination)
+        if (CurrentNode is not TDestination)
         {
             throw new InvalidOperationException("The last INode is not the destination.");
         }
 
         await this
-            .Current.OnNodeOpenedAsync(this, linkedCancellationTokenSource.Token).ConfigureAwait(false);
-
+            .CurrentNode.OnNodeOpenedAsync(this, linkedCancellationTokenSource.Token)
+            .ConfigureAwait(false);
 
         return this;
     }

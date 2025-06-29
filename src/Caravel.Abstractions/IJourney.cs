@@ -4,7 +4,7 @@ public interface IJourney
 {
     CancellationToken JourneyCancellationToken { get; }
     IGraph Graph { get; }
-    INode Current { get; }
+    INode CurrentNode { get; }
 
     Task<IEnumerable<IJourneyLeg>> ReadJourneyLegsAsync(CancellationToken cancellationToken);
 
