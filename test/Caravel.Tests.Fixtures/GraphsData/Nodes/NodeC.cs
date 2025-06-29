@@ -19,7 +19,7 @@ public sealed class NodeC : IAuditableNode
         return [this.CreateEdge<NodeA>(OpenNodeA), this.CreateEdge<NodeE>(OpenNodeE)];
     }
 
-    public Task<bool> Audit(IJourney journey, CancellationToken cancellationToken) => Task.FromResult(_existValue);
+    public Task<bool> AuditAsync(IJourney journey, CancellationToken cancellationToken) => Task.FromResult(_existValue);
 
     public Task<NodeA> OpenNodeA(IJourney journey, CancellationToken _)
     {

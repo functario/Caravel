@@ -27,7 +27,7 @@ public sealed class GraphTestBuilder
     public IAuditableNode AddAuditableNode<T>() where T : class
     {
         var node = Substitute.For<IAuditableNode, T>();
-        node.Audit(Arg.Any<IJourney>(), Arg.Any<CancellationToken>())
+        node.AuditAsync(Arg.Any<IJourney>(), Arg.Any<CancellationToken>())
             .Returns(ci =>
                 _audits.TryGetValue(node, out var result) ? result : Task.FromResult(true)
             );

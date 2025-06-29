@@ -1,4 +1,4 @@
-﻿namespace Caravel.History.Mermaid;
+﻿namespace Caravel.Mermaid;
 
 public enum MermaidGraphDirections
 {

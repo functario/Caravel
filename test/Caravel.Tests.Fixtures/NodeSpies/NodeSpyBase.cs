@@ -19,5 +19,5 @@ public class NodeSpyBase : INodeSpy
     public ImmutableHashSet<IEdge> GetEdges() => InternalEdges;
 
 
-    public Task<bool> Audit(IJourney journey, CancellationToken cancellationToken) => Task.FromResult(_existValue);
+    public Task<bool> AuditAsync(IJourney journey, CancellationToken cancellationToken) => Task.FromResult(_existValue);
 }

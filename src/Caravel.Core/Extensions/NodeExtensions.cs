@@ -36,7 +36,7 @@ public static class NodeExtensions
     {
         if (node is IAuditableNode currentNodeToValidate)
         {
-            var exist = await currentNodeToValidate.Audit(journey, cancellationToken).ConfigureAwait(false);
+            var exist = await currentNodeToValidate.AuditAsync(journey, cancellationToken).ConfigureAwait(false);
 
             if (!exist)
             {

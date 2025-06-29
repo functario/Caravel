@@ -24,7 +24,7 @@ public sealed class NodeA : IAuditableNode
             ];
     }
 
-    public Task<bool> Audit(IJourney journey, CancellationToken cancellationToken) => Task.FromResult(_existValue);
+    public Task<bool> AuditAsync(IJourney journey, CancellationToken cancellationToken) => Task.FromResult(_existValue);
 
     public Task<NodeB> OpenNodeB(IJourney journey, CancellationToken _)
     {

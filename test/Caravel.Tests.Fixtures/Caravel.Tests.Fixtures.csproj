@@ -17,6 +17,6 @@
         <ProjectReference Include="..\..\src\Caravel.Abstractions\Caravel.Abstractions.csproj" />
         <ProjectReference Include="..\..\src\Caravel.Core\Caravel.Core.csproj" />
         <ProjectReference Include="..\..\src\Caravel.Graph.Dijkstra\Caravel.Graph.Dijkstra.csproj" />
-        <ProjectReference Include="..\..\src\Caravel.History.Mermaid\Caravel.History.Mermaid.csproj" />
+        <ProjectReference Include="..\..\src\Caravel.Mermaid\Caravel.Mermaid.csproj" />
     </ItemGroup>
 </Project>

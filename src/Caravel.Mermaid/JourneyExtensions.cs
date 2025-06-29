@@ -1,6 +1,6 @@
 ﻿using Caravel.Abstractions;
 
-namespace Caravel.History.Mermaid;
+namespace Caravel.Mermaid;
 
 public static partial class JourneyExtensions
 {

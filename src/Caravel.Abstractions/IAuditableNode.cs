@@ -2,5 +2,5 @@
 
 public interface IAuditableNode : INode
 {
-    public Task<bool> Audit(IJourney journey, CancellationToken cancellationToken);
+    public Task<bool> AuditAsync(IJourney journey, CancellationToken cancellationToken);
 }
