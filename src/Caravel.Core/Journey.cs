@@ -136,7 +136,13 @@ public record Journey : IJourney, IJourneLegPublisher
         CancellationToken cancellationToken
     ) => GetCompletedJourneyLegsAsync(cancellationToken);
 
+    /// <summary>
+    /// Returns completed journey legs. Must be overridden by subclasses; base implementation will throw.
+    /// </summary>
     protected virtual Task<IEnumerable<IJourneyLeg>> GetCompletedJourneyLegsAsync(
         CancellationToken cancellationToken
-    ) => Task.FromResult<IEnumerable<IJourneyLeg>>([]);
+    ) =>
+        throw new NotImplementedException(
+            $"{GetType().Name} must override {nameof(GetCompletedJourneyLegsAsync)}."
+        );
 }
