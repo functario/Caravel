@@ -5,12 +5,14 @@ using Caravel.Graph.Dijkstra;
 using Caravel.Tests.Fixtures.NodeSpies;
 
 namespace Caravel.Tests.Fixtures;
+
 public sealed class JourneyBuilder
 {
     private readonly Dictionary<Type, NodeBuilder> _nodes = [];
     private Type? _firstNodeType;
 
-    public NodeBuilder AddNode<T>() where T : INodeSpy
+    public NodeBuilder AddNode<T>()
+        where T : INodeSpy
     {
         var type = typeof(T);
         if (_nodes.ContainsKey(type))
@@ -51,14 +53,13 @@ public sealed class JourneyBuilder
 
         return new TestingJourney(startNode, graph, ct);
     }
-
 }
 
 public sealed class NodeBuilder
 {
     private readonly JourneyBuilder _parent;
     private readonly Type _type;
-    private readonly List<(Type neighbor, int weight)> _edges = [];
+    private readonly List<(Type neighbor, int weight, string? description)> _edges = [];
     private bool _auditValue = true;
     private INodeSpy? _instance;
 
@@ -68,12 +69,13 @@ public sealed class NodeBuilder
         _type = type;
     }
 
-    public NodeBuilder WithEdge<TNeighbor>(int weight = 0) where TNeighbor : INode =>
-        WithEdge(typeof(TNeighbor), weight);
+    public NodeBuilder WithEdge<TNeighbor>(int weight = 0, string description = "")
+        where TNeighbor : INode => WithEdge(typeof(TNeighbor), weight, description);
 
-    public NodeBuilder WithEdge(Type neighborType, int weight = 0)
+    public NodeBuilder WithEdge(Type neighborType, int weight = 0, string description = "")
     {
-        _edges.Add((neighborType, weight));
+        var edgeInfo = string.IsNullOrWhiteSpace(description) ? null : description;
+        _edges.Add((neighborType, weight, edgeInfo));
         return this;
     }
 
@@ -85,8 +87,9 @@ public sealed class NodeBuilder
 
     public INodeSpy CreateNode(ImmutableHashSet<IEdge> edges)
     {
-        var ctor = _type.GetConstructor([typeof(ImmutableHashSet<IEdge>), typeof(bool)])
-                   ?? throw new InvalidOperationException($"Constructor not found for {_type.Name}");
+        var ctor =
+            _type.GetConstructor([typeof(ImmutableHashSet<IEdge>), typeof(bool)])
+            ?? throw new InvalidOperationException($"Constructor not found for {_type.Name}");
 
         _instance = (INodeSpy)ctor.Invoke([edges, _auditValue]);
         return _instance;
@@ -95,15 +98,18 @@ public sealed class NodeBuilder
     public ImmutableHashSet<IEdge> BuildEdges()
     {
         var origin = _type;
-        var edges = _edges.Select(tuple =>
-        {
-            var (neighbor, weight) = tuple;
+        var edges = _edges
+            .Select(tuple =>
+            {
+                var (neighbor, weight, metaData) = tuple;
 
-            static Task<INode> MoveNext(IJourney _, CancellationToken __) =>
-                throw new InvalidOperationException("Edge not resolved yet.");
+                static Task<INode> MoveNext(IJourney _, CancellationToken __) =>
+                    throw new InvalidOperationException("Edge not resolved yet.");
 
-            return new Edge(origin, neighbor, MoveNext, weight);
-        }).ToImmutableHashSet<IEdge>();
+                var neighborNavigator = new NeighborNavigator(MoveNext, metaData);
+                return new Edge(origin, neighbor, neighborNavigator, weight);
+            })
+            .ToImmutableHashSet<IEdge>();
 
         return edges;
     }
@@ -114,21 +120,36 @@ public sealed class NodeBuilder
         if (_instance is null)
             throw new InvalidOperationException("Node instance not created yet.");
 
-        var newEdges = _instance.InternalEdges
-        .Select(e => (IEdge)new Edge(
-            e.Origin,
-            e.Neighbor,
-            (_, _) => Task.FromResult<INode>(map[e.Neighbor]),
-            e.Weight
-        ))
-        .ToImmutableHashSet();
+        var newEdges = _instance
+            .InternalEdges.Select(edge =>
+                (IEdge)
+                    new Edge(
+                        edge.Origin,
+                        edge.Neighbor,
+                        CreateNeighborNavigator(map, edge),
+                        edge.Weight
+                    )
+            )
+            .ToImmutableHashSet();
 
-        var ctor = _type.GetConstructor([typeof(ImmutableHashSet<IEdge>), typeof(bool)])
-                   ?? throw new InvalidOperationException("Node must have expected constructor.");
+        var ctor =
+            _type.GetConstructor([typeof(ImmutableHashSet<IEdge>), typeof(bool)])
+            ?? throw new InvalidOperationException("Node must have expected constructor.");
 
         var newNode = (INodeSpy)ctor.Invoke([newEdges, _auditValue]);
         map[_type] = newNode;
     }
 
     public JourneyBuilder Done() => _parent;
+
+    private static NeighborNavigator CreateNeighborNavigator(
+        Dictionary<Type, INodeSpy> map,
+        IEdge edge
+    )
+    {
+        return new NeighborNavigator(
+            (_, _) => Task.FromResult<INode>(map[edge.Neighbor]),
+            edge.NeighborNavigator.MetaData
+        );
+    }
 }

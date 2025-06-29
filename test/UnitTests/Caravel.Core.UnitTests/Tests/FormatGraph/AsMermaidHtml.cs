@@ -9,14 +9,14 @@ public class AsMermaidHtml
     {
         var builder = new JourneyBuilder()
             .AddNode<NodeSpy1>()
-            .WithEdge<NodeSpy2>()
+            .WithEdge<NodeSpy2>(description: "Open Node2")
             .Done()
             .AddNode<NodeSpy2>()
             .WithEdge<NodeSpy3>(50) // The weight setting the route
             .WithEdge<NodeSpy4>(100) // The weight setting the route
             .Done()
             .AddNode<NodeSpy3>()
-            .WithEdge<NodeSpy5>()
+            .WithEdge<NodeSpy5>(description: "Open Node5")
             .Done()
             .AddNode<NodeSpy4>()
             .WithEdge<NodeSpy5>()
@@ -27,7 +27,7 @@ public class AsMermaidHtml
         var journey = builder.Build();
 
         // Act
-        var sut = journey.Graph.ToMermaidHtml();
+        var sut = journey.Graph.ToMermaidHtml(true);
 
         // Assert
         await sut.VerifyMermaidHtmlAsync();
@@ -38,14 +38,14 @@ public class AsMermaidHtml
     {
         var builder = new JourneyBuilder()
             .AddNode<NodeSpy1>()
-            .WithEdge<NodeSpy2>()
+            .WithEdge<NodeSpy2>(description: "Open Node2")
             .Done()
             .AddNode<NodeSpy2>()
             .WithEdge<NodeSpy3>(50) // The weight setting the route
             .WithEdge<NodeSpy4>(100) // The weight setting the route
             .Done()
             .AddNode<NodeSpy3>()
-            .WithEdge<NodeSpy5>()
+            .WithEdge<NodeSpy5>(description: "Open Node5")
             .Done()
             .AddNode<NodeSpy4>()
             .WithEdge<NodeSpy5>()
@@ -57,7 +57,7 @@ public class AsMermaidHtml
         var pastJourney = await journey.GotoAsync<NodeSpy5>();
 
         // Act
-        var sut = await pastJourney.ToMermaidHtml(CancellationToken.None);
+        var sut = await pastJourney.ToMermaidHtml(true);
 
         // Assert
         await sut.VerifyMermaidHtmlAsync();
@@ -68,21 +68,21 @@ public class AsMermaidHtml
     {
         var builder = new JourneyBuilder()
             .AddNode<NodeSpy1>()
-            .WithEdge<NodeSpy2>()
+            .WithEdge<NodeSpy2>(description: "Open Node2")
             .Done()
             .AddNode<NodeSpy2>()
-            .WithEdge<NodeSpy3>(50) // The weight setting the route
-            .WithEdge<NodeSpy4>(100) // The weight setting the route
+            .WithEdge<NodeSpy3>(50, description: "Open Node3") // The weight setting the route
+            .WithEdge<NodeSpy4>(100, description: "Open Node4") // The weight setting the route
             .Done()
             .AddNode<NodeSpy3>()
-            .WithEdge<NodeSpy5>()
+            .WithEdge<NodeSpy5>(description: "Open Node5")
             .Done()
             .AddNode<NodeSpy4>()
-            .WithEdge<NodeSpy5>()
-            .WithEdge<NodeSpy1>()
+            .WithEdge<NodeSpy5>(description: "Open Node5")
+            .WithEdge<NodeSpy1>(description: "Open Node1")
             .Done()
             .AddNode<NodeSpy5>()
-            .WithEdge<NodeSpy4>()
+            .WithEdge<NodeSpy4>(description: "Open Node4")
             .Done();
 
         var journey = builder.Build();
@@ -92,7 +92,7 @@ public class AsMermaidHtml
             .GotoAsync<NodeSpy1>();
 
         // Act
-        var sut = await pastJourney.ToManyMermaidHtml(CancellationToken.None);
+        var sut = await pastJourney.ToManyMermaidHtml(true);
 
         // Assert
         await sut.VerifyMermaidHtmlAsync();

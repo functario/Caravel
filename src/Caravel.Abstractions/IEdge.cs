@@ -4,6 +4,6 @@ public interface IEdge
 {
     Type Neighbor { get; }
     Type Origin { get; }
-    Func<IJourney, CancellationToken, Task<INode>> MoveNext { get; }
+    INeighborNavigator NeighborNavigator { get; }
     int Weight { get; }
 }

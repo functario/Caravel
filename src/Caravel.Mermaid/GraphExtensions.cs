@@ -1,14 +1,19 @@
 ﻿using System.Collections.Immutable;
 using System.Globalization;
 using System.Text;
+using System.Text.RegularExpressions;
 using Caravel.Abstractions;
 
 namespace Caravel.Mermaid;
 
-public static class GraphExtensions
+public static partial class GraphExtensions
 {
+    private static string NewLine => "<br>";
+    private const string SafeCharPattern = @"^[a-zA-Z0-9 _.\-:]+$";
+
     public static string ToMermaidGraph(
         this IGraph graph,
+        bool isDescriptionDisplayed = false,
         MermaidGraphDirections mermaidGraphDirection = default
     )
     {
@@ -31,7 +36,7 @@ public static class GraphExtensions
         {
             foreach (var edge in nodeEdges[i].edges.OrderBy(x => x.Neighbor.Name))
             {
-                var edgeStr = edge.ToString();
+                var edgeStr = edge.ToMermaidSection(isDescriptionDisplayed);
                 stringBuilder.AppendLine(edgeStr);
             }
         }
@@ -45,12 +50,13 @@ public static class GraphExtensions
 
     public static string ToMermaidHtml(
         this IGraph graph,
+        bool isDescriptionDisplayed = false,
         MermaidGraphDirections mermaidGraphDirection = default
     )
     {
         ArgumentNullException.ThrowIfNull(graph, nameof(graph));
 
-        var mermaid = graph.ToMermaidGraph(mermaidGraphDirection);
+        var mermaid = graph.ToMermaidGraph(isDescriptionDisplayed, mermaidGraphDirection);
         return mermaid.WithOneGraph().FormatHtml();
     }
 
@@ -65,38 +71,41 @@ public static class GraphExtensions
         return mermaid.WithOneGraph().FormatHtml();
     }
 
-    public static async Task<string> ToMermaidHtml(this IJourney journey, CancellationToken cancellationToken)
+    public static async Task<string> ToMermaidHtml(
+        this IJourney journey,
+        bool isDescriptionDisplayed = false,
+        CancellationToken cancellationToken = default
+    )
     {
         ArgumentNullException.ThrowIfNull(journey, nameof(journey));
 
-        var mermaid = await journey.ToMermaidSequenceDiagram(cancellationToken)
+        var mermaid = await journey
+            .ToMermaidSequenceDiagram(isDescriptionDisplayed, cancellationToken)
             .ConfigureAwait(false);
 
         return mermaid.WithOneGraph().FormatHtml();
     }
 
-    public static async Task<string> ToManyMermaidHtml(this IJourney journey, CancellationToken cancellationToken)
+    public static async Task<string> ToManyMermaidHtml(
+        this IJourney journey,
+        bool isDescriptionDisplayed = false,
+        CancellationToken cancellationToken = default
+    )
     {
         ArgumentNullException.ThrowIfNull(journey, nameof(journey));
 
-        var mermaidLegsByIndexes = await journey.ToManyMermaidSequenceDiagram(cancellationToken).ConfigureAwait(false);
+        var mermaidLegsByIndexes = await journey
+            .ToManyMermaidSequenceDiagram(isDescriptionDisplayed, cancellationToken)
+            .ConfigureAwait(false);
 
         var mermaidLegs = mermaidLegsByIndexes.Values;
         return mermaidLegs.WithManyGraphs().FormatHtml();
     }
 
-    private static async Task<IJourneyLeg[]> ReadJourneyLegs(
-        this IJourney journey,
-        CancellationToken cancellationToken
-    )
-    {
-        var history = await journey.ReadJourneyLegsAsync(cancellationToken).ConfigureAwait(false);
-        return [.. history];
-    }
-
     public static async Task<string> ToMermaidSequenceDiagram(
         this IJourney journey,
-        CancellationToken cancellationToken
+        bool isDescriptionDisplayed = false,
+        CancellationToken cancellationToken = default
     )
     {
         ArgumentNullException.ThrowIfNull(journey, nameof(journey));
@@ -109,7 +118,7 @@ public static class GraphExtensions
         {
             var edges = journeyLegs[i].Edges.ToArray();
 
-            foreach (var item in edges.ToSequenceDiagramItem())
+            foreach (var item in edges.ToSequenceDiagramItem(isDescriptionDisplayed))
             {
                 stringBuilder.AppendLine(item);
             }
@@ -123,7 +132,8 @@ public static class GraphExtensions
 
     public static async Task<Dictionary<int, string>> ToManyMermaidSequenceDiagram(
         this IJourney journey,
-        CancellationToken cancellationToken
+        bool isDescriptionDisplayed = false,
+        CancellationToken cancellationToken = default
     )
     {
         ArgumentNullException.ThrowIfNull(journey, nameof(journey));
@@ -139,7 +149,7 @@ public static class GraphExtensions
             stringBuilder.AppendLine("box");
             stringBuilder.FlatParticipants(edges);
 
-            foreach (var item in edges.ToSequenceDiagramItem())
+            foreach (var item in edges.ToSequenceDiagramItem(isDescriptionDisplayed))
             {
                 stringBuilder.AppendLine(item);
             }
@@ -179,12 +189,54 @@ public static class GraphExtensions
         return stringBuilder;
     }
 
-    private static IEnumerable<string> ToSequenceDiagramItem(this IEdge[] edges)
+    private static async Task<IJourneyLeg[]> ReadJourneyLegs(
+        this IJourney journey,
+        CancellationToken cancellationToken
+    )
+    {
+        var history = await journey.ReadJourneyLegsAsync(cancellationToken).ConfigureAwait(false);
+        return [.. history];
+    }
+
+    private static void ThrowIfNotMermaidSafe(this string description)
+    {
+        var isSafe = MermaidSafeChars().IsMatch(description);
+        if (!isSafe)
+        {
+            throw new ArgumentException(
+                $"The description must respect the regex pattern '{SafeCharPattern}'."
+            );
+        }
+    }
+
+    private static string GetEdgeNoteAsMermaid(this IEdge edge, bool isDescriptionDisplayed)
+    {
+        var weight = edge.Weight.ToString(CultureInfo.InvariantCulture);
+        if (isDescriptionDisplayed && edge.NeighborNavigator.MetaData is string description)
+        {
+            description.ThrowIfNotMermaidSafe();
+            return $"{weight}{NewLine}{description}";
+        }
+
+        return weight;
+    }
+
+    private static string ToMermaidSection(this IEdge edge, bool isDescriptionDisplayed)
+    {
+        var text = GetEdgeNoteAsMermaid(edge, isDescriptionDisplayed);
+        return $"{edge.Origin.Name} -->|{text}| {edge.Neighbor.Name}";
+    }
+
+    private static IEnumerable<string> ToSequenceDiagramItem(
+        this IEdge[] edges,
+        bool isDescriptionDisplayed
+    )
     {
         for (var i = 0; i < edges.Length; i++)
         {
             var edge = edges[i];
-            yield return $"{edge.Origin.Name}->>{edge.Neighbor.Name}:{edge.Weight}";
+            var text = GetEdgeNoteAsMermaid(edge, isDescriptionDisplayed);
+            yield return $"{edge.Origin.Name}->>{edge.Neighbor.Name}:{text}";
         }
     }
 
@@ -264,4 +316,7 @@ public static class GraphExtensions
             </html>
             """;
     }
+
+    [GeneratedRegex(SafeCharPattern)]
+    private static partial Regex MermaidSafeChars();
 }

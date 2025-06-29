@@ -70,7 +70,7 @@ public record Journey : IJourney, IJourneLegPublisher
         foreach (var edge in edges)
         {
             linkedCancellationTokenSource.Token.ThrowExceptionIfCancellationRequested();
-            CurrentNode = await edge.MoveNext(this, linkedCancellationTokenSource.Token)
+            CurrentNode = await edge.NeighborNavigator.MoveNext(this, linkedCancellationTokenSource.Token)
                 .ConfigureAwait(false);
 
             await this

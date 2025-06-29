@@ -28,7 +28,7 @@ public class WhenDirectJourney
         var pastJourney = await journey.GotoAsync<NodeSpy5>();
 
         // Act
-        var sut = await pastJourney.ToMermaidSequenceDiagram(CancellationToken.None);
+        var sut = await pastJourney.ToMermaidSequenceDiagram();
 
         // Assert
         await sut.VerifyMermaidMarkdownAsync();
@@ -60,7 +60,7 @@ public class WhenDirectJourney
         var pastJourney = await journey.GotoAsync<NodeSpy3>();
 
         // Act
-        var sut = await pastJourney.ToMermaidSequenceDiagram(CancellationToken.None);
+        var sut = await pastJourney.ToMermaidSequenceDiagram();
 
         // Assert
         await sut.VerifyMermaidMarkdownAsync();
@@ -93,7 +93,7 @@ public class WhenDirectJourney
         var pastJourney = await journey.GotoAsync<NodeSpy5>();
 
         // Act
-        var sut = await pastJourney.ToMermaidSequenceDiagram(CancellationToken.None);
+        var sut = await pastJourney.ToMermaidSequenceDiagram();
 
         // Assert
         await sut.VerifyMermaidMarkdownAsync(node3Weight, node4Weight);
@@ -105,7 +105,7 @@ public class WhenDirectJourney
         // Arrange
         var builder = new JourneyBuilder()
             .AddNode<NodeSpy1>()
-            .WithEdge<NodeSpy2>()
+            .WithEdge<NodeSpy2>(description: "Open Node2")
             .Done()
             .AddNode<NodeSpy2>()
             .WithEdge<NodeSpy3>()
@@ -128,7 +128,7 @@ public class WhenDirectJourney
             .GotoAsync<NodeSpy1>();
 
         // Act
-        var sut = await pastJourney.ToMermaidSequenceDiagram(CancellationToken.None);
+        var sut = await pastJourney.ToMermaidSequenceDiagram(true);
 
         // Assert
         await sut.VerifyMermaidMarkdownAsync();

@@ -72,7 +72,7 @@ public sealed class GraphTestBuilder
         edge.Origin.Returns(origin.GetType());
         edge.Neighbor.Returns(neighbor.GetType());
         edge.Weight.Returns(weight);
-        edge.MoveNext.Returns((IJourney _, CancellationToken _) => Task.FromResult(neighbor));
+        edge.NeighborNavigator.MoveNext.Returns((IJourney _, CancellationToken _) => Task.FromResult(neighbor));
         return edge;
     }
 
