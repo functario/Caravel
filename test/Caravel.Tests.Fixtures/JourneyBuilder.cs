@@ -49,7 +49,7 @@ public sealed class JourneyBuilder
         var graph = new DijkstraGraph([.. nodeInstances.Values.Cast<INode>()]);
         var startNode = nodeInstances[_firstNodeType!];
 
-        return new Journey(startNode, graph, ct);
+        return new TestingJourney(startNode, graph, ct);
     }
 
 }

@@ -1,10 +1,9 @@
 ﻿using Caravel.Abstractions;
 using Caravel.Core.Extensions;
-using Caravel.History.Mermaid;
 
 namespace Caravel.Core;
 
-public record Journey : IJourney
+public record Journey : IJourney, IJourneLegPublisher
 {
     public Journey(INode current, IGraph graph, CancellationToken journeyCancellationToken)
     {
@@ -14,13 +13,30 @@ public record Journey : IJourney
         Graph = graph;
         JourneyCancellationToken = journeyCancellationToken;
         Current = current;
-        Log = new JourneyLog();
     }
 
     public INode Current { get; private set; }
     public IGraph Graph { get; init; }
     public CancellationToken JourneyCancellationToken { get; }
-    public IJourneyLog Log { get; init; }
+
+    // Explicit to enfore usage of the virtual method.
+    Task IJourneLegPublisher.PublishOnJourneyLegCompletedAsync(
+        IJourneyLeg journeyLeg,
+        CancellationToken cancellationToken
+    ) => PublishOnJourneyLegCompletedAsync(journeyLeg, cancellationToken);
+
+    Task<IEnumerable<IJourneyLeg>> IJourney.ReadJourneyLegsAsync(
+        CancellationToken cancellationToken
+    ) => ReadJourneyLegsAsync(cancellationToken);
+
+    protected virtual Task PublishOnJourneyLegCompletedAsync(
+        IJourneyLeg journeyLeg,
+        CancellationToken cancellationToken
+    ) => Task.CompletedTask;
+
+    protected virtual Task<IEnumerable<IJourneyLeg>> ReadJourneyLegsAsync(
+        CancellationToken cancellationToken
+    ) => Task.FromResult<IEnumerable<IJourneyLeg>>([]);
 
     public async Task<IJourney> GotoAsync<TDestination>(
         IWaypoints waypoints,
@@ -47,6 +63,7 @@ public record Journey : IJourney
             waypoints,
             excludeNodes
         );
+
         var edges = shortestRoute.Edges;
 
         if (edges.Any(x => x is null))
@@ -56,17 +73,20 @@ public record Journey : IJourney
 
         // TODO: To replace by virtual method for publication of JourneyHistory
         // Then remove dependency from Caravel.Histor.Mermaid
-        var journeyHistory = new JourneyHistory();
+
+        var legEdges = new Queue<IEdge>();
         foreach (var edge in edges)
         {
             linkedCancellationTokenSource.Token.ThrowExceptionIfCancellationRequested();
             Current = await edge.MoveNext(this, linkedCancellationTokenSource.Token)
                 .ConfigureAwait(false);
 
-            journeyHistory.Edges.Enqueue(edge);
+            legEdges.Enqueue(edge);
         }
 
-        Log.History.Enqueue(journeyHistory);
+        var journeyLeg = new JourneyLeg(legEdges);
+        await PublishOnJourneyLegCompletedAsync(journeyLeg, localCancellationToken)
+            .ConfigureAwait(false);
 
         if (Current is not TDestination)
         {

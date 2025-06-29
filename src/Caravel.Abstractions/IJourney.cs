@@ -4,8 +4,10 @@ public interface IJourney
 {
     CancellationToken JourneyCancellationToken { get; }
     IGraph Graph { get; }
-    IJourneyLog Log { get; }
     INode Current { get; }
+
+    Task<IEnumerable<IJourneyLeg>> ReadJourneyLegsAsync(CancellationToken cancellationToken);
+
     Task<IJourney> GotoAsync<TDestination>(
         IWaypoints waypoints,
         IExcludedNodes excludeNodes,

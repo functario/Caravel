@@ -57,7 +57,7 @@ public class AsMermaidHtml
         var pastJourney = await journey.GotoAsync<NodeSpy5>();
 
         // Act
-        var sut = pastJourney.Log.ToMermaidHtml();
+        var sut = await pastJourney.ToMermaidHtml(CancellationToken.None);
 
         // Assert
         await sut.VerifyMermaidHtmlAsync();
@@ -92,7 +92,7 @@ public class AsMermaidHtml
             .GotoAsync<NodeSpy1>();
 
         // Act
-        var sut = pastJourney.Log.ToManyMermaidHtml();
+        var sut = await pastJourney.ToManyMermaidHtml(CancellationToken.None);
 
         // Assert
         await sut.VerifyMermaidHtmlAsync();

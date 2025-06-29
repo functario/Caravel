@@ -65,32 +65,49 @@ public static class GraphExtensions
         return mermaid.WithOneGraph().FormatHtml();
     }
 
-    public static string ToMermaidHtml(this IJourneyLog journeyLog)
+    public static async Task<string> ToMermaidHtml(this IJourney journey, CancellationToken cancellationToken)
     {
-        ArgumentNullException.ThrowIfNull(journeyLog, nameof(journeyLog));
+        ArgumentNullException.ThrowIfNull(journey, nameof(journey));
 
-        var mermaid = journeyLog.ToMermaidSequenceDiagram();
+        var mermaid = await journey.ToMermaidSequenceDiagram(cancellationToken)
+            .ConfigureAwait(false);
+
         return mermaid.WithOneGraph().FormatHtml();
     }
 
-    public static string ToManyMermaidHtml(this IJourneyLog journeyLog)
+    public static async Task<string> ToManyMermaidHtml(this IJourney journey, CancellationToken cancellationToken)
     {
-        ArgumentNullException.ThrowIfNull(journeyLog, nameof(journeyLog));
+        ArgumentNullException.ThrowIfNull(journey, nameof(journey));
 
-        var mermaids = journeyLog.ToManyMermaidSequenceDiagram().Values;
-        return mermaids.WithManyGraphs(nameof(JourneyHistory)).FormatHtml();
+        var mermaidLegsByIndexes = await journey.ToManyMermaidSequenceDiagram(cancellationToken).ConfigureAwait(false);
+
+        var mermaidLegs = mermaidLegsByIndexes.Values;
+        return mermaidLegs.WithManyGraphs().FormatHtml();
     }
 
-    public static string ToMermaidSequenceDiagram(this IJourneyLog journeyLog)
+    private static async Task<IJourneyLeg[]> ReadJourneyLegs(
+        this IJourney journey,
+        CancellationToken cancellationToken
+    )
     {
-        ArgumentNullException.ThrowIfNull(journeyLog, nameof(journeyLog));
-        var history = journeyLog.History.ToArray();
+        var history = await journey.ReadJourneyLegsAsync(cancellationToken).ConfigureAwait(false);
+        return [.. history];
+    }
+
+    public static async Task<string> ToMermaidSequenceDiagram(
+        this IJourney journey,
+        CancellationToken cancellationToken
+    )
+    {
+        ArgumentNullException.ThrowIfNull(journey, nameof(journey));
+        var journeyLegs = await journey.ReadJourneyLegs(cancellationToken).ConfigureAwait(false);
 
         var stringBuilder = new StringBuilder();
         stringBuilder.AppendLine(CultureInfo.InvariantCulture, $"sequenceDiagram");
-        for (var i = 0; i < history.Length; i++)
+
+        for (var i = 0; i < journeyLegs.Length; i++)
         {
-            var edges = history[i].Edges.ToArray();
+            var edges = journeyLegs[i].Edges.ToArray();
 
             foreach (var item in edges.ToSequenceDiagramItem())
             {
@@ -104,15 +121,19 @@ public static class GraphExtensions
             : result;
     }
 
-    public static Dictionary<int, string> ToManyMermaidSequenceDiagram(this IJourneyLog journeyLog)
+    public static async Task<Dictionary<int, string>> ToManyMermaidSequenceDiagram(
+        this IJourney journey,
+        CancellationToken cancellationToken
+    )
     {
-        ArgumentNullException.ThrowIfNull(journeyLog, nameof(journeyLog));
+        ArgumentNullException.ThrowIfNull(journey, nameof(journey));
 
-        var history = journeyLog.History.ToArray();
+        var journeyLegs = await journey.ReadJourneyLegs(cancellationToken).ConfigureAwait(false);
+
         var groups = new Dictionary<int, string>();
-        for (var i = 0; i < history.Length; i++)
+        for (var i = 0; i < journeyLegs.Length; i++)
         {
-            var edges = history[i].Edges.ToArray();
+            var edges = journeyLegs[i].Edges.ToArray();
             var stringBuilder = new StringBuilder();
             stringBuilder.AppendLine(CultureInfo.InvariantCulture, $"sequenceDiagram");
             stringBuilder.AppendLine("box");
@@ -167,14 +188,14 @@ public static class GraphExtensions
         }
     }
 
-    private static string WithManyGraphs(this ICollection<string> graphs, string title)
+    private static string WithManyGraphs(this ICollection<string> graphs)
     {
         return string.Join(
             Environment.NewLine,
             graphs.Select(
                 (graph, index) =>
                     $"""
-                    <h2 class="diagram-title">{title} {index + 1}</h2>
+                    <h2 class="diagram-title">{index + 1}</h2>
                     <div class="mermaid">{graph}</div>
                     <hr class="separator" />
                     """
