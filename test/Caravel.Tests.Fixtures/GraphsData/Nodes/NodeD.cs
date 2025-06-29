@@ -7,7 +7,23 @@ namespace Caravel.Tests.Fixtures.GraphsData.Nodes;
 
 public sealed class NodeD : INode
 {
-    public NodeD() { }
+    private readonly bool _isOnOpenedSuccess;
+
+    public NodeD(bool isOnOpenedSuccess = true)
+    {
+        _isOnOpenedSuccess = isOnOpenedSuccess;
+    }
+
+    public Task OnNodeOpenedAsync(IJourney journey, CancellationToken cancellationToken)
+    {
+        if (_isOnOpenedSuccess)
+        {
+            return Task.CompletedTask;
+        }
+
+        throw new InvalidOperationException(nameof(NodeD));
+    }
+
 
     public ImmutableHashSet<IEdge> GetEdges()
     {

@@ -39,7 +39,6 @@ public static partial class JourneyExtensions
             .ConfigureAwait(false);
     }
 
-
     public static async Task<IJourney> GotoAsync<TDestination>(
         this Task<IJourney> journeyTask,
         Waypoints waypoints,
@@ -92,15 +91,16 @@ public static partial class JourneyExtensions
         linkedCancellationTokenSource.Token.ThrowExceptionIfCancellationRequested();
 
         await journey
-            .Current.ThrowExceptionIfNodeAuditFails(journey, linkedCancellationTokenSource.Token)
+            .Current.OnNodeOpenedAsync(journey, linkedCancellationTokenSource.Token)
             .ConfigureAwait(false);
 
         if (journey.Current is TCurrentNode current)
         {
-            var funcNode = await func(current, linkedCancellationTokenSource.Token).ConfigureAwait(false);
+            var funcNode = await func(current, linkedCancellationTokenSource.Token)
+                .ConfigureAwait(false);
 
             await funcNode
-                .ThrowExceptionIfNodeAuditFails(journey, linkedCancellationTokenSource.Token)
+                .OnNodeOpenedAsync(journey, linkedCancellationTokenSource.Token)
                 .ConfigureAwait(false);
 
             return funcNode is null

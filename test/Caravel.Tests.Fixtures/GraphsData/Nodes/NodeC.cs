@@ -5,13 +5,23 @@ using Caravel.Core.Extensions;
 
 namespace Caravel.Tests.Fixtures.GraphsData.Nodes;
 
-public sealed class NodeC : IAuditableNode
+public sealed class NodeC : INode
 {
-    private readonly bool _existValue;
+    private readonly bool _isOnOpenedSuccess;
 
-    public NodeC(bool existValue = true)
+    public NodeC(bool isOnOpenedSuccess = true)
     {
-        _existValue = existValue;
+        _isOnOpenedSuccess = isOnOpenedSuccess;
+    }
+
+    public Task OnNodeOpenedAsync(IJourney journey, CancellationToken cancellationToken)
+    {
+        if (_isOnOpenedSuccess)
+        {
+            return Task.CompletedTask;
+        }
+
+        throw new InvalidOperationException(nameof(NodeC));
     }
 
     public ImmutableHashSet<IEdge> GetEdges()
@@ -19,7 +29,6 @@ public sealed class NodeC : IAuditableNode
         return [this.CreateEdge<NodeA>(OpenNodeA), this.CreateEdge<NodeE>(OpenNodeE)];
     }
 
-    public Task<bool> AuditAsync(IJourney journey, CancellationToken cancellationToken) => Task.FromResult(_existValue);
 
     public Task<NodeA> OpenNodeA(IJourney journey, CancellationToken _)
     {

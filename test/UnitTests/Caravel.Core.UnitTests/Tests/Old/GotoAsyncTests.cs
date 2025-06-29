@@ -73,7 +73,7 @@
 //    }
 
 //    [Fact(
-//        DisplayName = $"IAuditableNode GotoAsync throws exception if does not exist in the current context of journey."
+//        DisplayName = $"INode GotoAsync throws exception if does not exist in the current context of journey."
 //    )]
 //    public async Task Test5()
 //    {
@@ -97,7 +97,7 @@
 //    }
 
 //    [Fact(
-//        DisplayName = $"IAuditableNode DoAsync throws exception if does not exist in the current context of journey."
+//        DisplayName = $"INode DoAsync throws exception if does not exist in the current context of journey."
 //    )]
 //    public async Task Test6()
 //    {

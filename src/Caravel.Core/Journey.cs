@@ -52,8 +52,8 @@ public record Journey : IJourney, IJourneLegPublisher
         linkedCancellationTokenSource.Token.ThrowExceptionIfCancellationRequested();
 
         await this
-            .Current.ThrowExceptionIfNodeAuditFails(this, linkedCancellationTokenSource.Token)
-            .ConfigureAwait(false);
+            .Current.OnNodeOpenedAsync(this, linkedCancellationTokenSource.Token).ConfigureAwait(false);
+
 
         var originType = Current.GetType();
         var destinationType = typeof(TDestination);
@@ -94,8 +94,8 @@ public record Journey : IJourney, IJourneLegPublisher
         }
 
         await this
-            .Current.ThrowExceptionIfNodeAuditFails(this, linkedCancellationTokenSource.Token)
-            .ConfigureAwait(false);
+            .Current.OnNodeOpenedAsync(this, linkedCancellationTokenSource.Token).ConfigureAwait(false);
+
 
         return this;
     }

@@ -30,18 +30,4 @@ public static class NodeExtensions
 
         return new Edge(originType, neighborType, WrappedMoveNExt, weight);
     }
-
-
-    public static async Task ThrowExceptionIfNodeAuditFails(this INode node, IJourney journey, CancellationToken cancellationToken)
-    {
-        if (node is IAuditableNode currentNodeToValidate)
-        {
-            var exist = await currentNodeToValidate.AuditAsync(journey, cancellationToken).ConfigureAwait(false);
-
-            if (!exist)
-            {
-                throw new InvalidOperationException("The Node audit has failed");
-            }
-        }
-    }
 }

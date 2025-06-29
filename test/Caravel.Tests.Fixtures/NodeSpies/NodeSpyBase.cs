@@ -1,15 +1,16 @@
 ﻿using System.Collections.Immutable;
 using Caravel.Abstractions;
+using Caravel.Tests.Fixtures.GraphsData.Nodes;
 
 namespace Caravel.Tests.Fixtures.NodeSpies;
 
 public class NodeSpyBase : INodeSpy
 {
-    private readonly bool _existValue;
+    private readonly bool _isOnOpenedSuccess;
 
-    public NodeSpyBase(ImmutableHashSet<IEdge> edges, bool existValue = true)
+    public NodeSpyBase(ImmutableHashSet<IEdge> edges, bool isOnOpenedSuccess = true)
     {
-        _existValue = existValue;
+        _isOnOpenedSuccess = isOnOpenedSuccess;
         InternalEdges = edges;
     }
 
@@ -19,5 +20,13 @@ public class NodeSpyBase : INodeSpy
     public ImmutableHashSet<IEdge> GetEdges() => InternalEdges;
 
 
-    public Task<bool> AuditAsync(IJourney journey, CancellationToken cancellationToken) => Task.FromResult(_existValue);
+    public Task OnNodeOpenedAsync(IJourney journey, CancellationToken cancellationToken)
+    {
+        if (_isOnOpenedSuccess)
+        {
+            return Task.CompletedTask;
+        }
+
+        throw new InvalidOperationException(nameof(NodeA));
+    }
 }

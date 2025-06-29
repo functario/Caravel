@@ -24,10 +24,10 @@ public sealed class GraphTestBuilder
         return node;
     }
 
-    public IAuditableNode AddAuditableNode<T>() where T : class
+    public INode AddAuditableNode<T>() where T : class
     {
-        var node = Substitute.For<IAuditableNode, T>();
-        node.AuditAsync(Arg.Any<IJourney>(), Arg.Any<CancellationToken>())
+        var node = Substitute.For<INode, T>();
+        node.OnNodeOpenedAsync(Arg.Any<IJourney>(), Arg.Any<CancellationToken>())
             .Returns(ci =>
                 _audits.TryGetValue(node, out var result) ? result : Task.FromResult(true)
             );
@@ -41,7 +41,7 @@ public sealed class GraphTestBuilder
         return node;
     }
 
-    public GraphTestBuilder SetAuditFor(IAuditableNode node, bool result)
+    public GraphTestBuilder SetAuditFor(INode node, bool result)
     {
         _audits[node] = Task.FromResult(result);
         return this;
