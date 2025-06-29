@@ -3,6 +3,7 @@ using System.Globalization;
 using System.Text;
 using System.Text.RegularExpressions;
 using Caravel.Abstractions;
+using Caravel.Abstractions.Events;
 
 namespace Caravel.Mermaid;
 
@@ -109,7 +110,7 @@ public static partial class GraphExtensions
     )
     {
         ArgumentNullException.ThrowIfNull(journey, nameof(journey));
-        var journeyLegs = await journey.ReadJourneyLegs(cancellationToken).ConfigureAwait(false);
+        var journeyLegs = await GetCompletedJourneyLegsAsync(journey, cancellationToken).ConfigureAwait(false);
 
         var stringBuilder = new StringBuilder();
         stringBuilder.AppendLine(CultureInfo.InvariantCulture, $"sequenceDiagram");
@@ -138,7 +139,7 @@ public static partial class GraphExtensions
     {
         ArgumentNullException.ThrowIfNull(journey, nameof(journey));
 
-        var journeyLegs = await journey.ReadJourneyLegs(cancellationToken).ConfigureAwait(false);
+        var journeyLegs = await GetCompletedJourneyLegsAsync(journey, cancellationToken).ConfigureAwait(false);
 
         var groups = new Dictionary<int, string>();
         for (var i = 0; i < journeyLegs.Length; i++)
@@ -189,12 +190,12 @@ public static partial class GraphExtensions
         return stringBuilder;
     }
 
-    private static async Task<IJourneyLeg[]> ReadJourneyLegs(
+    private static async Task<IJourneyLeg[]> GetCompletedJourneyLegsAsync(
         this IJourney journey,
         CancellationToken cancellationToken
     )
     {
-        var history = await journey.ReadJourneyLegsAsync(cancellationToken).ConfigureAwait(false);
+        var history = await journey.GetCompletedJourneyLegsAsync(cancellationToken).ConfigureAwait(false);
         return [.. history];
     }
 

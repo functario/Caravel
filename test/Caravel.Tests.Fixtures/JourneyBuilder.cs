@@ -28,7 +28,7 @@ public sealed class JourneyBuilder
     public ImmutableDictionary<Type, NodeBuilder> Nodes => _nodes.ToImmutableDictionary();
     public Type Node => _firstNodeType!;
 
-    public IJourney Build(CancellationToken ct = default)
+    public IJourney Build(TimeProvider? timeProvider = default, CancellationToken ct = default)
     {
         var nodeInstances = new Dictionary<Type, INodeSpy>();
 
@@ -51,7 +51,8 @@ public sealed class JourneyBuilder
         var graph = new DijkstraGraph([.. nodeInstances.Values.Cast<INode>()]);
         var startNode = nodeInstances[_firstNodeType!];
 
-        return new TestingJourney(startNode, graph, ct);
+        timeProvider ??= TimeProvider.System;
+        return new TestingJourney(startNode, graph, timeProvider, ct);
     }
 }
 

@@ -1,33 +1,44 @@
 ﻿using System.Collections.Concurrent;
 using Caravel.Abstractions;
+using Caravel.Abstractions.Events;
 using Caravel.Core;
 
 namespace Caravel.Tests.Fixtures;
 
 public sealed record TestingJourney : Journey
 {
-    public TestingJourney(INode current, IGraph graph, CancellationToken journeyCancellationToken)
-        : base(current, graph, journeyCancellationToken) { }
+    public TestingJourney(
+        INode current,
+        IGraph graph,
+        TimeProvider timeProvider,
+        CancellationToken journeyCancellationToken
+    )
+        : base(current, graph, timeProvider, journeyCancellationToken) { }
 
-    public ConcurrentQueue<IJourneyLeg> Legs { get; init; } = [];
+    public ConcurrentQueue<IJourneyLegEvent> LegEvents { get; init; } = [];
 
     protected override Task PublishOnJourneyLegCompletedAsync(
-        IJourneyLeg journeyLeg,
+        IJourneyLegCompletedEvent journeyLegCompletedEvent,
         CancellationToken cancellationToken
     )
     {
         if (cancellationToken.IsCancellationRequested)
             return Task.CompletedTask;
 
-        Legs.Enqueue(journeyLeg);
+        LegEvents.Enqueue(journeyLegCompletedEvent);
         return Task.CompletedTask;
     }
 
-    protected override Task<IEnumerable<IJourneyLeg>> ReadJourneyLegsAsync(
+    protected override Task<IEnumerable<IJourneyLeg>> GetCompletedJourneyLegsAsync(
         CancellationToken cancellationToken = default
     )
     {
-        var legArray = Legs.ToArray();
+        var legArray = LegEvents
+            .Where(x => x is IJourneyLegCompletedEvent)
+            .OrderBy(x => x.EventDateTimeOffset)
+            .Select(x => x.JourneyLeg)
+            .ToArray();
+
         return Task.FromResult<IEnumerable<IJourneyLeg>>(legArray);
     }
 }

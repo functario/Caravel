@@ -1,5 +1,4 @@
 ﻿using Caravel.Abstractions;
-using Caravel.Core;
 using Caravel.Graph.Dijkstra;
 using NSubstitute;
 
@@ -74,12 +73,6 @@ public sealed class GraphTestBuilder
         edge.Weight.Returns(weight);
         edge.NeighborNavigator.MoveNext.Returns((IJourney _, CancellationToken _) => Task.FromResult(neighbor));
         return edge;
-    }
-
-    public IJourney CreateJourney(INode start, CancellationToken cancellationToken = default)
-    {
-        var journey = new Journey(start, CreateGraph(), cancellationToken);
-        return journey;
     }
 
     public IGraph CreateGraph()
