@@ -3,7 +3,6 @@ using System.Globalization;
 using System.Text;
 using System.Text.RegularExpressions;
 using Caravel.Abstractions;
-using Caravel.Abstractions.Events;
 
 namespace Caravel.Mermaid;
 

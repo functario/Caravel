@@ -1,4 +1,5 @@
-﻿using Caravel.Abstractions.Events;
+﻿using Caravel.Abstractions;
+using Caravel.Abstractions.Events;
 
 namespace Caravel.Core.Events;
 

@@ -1,6 +1,4 @@
-﻿using Caravel.Abstractions.Events;
-
-namespace Caravel.Abstractions;
+﻿namespace Caravel.Abstractions;
 
 public interface IJourney
 {

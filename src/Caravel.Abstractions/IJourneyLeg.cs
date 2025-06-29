@@ -1,4 +1,4 @@
-﻿namespace Caravel.Abstractions.Events;
+﻿namespace Caravel.Abstractions;
 public interface IJourneyLeg
 {
     public Guid JourneyId { get; }
