@@ -57,7 +57,7 @@ public record Journey : IJourney, IJourneLegPublisher
 
         var originType = Current.GetType();
         var destinationType = typeof(TDestination);
-        var shortestRoute = Graph.GetShortestRoute(
+        var shortestRoute = Graph.GetRoute(
             originType,
             destinationType,
             waypoints,

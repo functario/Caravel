@@ -14,7 +14,7 @@ public sealed class DijkstraGraph : IGraph
 
     public FrozenDictionary<Type, INode> Nodes => _nodes;
 
-    public IRoute GetShortestRoute(
+    public IRoute GetRoute(
         Type origin,
         Type destination,
         IWaypoints waypoints,

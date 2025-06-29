@@ -4,7 +4,7 @@ namespace Caravel.Abstractions;
 
 public interface IGraph
 {
-    IRoute GetShortestRoute(
+    IRoute GetRoute(
         Type origin,
         Type destination,
         IWaypoints waypoints,
