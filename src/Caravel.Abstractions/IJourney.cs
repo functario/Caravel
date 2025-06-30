@@ -6,7 +6,7 @@ public interface IJourney
     IGraph Graph { get; }
     INode CurrentNode { get; }
 
-    Task<IEnumerable<IJourneyLeg>> ReadJourneyLegsAsync(CancellationToken cancellationToken);
+    Task<IEnumerable<IJourneyLeg>> GetCompletedJourneyLegsAsync(CancellationToken cancellationToken);
 
     Task<IJourney> GotoAsync<TDestination>(
         IWaypoints waypoints,

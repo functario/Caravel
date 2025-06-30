@@ -1,5 +1,6 @@
 ﻿namespace Caravel.Abstractions;
 public interface IJourneyLeg
 {
-    Queue<IEdge> Edges { get; }
+    public Guid JourneyId { get; }
+    public Queue<IEdge> Edges { get; }
 }

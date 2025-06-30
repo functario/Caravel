@@ -1,6 +1,6 @@
 ﻿using Caravel.Abstractions;
 
 namespace Caravel.Core;
-public record JourneyLeg(Queue<IEdge> Edges) : IJourneyLeg
+public record JourneyLeg(Guid JourneyId, Queue<IEdge> Edges) : IJourneyLeg
 {
 }

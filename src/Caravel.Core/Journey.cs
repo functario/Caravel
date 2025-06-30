@@ -1,16 +1,26 @@
 ﻿using Caravel.Abstractions;
+using Caravel.Abstractions.Events;
+using Caravel.Core.Events;
 using Caravel.Core.Extensions;
 
 namespace Caravel.Core;
 
-public record Journey : IJourney, IJourneLegPublisher
+public abstract class Journey : IJourney, IJourneLegPublisher
 {
-    public Journey(INode current, IGraph graph, CancellationToken journeyCancellationToken)
+    private readonly TimeProvider _timeProvider;
+
+    protected Journey(
+        INode current,
+        IGraph graph,
+        TimeProvider timeProvider,
+        CancellationToken journeyCancellationToken
+    )
     {
         ArgumentNullException.ThrowIfNull(current, nameof(current));
         journeyCancellationToken.ThrowExceptionIfCancellationRequested();
 
         Graph = graph;
+        _timeProvider = timeProvider;
         JourneyCancellationToken = journeyCancellationToken;
         CurrentNode = current;
     }
@@ -18,25 +28,7 @@ public record Journey : IJourney, IJourneLegPublisher
     public INode CurrentNode { get; private set; }
     public IGraph Graph { get; init; }
     public CancellationToken JourneyCancellationToken { get; }
-
-    // Explicit to enfore usage of the virtual method.
-    Task IJourneLegPublisher.PublishOnJourneyLegCompletedAsync(
-        IJourneyLeg journeyLeg,
-        CancellationToken cancellationToken
-    ) => PublishOnJourneyLegCompletedAsync(journeyLeg, cancellationToken);
-
-    Task<IEnumerable<IJourneyLeg>> IJourney.ReadJourneyLegsAsync(
-        CancellationToken cancellationToken
-    ) => ReadJourneyLegsAsync(cancellationToken);
-
-    protected virtual Task PublishOnJourneyLegCompletedAsync(
-        IJourneyLeg journeyLeg,
-        CancellationToken cancellationToken
-    ) => Task.CompletedTask;
-
-    protected virtual Task<IEnumerable<IJourneyLeg>> ReadJourneyLegsAsync(
-        CancellationToken cancellationToken
-    ) => Task.FromResult<IEnumerable<IJourneyLeg>>([]);
+    public Guid Id { get; init; } = Guid.CreateVersion7();
 
     public async Task<IJourney> GotoAsync<TDestination>(
         IWaypoints waypoints,
@@ -51,37 +43,50 @@ public record Journey : IJourney, IJourneLegPublisher
 
         linkedCancellationTokenSource.Token.ThrowExceptionIfCancellationRequested();
 
-        await this
-            .CurrentNode.OnNodeOpenedAsync(this, linkedCancellationTokenSource.Token)
+        await CurrentNode
+            .OnNodeOpenedAsync(this, linkedCancellationTokenSource.Token)
             .ConfigureAwait(false);
 
         var originType = CurrentNode.GetType();
         var destinationType = typeof(TDestination);
         var route = Graph.GetRoute(originType, destinationType, waypoints, excludeNodes);
 
-        var edges = route.Edges;
-
-        if (edges.Any(x => x is null))
+        if (route.Edges.Any(x => x is null))
         {
             throw new InvalidOperationException("Edge should not be null.");
         }
 
         var legEdges = new Queue<IEdge>();
-        foreach (var edge in edges)
+        var journeyLeg = new JourneyLeg(Id, legEdges);
+        await PublishOnJourneyLegStartedAsync(
+                new JourneyLegStartedEvent(_timeProvider.GetUtcNow(), journeyLeg),
+                linkedCancellationTokenSource.Token
+            )
+            .ConfigureAwait(false);
+
+        foreach (var edge in route.Edges)
         {
             linkedCancellationTokenSource.Token.ThrowExceptionIfCancellationRequested();
-            CurrentNode = await edge.NeighborNavigator.MoveNext(this, linkedCancellationTokenSource.Token)
+            CurrentNode = await edge
+                .NeighborNavigator.MoveNext(this, linkedCancellationTokenSource.Token)
                 .ConfigureAwait(false);
 
-            await this
-                .CurrentNode.OnNodeOpenedAsync(this, linkedCancellationTokenSource.Token)
+            await CurrentNode
+                .OnNodeOpenedAsync(this, linkedCancellationTokenSource.Token)
                 .ConfigureAwait(false);
 
-            legEdges.Enqueue(edge);
+            journeyLeg.Edges.Enqueue(edge);
+            await PublishOnJourneyLegUpdatedAsync(
+                    new JourneyLegUpdatedEvent(_timeProvider.GetUtcNow(), journeyLeg),
+                    linkedCancellationTokenSource.Token
+                )
+                .ConfigureAwait(false);
         }
 
-        var journeyLeg = new JourneyLeg(legEdges);
-        await PublishOnJourneyLegCompletedAsync(journeyLeg, localCancellationToken)
+        await PublishOnJourneyLegCompletedAsync(
+                new JourneyLegCompletedEvent(_timeProvider.GetUtcNow(), journeyLeg),
+                localCancellationToken
+            )
             .ConfigureAwait(false);
 
         if (CurrentNode is not TDestination)
@@ -89,10 +94,29 @@ public record Journey : IJourney, IJourneLegPublisher
             throw new InvalidOperationException("The last INode is not the destination.");
         }
 
-        await this
-            .CurrentNode.OnNodeOpenedAsync(this, linkedCancellationTokenSource.Token)
+        await CurrentNode
+            .OnNodeOpenedAsync(this, linkedCancellationTokenSource.Token)
             .ConfigureAwait(false);
 
         return this;
     }
+
+    public abstract Task PublishOnJourneyLegCompletedAsync(
+        IJourneyLegCompletedEvent journeyLegCompletedEvent,
+        CancellationToken cancellationToken
+    );
+
+    public abstract Task PublishOnJourneyLegStartedAsync(
+        IJourneyLegStartedEvent journeyLegStartedEvent,
+        CancellationToken cancellationToken
+    );
+
+    public abstract Task PublishOnJourneyLegUpdatedAsync(
+        IJourneyLegUpdatedEvent journeyLegUpdatedEvent,
+        CancellationToken cancellationToken
+    );
+
+    public abstract Task<IEnumerable<IJourneyLeg>> GetCompletedJourneyLegsAsync(
+        CancellationToken cancellationToken
+    );
 }
