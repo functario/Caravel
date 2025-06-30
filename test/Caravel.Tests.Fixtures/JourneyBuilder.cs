@@ -52,7 +52,7 @@ public sealed class JourneyBuilder
         var startNode = nodeInstances[_firstNodeType!];
 
         timeProvider ??= TimeProvider.System;
-        return new TestingJourney(startNode, graph, timeProvider, ct);
+        return new InMemoryJourney(startNode, graph, timeProvider, ct);
     }
 }
 

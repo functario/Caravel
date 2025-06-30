@@ -5,11 +5,11 @@ using Caravel.Core.Extensions;
 
 namespace Caravel.Core;
 
-public record Journey : IJourney, IJourneLegPublisher
+public abstract class Journey : IJourney, IJourneLegPublisher
 {
     private readonly TimeProvider _timeProvider;
 
-    public Journey(
+    protected Journey(
         INode current,
         IGraph graph,
         TimeProvider timeProvider,
@@ -101,48 +101,22 @@ public record Journey : IJourney, IJourneLegPublisher
         return this;
     }
 
-    // Explicit to enforce usage of the virtual method.
-    Task IJourneLegPublisher.PublishOnJourneyLegCompletedAsync(
+    public abstract Task PublishOnJourneyLegCompletedAsync(
         IJourneyLegCompletedEvent journeyLegCompletedEvent,
         CancellationToken cancellationToken
-    ) => PublishOnJourneyLegCompletedAsync(journeyLegCompletedEvent, cancellationToken);
+    );
 
-    Task IJourneLegPublisher.PublishOnJourneyLegStartedAsync(
+    public abstract Task PublishOnJourneyLegStartedAsync(
         IJourneyLegStartedEvent journeyLegStartedEvent,
         CancellationToken cancellationToken
-    ) => PublishOnJourneyLegStartedAsync(journeyLegStartedEvent, cancellationToken);
+    );
 
-    Task IJourneLegPublisher.PublishOnJourneyLegUpdatedAsync(
+    public abstract Task PublishOnJourneyLegUpdatedAsync(
         IJourneyLegUpdatedEvent journeyLegUpdatedEvent,
         CancellationToken cancellationToken
-    ) => PublishOnJourneyLegUpdatedAsync(journeyLegUpdatedEvent, cancellationToken);
+    );
 
-    protected virtual Task PublishOnJourneyLegUpdatedAsync(
-        IJourneyLegUpdatedEvent journeyLegUpdatedEvent,
+    public abstract Task<IEnumerable<IJourneyLeg>> GetCompletedJourneyLegsAsync(
         CancellationToken cancellationToken
-    ) => Task.CompletedTask;
-
-    protected virtual Task PublishOnJourneyLegStartedAsync(
-        IJourneyLegStartedEvent journeyLegStartedEvent,
-        CancellationToken cancellationToken
-    ) => Task.CompletedTask;
-
-    protected virtual Task PublishOnJourneyLegCompletedAsync(
-        IJourneyLegCompletedEvent journeyLegCompletedEvent,
-        CancellationToken cancellationToken
-    ) => Task.CompletedTask;
-
-    Task<IEnumerable<IJourneyLeg>> IJourney.GetCompletedJourneyLegsAsync(
-        CancellationToken cancellationToken
-    ) => GetCompletedJourneyLegsAsync(cancellationToken);
-
-    /// <summary>
-    /// Returns completed journey legs. Must be overridden by subclasses; base implementation will throw.
-    /// </summary>
-    protected virtual Task<IEnumerable<IJourneyLeg>> GetCompletedJourneyLegsAsync(
-        CancellationToken cancellationToken
-    ) =>
-        throw new NotImplementedException(
-            $"{GetType().Name} must override {nameof(GetCompletedJourneyLegsAsync)}."
-        );
+    );
 }
