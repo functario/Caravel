@@ -1,34 +1,38 @@
-﻿namespace Caravel.Core.UnitTests.Tests.Navigation;
+﻿namespace Caravel.Core.UnitTests.Tests.NodeAction;
 
 [Trait(TestType, Unit)]
-[Trait(Feature, FeatureNavigation)]
-[Trait(Domain, EdgeDomain)]
-public class UsesEdgesWithSmallestWeights
+[Trait(Feature, FeatureNodeAction)]
+[Trait(Domain, NodeDomain)]
+public class DoesNotChangeTheCurrentNode
 {
-    [Fact(DisplayName = "When same edge with different weights")]
+    [Fact(DisplayName = "When action is done between two navigations")]
     public async Task Test1()
     {
         // Arrange
         var builder = new JourneyBuilder()
             .AddNode<NodeSpy1>()
-            .WithEdge<NodeSpy2>(3)
-            .WithEdge<NodeSpy2>(1)
-            .WithEdge<NodeSpy2>(2)
+            .WithEdge<NodeSpy2>()
             .Done()
             .AddNode<NodeSpy2>()
+            .WithEdge<NodeSpy3>()
+            .Done()
+            .AddNode<NodeSpy3>()
             .Done();
 
         var journey = builder.Build();
 
         // Act
-        var sut = await journey.GotoAsync<NodeSpy2>();
+        var sut = await journey
+            .GotoAsync<NodeSpy2>()
+            .DoAsync<NodeSpy2>((node, ct) => Task.FromResult(node))
+            .GotoAsync<NodeSpy3>();
 
         // Assert
         var result = await sut.ToMermaidSequenceDiagram();
         await result.VerifyMermaidMarkdownAsync();
     }
 
-    [Fact(DisplayName = "When edge configured with default values")]
+    [Fact(DisplayName = "When action is done at the end of a navigation")]
     public async Task Test2()
     {
         // Arrange
@@ -37,41 +41,45 @@ public class UsesEdgesWithSmallestWeights
             .WithEdge<NodeSpy2>()
             .Done()
             .AddNode<NodeSpy2>()
+            .WithEdge<NodeSpy3>()
+            .Done()
+            .AddNode<NodeSpy3>()
             .Done();
 
         var journey = builder.Build();
 
         // Act
-        var sut = await journey.GotoAsync<NodeSpy2>();
+        var sut = await journey
+            .GotoAsync<NodeSpy2>()
+            .GotoAsync<NodeSpy3>()
+            .DoAsync<NodeSpy3>((node, ct) => Task.FromResult(node));
 
         // Assert
         var result = await sut.ToMermaidSequenceDiagram();
         await result.VerifyMermaidMarkdownAsync();
     }
 
-    [Fact(DisplayName = "When edges configured with specific and default values")]
+    [Fact(DisplayName = "When action is done before any navigation on current node")]
     public async Task Test3()
     {
         // Arrange
         var builder = new JourneyBuilder()
             .AddNode<NodeSpy1>()
-            .WithEdge<NodeSpy2>(1)
-            .WithEdge<NodeSpy2>(99)
+            .WithEdge<NodeSpy2>()
             .Done()
             .AddNode<NodeSpy2>()
-            .WithEdge<NodeSpy3>(99)
             .WithEdge<NodeSpy3>()
             .Done()
             .AddNode<NodeSpy3>()
-            .WithEdge<NodeSpy4>()
-            .Done()
-            .AddNode<NodeSpy4>()
             .Done();
 
         var journey = builder.Build();
 
         // Act
-        var sut = await journey.GotoAsync<NodeSpy2>().GotoAsync<NodeSpy3>().GotoAsync<NodeSpy4>();
+        var sut = await journey
+            .DoAsync<NodeSpy1>((node, ct) => Task.FromResult(node))
+            .GotoAsync<NodeSpy2>()
+            .GotoAsync<NodeSpy3>();
 
         // Assert
         var result = await sut.ToMermaidSequenceDiagram();
