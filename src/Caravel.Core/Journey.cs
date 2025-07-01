@@ -1,5 +1,6 @@
 ﻿using Caravel.Abstractions;
 using Caravel.Abstractions.Events;
+using Caravel.Abstractions.Exceptions;
 using Caravel.Core.Events;
 using Caravel.Core.Extensions;
 
@@ -50,12 +51,6 @@ public abstract class Journey : IJourney, IJourneyLegPublisher
         var originType = CurrentNode.GetType();
         var destinationType = typeof(TDestination);
         var route = Graph.GetRoute(originType, destinationType, waypoints, excludeNodes);
-
-        if (route.Edges.Any(x => x is null))
-        {
-            throw new InvalidOperationException("Edge should not be null.");
-        }
-
         var legEdges = new Queue<IEdge>();
         var journeyLeg = new JourneyLeg(Id, legEdges);
         await PublishOnJourneyLegStartedAsync(
@@ -91,7 +86,7 @@ public abstract class Journey : IJourney, IJourneyLegPublisher
 
         if (CurrentNode is not TDestination)
         {
-            throw new InvalidOperationException("The last INode is not the destination.");
+            throw new UnexpectedNodeException(typeof(TDestination), CurrentNode.GetType());
         }
 
         await CurrentNode

@@ -3,6 +3,7 @@ using System.Globalization;
 using System.Text;
 using System.Text.RegularExpressions;
 using Caravel.Abstractions;
+using Caravel.Mermaid.Exceptions;
 
 namespace Caravel.Mermaid;
 
@@ -109,7 +110,8 @@ public static partial class GraphExtensions
     )
     {
         ArgumentNullException.ThrowIfNull(journey, nameof(journey));
-        var journeyLegs = await GetCompletedJourneyLegsAsync(journey, cancellationToken).ConfigureAwait(false);
+        var journeyLegs = await GetCompletedJourneyLegsAsync(journey, cancellationToken)
+            .ConfigureAwait(false);
 
         var stringBuilder = new StringBuilder();
         stringBuilder.AppendLine(CultureInfo.InvariantCulture, $"sequenceDiagram");
@@ -138,7 +140,8 @@ public static partial class GraphExtensions
     {
         ArgumentNullException.ThrowIfNull(journey, nameof(journey));
 
-        var journeyLegs = await GetCompletedJourneyLegsAsync(journey, cancellationToken).ConfigureAwait(false);
+        var journeyLegs = await GetCompletedJourneyLegsAsync(journey, cancellationToken)
+            .ConfigureAwait(false);
 
         var groups = new Dictionary<int, string>();
         for (var i = 0; i < journeyLegs.Length; i++)
@@ -194,7 +197,9 @@ public static partial class GraphExtensions
         CancellationToken cancellationToken
     )
     {
-        var history = await journey.GetCompletedJourneyLegsAsync(cancellationToken).ConfigureAwait(false);
+        var history = await journey
+            .GetCompletedJourneyLegsAsync(cancellationToken)
+            .ConfigureAwait(false);
         return [.. history];
     }
 
@@ -203,9 +208,7 @@ public static partial class GraphExtensions
         var isSafe = MermaidSafeChars().IsMatch(description);
         if (!isSafe)
         {
-            throw new ArgumentException(
-                $"The description must respect the regex pattern '{SafeCharPattern}'."
-            );
+            throw new InvalidDescriptionException(description, SafeCharPattern);
         }
     }
 
