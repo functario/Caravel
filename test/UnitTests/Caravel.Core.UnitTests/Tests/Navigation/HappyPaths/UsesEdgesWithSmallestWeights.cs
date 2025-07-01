@@ -1,4 +1,4 @@
-﻿namespace Caravel.Core.UnitTests.Tests.Navigation;
+﻿namespace Caravel.Core.UnitTests.Tests.Navigation.HappyPaths;
 
 [Trait(TestType, Unit)]
 [Trait(Feature, FeatureNavigation)]
@@ -16,12 +16,17 @@ public class UsesEdgesWithSmallestWeights
             .WithEdge<NodeSpy2>(2)
             .Done()
             .AddNode<NodeSpy2>()
+            .WithEdge<NodeSpy3>(3)
+            .WithEdge<NodeSpy3>(1)
+            .WithEdge<NodeSpy3>(2)
+            .Done()
+            .AddNode<NodeSpy3>()
             .Done();
 
         var journey = builder.Build();
 
         // Act
-        var sut = await journey.GotoAsync<NodeSpy2>();
+        var sut = await journey.GotoAsync<NodeSpy2>().GotoAsync<NodeSpy3>();
 
         // Assert
         var result = await sut.ToMermaidSequenceDiagram();
@@ -37,12 +42,15 @@ public class UsesEdgesWithSmallestWeights
             .WithEdge<NodeSpy2>()
             .Done()
             .AddNode<NodeSpy2>()
+            .WithEdge<NodeSpy3>()
+            .Done()
+            .AddNode<NodeSpy3>()
             .Done();
 
         var journey = builder.Build();
 
         // Act
-        var sut = await journey.GotoAsync<NodeSpy2>();
+        var sut = await journey.GotoAsync<NodeSpy2>().GotoAsync<NodeSpy3>();
 
         // Assert
         var result = await sut.ToMermaidSequenceDiagram();
@@ -55,23 +63,28 @@ public class UsesEdgesWithSmallestWeights
         // Arrange
         var builder = new JourneyBuilder()
             .AddNode<NodeSpy1>()
+            .WithEdge<NodeSpy2>()
             .WithEdge<NodeSpy2>(1)
             .WithEdge<NodeSpy2>(99)
             .Done()
             .AddNode<NodeSpy2>()
             .WithEdge<NodeSpy3>(99)
             .WithEdge<NodeSpy3>()
+            .WithEdge<NodeSpy3>(1)
             .Done()
             .AddNode<NodeSpy3>()
-            .WithEdge<NodeSpy4>()
+            .WithEdge<NodeSpy4>(99)
+            .WithEdge<NodeSpy4>(1)
             .Done()
             .AddNode<NodeSpy4>()
             .Done();
 
         var journey = builder.Build();
-
         // Act
-        var sut = await journey.GotoAsync<NodeSpy2>().GotoAsync<NodeSpy3>().GotoAsync<NodeSpy4>();
+        // csharpier-ignore
+        var sut = await journey
+            .GotoAsync<NodeSpy2>()
+            .GotoAsync<NodeSpy4>();
 
         // Assert
         var result = await sut.ToMermaidSequenceDiagram();

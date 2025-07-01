@@ -12,3 +12,8 @@ using System.Diagnostics.CodeAnalysis;
     Scope = "namespaceanddescendants",
     Target = "~N:Caravel.Core.UnitTests.Tests"
 )]
+[assembly: SuppressMessage(
+    "Reliability",
+    "CA2007:Consider calling ConfigureAwait on the awaited task",
+    Justification = "Unnecessary for tests"
+)]
