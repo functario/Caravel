@@ -22,7 +22,7 @@ public sealed class InMemoryJourney : Journey
     {
         var legArray = LegEvents
             .Where(x => x is IJourneyLegCompletedEvent)
-            .OrderBy(x => x.EventDateTimeOffset)
+            .OrderBy(x => x.Timestamp)
             .Select(x => x.JourneyLeg)
             .ToArray();
 

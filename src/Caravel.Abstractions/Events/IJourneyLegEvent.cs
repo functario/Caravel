@@ -1,6 +1,6 @@
 ﻿namespace Caravel.Abstractions.Events;
 public interface IJourneyLegEvent
 {
-    DateTimeOffset EventDateTimeOffset { get; }
+    DateTimeOffset Timestamp { get; }
     public IJourneyLeg JourneyLeg { get; }
 }

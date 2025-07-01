@@ -5,7 +5,7 @@ using Caravel.Core.Extensions;
 
 namespace Caravel.Core;
 
-public abstract class Journey : IJourney, IJourneLegPublisher
+public abstract class Journey : IJourney, IJourneyLegPublisher
 {
     private readonly TimeProvider _timeProvider;
 
@@ -17,7 +17,7 @@ public abstract class Journey : IJourney, IJourneLegPublisher
     )
     {
         ArgumentNullException.ThrowIfNull(current, nameof(current));
-        journeyCancellationToken.ThrowExceptionIfCancellationRequested();
+        journeyCancellationToken.ThrowIfCancellationRequested();
 
         Graph = graph;
         _timeProvider = timeProvider;
@@ -41,7 +41,7 @@ public abstract class Journey : IJourney, IJourneLegPublisher
             localCancellationToken
         );
 
-        linkedCancellationTokenSource.Token.ThrowExceptionIfCancellationRequested();
+        linkedCancellationTokenSource.Token.ThrowIfCancellationRequested();
 
         await CurrentNode
             .OnNodeOpenedAsync(this, linkedCancellationTokenSource.Token)
@@ -66,7 +66,7 @@ public abstract class Journey : IJourney, IJourneLegPublisher
 
         foreach (var edge in route.Edges)
         {
-            linkedCancellationTokenSource.Token.ThrowExceptionIfCancellationRequested();
+            linkedCancellationTokenSource.Token.ThrowIfCancellationRequested();
             CurrentNode = await edge
                 .NeighborNavigator.MoveNext(this, linkedCancellationTokenSource.Token)
                 .ConfigureAwait(false);
