@@ -1,6 +1,5 @@
 ﻿using System.Collections.Immutable;
 using Caravel.Abstractions;
-using Caravel.Tests.Fixtures.GraphsData.Nodes;
 
 namespace Caravel.Tests.Fixtures.NodeSpies;
 
@@ -20,11 +19,12 @@ public class NodeSpyBase : INodeSpy
 
     public Task OnNodeOpenedAsync(IJourney journey, CancellationToken cancellationToken)
     {
+        cancellationToken.ThrowIfCancellationRequested();
         if (_isOnOpenedSuccess)
         {
             return Task.CompletedTask;
         }
 
-        throw new InvalidOperationException(nameof(NodeA));
+        throw new InvalidOperationException();
     }
 }
