@@ -8,12 +8,7 @@ public static class GraphExtensions
     public static IRoute GetShortestRoute(this IGraph graph, Type origin, Type destination)
     {
         ArgumentNullException.ThrowIfNull(graph, nameof(graph));
-        return graph.GetRoute(
-            origin,
-            destination,
-            Waypoints.Empty(),
-            ExcludedNodes.Empty()
-        );
+        return graph.GetRoute(origin, destination, Waypoints.Empty(), ExcludedNodes.Empty());
     }
 
     public static IRoute GetShortestRoute(

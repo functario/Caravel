@@ -14,11 +14,9 @@ public class NodeSpyBase : INodeSpy
         InternalEdges = edges;
     }
 
-
     public ImmutableHashSet<IEdge> InternalEdges { get; init; } = [];
 
     public ImmutableHashSet<IEdge> GetEdges() => InternalEdges;
-
 
     public Task OnNodeOpenedAsync(IJourney journey, CancellationToken cancellationToken)
     {

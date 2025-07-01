@@ -1,4 +1,5 @@
 ﻿namespace Caravel.Abstractions;
+
 public interface IWaypoints : IEnumerable<Type>
 {
     int Count { get; }

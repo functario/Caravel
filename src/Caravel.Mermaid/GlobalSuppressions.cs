@@ -5,5 +5,10 @@
 
 using System.Diagnostics.CodeAnalysis;
 
-[assembly: SuppressMessage("Design", "CA1032:Implement standard exception constructors",
-    Justification = "Enforce usage of specific constructors", Scope = "namespaceanddescendants", Target = "~N:Caravel.Mermaid.Exceptions")]
+[assembly: SuppressMessage(
+    "Design",
+    "CA1032:Implement standard exception constructors",
+    Justification = "Enforce usage of specific constructors",
+    Scope = "namespaceanddescendants",
+    Target = "~N:Caravel.Mermaid.Exceptions"
+)]

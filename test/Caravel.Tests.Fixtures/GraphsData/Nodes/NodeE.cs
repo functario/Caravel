@@ -24,7 +24,6 @@ public sealed class NodeE : INode
         throw new InvalidOperationException(nameof(NodeE));
     }
 
-
     public ImmutableHashSet<IEdge> GetEdges()
     {
         return [this.CreateEdge<NodeA>(OpenNodeA)];

@@ -1,6 +1,7 @@
 ﻿using Caravel.Abstractions.Exceptions;
 
 namespace Caravel.Mermaid.Exceptions;
+
 public class InvalidDescriptionException : CaravelException
 {
     private static string DefaultMessage(string description, string pattern) =>
@@ -10,5 +11,4 @@ public class InvalidDescriptionException : CaravelException
 
     public InvalidDescriptionException(string description, string pattern)
         : base(DefaultMessage(description, pattern)) { }
-
 }

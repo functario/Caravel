@@ -12,13 +12,7 @@ public sealed class Graph_5_Nodes_WithWeight
 
     public Graph_5_Nodes_WithWeight()
     {
-        _nodes = [
-            new NodeA(),
-            new NodeB(),
-            new NodeC(),
-            new NodeD(),
-            new NodeE()
-            ];
+        _nodes = [new NodeA(), new NodeB(), new NodeC(), new NodeD(), new NodeE()];
 
         _graph = new DijkstraGraph(_nodes);
     }

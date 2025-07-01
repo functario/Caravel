@@ -8,8 +8,6 @@
 //public class GotoAsyncTests
 //{
 
-
-
 //    [System.Diagnostics.CodeAnalysis.SuppressMessage(
 //        "Usage",
 //        "xUnit1051:Calls to methods which accept CancellationToken should use TestContext.Current.CancellationToken",

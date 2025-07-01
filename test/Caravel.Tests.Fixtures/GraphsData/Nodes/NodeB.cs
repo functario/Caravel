@@ -26,10 +26,7 @@ public sealed class NodeB : INode
 
     public ImmutableHashSet<IEdge> GetEdges()
     {
-        return
-        [
-            this.CreateEdge<NodeC>(OpenNodeC)
-        ];
+        return [this.CreateEdge<NodeC>(OpenNodeC)];
     }
 
     public Task<NodeC> OpenNodeC(IJourney journey, CancellationToken _)
