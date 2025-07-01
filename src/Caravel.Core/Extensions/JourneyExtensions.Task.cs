@@ -116,7 +116,7 @@ public static partial class JourneyExtensions
 
     private static void ThrowIfNotCurrentNode(Type current, Type expected)
     {
-        if (current == expected)
+        if (current != expected)
         {
             throw new UnexpectedNodeException(current, expected);
         }
