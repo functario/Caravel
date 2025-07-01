@@ -1,4 +1,5 @@
 ﻿using Caravel.Abstractions;
+using Caravel.Abstractions.Exceptions;
 
 namespace Caravel.Core.Extensions;
 
@@ -94,23 +95,31 @@ public static partial class JourneyExtensions
             .CurrentNode.OnNodeOpenedAsync(journey, linkedCancellationTokenSource.Token)
             .ConfigureAwait(false);
 
+        // Validate the CurrentNode at each steps.
         if (journey.CurrentNode is TCurrentNode current)
         {
             var funcNode = await func(current, linkedCancellationTokenSource.Token)
                 .ConfigureAwait(false);
 
+            ThrowIfNotCurrentNode(journey.CurrentNode.GetType(), typeof(TCurrentNode));
+
             await funcNode
                 .OnNodeOpenedAsync(journey, linkedCancellationTokenSource.Token)
                 .ConfigureAwait(false);
 
-            return funcNode is null
-                ? throw new InvalidOperationException(
-                    "The current node has been changed after function called."
-                )
-                : journey;
+            ThrowIfNotCurrentNode(journey.CurrentNode.GetType(), typeof(TCurrentNode));
+            return journey;
         }
 
-        throw new InvalidOperationException("The current node is not the expected one.");
+        throw new UnexpectedNodeException(journey.CurrentNode.GetType(), typeof(TCurrentNode));
+    }
+
+    private static void ThrowIfNotCurrentNode(Type current, Type expected)
+    {
+        if (current == expected)
+        {
+            throw new UnexpectedNodeException(current, expected);
+        }
     }
 
     public static CancellationTokenSource LinkJourneyAndLocalCancellationTokens(

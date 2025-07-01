@@ -1,18 +1,19 @@
 ﻿using System.Collections.Frozen;
 using Caravel.Abstractions;
+using Caravel.Abstractions.Exceptions;
 
 namespace Caravel.Graph.Dijkstra;
 
 public sealed class DijkstraGraph : IGraph
 {
-    private readonly FrozenDictionary<Type, INode> _nodes;
+    private readonly FrozenDictionary<Type, INode> _registeredNodes;
 
     public DijkstraGraph(ICollection<INode> nodes)
     {
-        _nodes = nodes.ToDictionary(n => n.GetType(), n => n).ToFrozenDictionary();
+        _registeredNodes = nodes.ToDictionary(n => n.GetType(), n => n).ToFrozenDictionary();
     }
 
-    public FrozenDictionary<Type, INode> Nodes => _nodes;
+    public FrozenDictionary<Type, INode> Nodes => _registeredNodes;
 
     public IRoute GetRoute(
         Type origin,
@@ -49,9 +50,13 @@ public sealed class DijkstraGraph : IGraph
         IExcludedNodes excludedNodes
     )
     {
-        if (excludedNodes.Any(x => waypoints.Contains(x)))
+        var invalidWaypoints = excludedNodes.Where(x => waypoints.Contains(x)).ToArray();
+        if (invalidWaypoints.Length > 0)
         {
-            throw new InvalidOperationException("Some waypoints are excluded.");
+            throw new InvalidWaypointsException(
+                InvalidWaypointReasons.WaypointsInExcludedNodes,
+                invalidWaypoints
+            );
         }
     }
 
@@ -63,51 +68,57 @@ public sealed class DijkstraGraph : IGraph
     {
         var isOriginExcluded = IsExcluded(origin, excludedNodes);
         var isdestinationExcluded = IsExcluded(destination, excludedNodes);
-        var _ = (isOriginExcluded, isdestinationExcluded) switch
+        InvalidRouteReasons? reason = (isOriginExcluded, isdestinationExcluded) switch
         {
-            (true, true) => throw new NotSupportedException(
-                "Origin and Destination should not be excluded."
-            ),
-            (false, true) => throw new NotSupportedException("Origin should not be excluded."),
-            (true, false) => throw new NotSupportedException("Destination should not be excluded."),
-            (false, false) => false,
+            (true, true) => InvalidRouteReasons.ExtremityNodesExcluded,
+            (false, true) => InvalidRouteReasons.DestinationNodeExcluded,
+            (true, false) => InvalidRouteReasons.OriginNodeExcluded,
+            (false, false) => null,
         };
+
+        if (reason is null)
+        {
+            return;
+        }
+
+        throw new InvalidRouteException((InvalidRouteReasons)reason!, origin, destination);
     }
 
     private static bool IsExcluded(Type node, IExcludedNodes excludedNodes) =>
         excludedNodes.Any(x => x == node);
 
-    private List<IEdge> Dijkstra(Type start, Type end, IExcludedNodes excludedNodes)
+    private List<IEdge> Dijkstra(Type origin, Type destination, IExcludedNodes excludedNodes)
     {
-        var distances = new Dictionary<Type, int> { [start] = 0 };
+        var distances = new Dictionary<Type, int> { [origin] = 0 };
         var previous = new Dictionary<Type, IEdge>();
         var visited = new HashSet<Type>();
 
         var queue = new PriorityQueue<Type, int>();
-        queue.Enqueue(start, 0);
+        queue.Enqueue(origin, 0);
 
-        while (queue.TryDequeue(out var current, out _))
+        while (queue.TryDequeue(out var nodeVisited, out _))
         {
-            if (IsExcluded(current, excludedNodes))
+            if (IsExcluded(nodeVisited, excludedNodes))
                 continue;
 
-            if (visited.Contains(current))
+            if (visited.Contains(nodeVisited))
                 continue;
 
-            if (current == end)
+            if (nodeVisited == destination)
                 break;
 
-            visited.Add(current);
+            visited.Add(nodeVisited);
 
-            if (!_nodes.TryGetValue(current, out var currentNode))
-                throw new InvalidOperationException(
-                    $"Node of type {current.Name} not found in graph."
-                );
+            if (!_registeredNodes.TryGetValue(nodeVisited, out var currentNode))
+                throw new UnknownNodeException(nodeVisited);
 
             foreach (var edge in currentNode.GetEdges())
             {
+                if (edge is null)
+                    throw new InvalidEdgeException(InvalidEdgeReasons.Null);
+
                 var neighbor = edge.Neighbor;
-                var newDistance = distances[current] + edge.Weight;
+                var newDistance = distances[nodeVisited] + edge.Weight;
 
                 if (
                     !distances.TryGetValue(neighbor, out var knownDistance)
@@ -121,14 +132,14 @@ public sealed class DijkstraGraph : IGraph
             }
         }
 
-        if (!previous.ContainsKey(end))
-            throw new InvalidOperationException($"No route found from {start.Name} to {end.Name}");
+        if (!previous.ContainsKey(destination))
+            throw new RouteNotFoundException(origin, destination);
 
         // Reconstruct path
         var path = new List<IEdge>();
-        var node = end;
+        var node = destination;
 
-        while (node != start)
+        while (node != origin)
         {
             var edge = previous[node];
             path.Insert(0, edge);
