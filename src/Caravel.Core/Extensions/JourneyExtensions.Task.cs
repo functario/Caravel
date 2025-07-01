@@ -88,7 +88,7 @@ public static partial class JourneyExtensions
             localCancellationToken
         );
 
-        linkedCancellationTokenSource.Token.ThrowExceptionIfCancellationRequested();
+        linkedCancellationTokenSource.Token.ThrowIfCancellationRequested();
 
         await journey
             .CurrentNode.OnNodeOpenedAsync(journey, linkedCancellationTokenSource.Token)

@@ -17,7 +17,7 @@ public abstract class Journey : IJourney, IJourneyLegPublisher
     )
     {
         ArgumentNullException.ThrowIfNull(current, nameof(current));
-        journeyCancellationToken.ThrowExceptionIfCancellationRequested();
+        journeyCancellationToken.ThrowIfCancellationRequested();
 
         Graph = graph;
         _timeProvider = timeProvider;
@@ -41,7 +41,7 @@ public abstract class Journey : IJourney, IJourneyLegPublisher
             localCancellationToken
         );
 
-        linkedCancellationTokenSource.Token.ThrowExceptionIfCancellationRequested();
+        linkedCancellationTokenSource.Token.ThrowIfCancellationRequested();
 
         await CurrentNode
             .OnNodeOpenedAsync(this, linkedCancellationTokenSource.Token)
@@ -66,7 +66,7 @@ public abstract class Journey : IJourney, IJourneyLegPublisher
 
         foreach (var edge in route.Edges)
         {
-            linkedCancellationTokenSource.Token.ThrowExceptionIfCancellationRequested();
+            linkedCancellationTokenSource.Token.ThrowIfCancellationRequested();
             CurrentNode = await edge
                 .NeighborNavigator.MoveNext(this, linkedCancellationTokenSource.Token)
                 .ConfigureAwait(false);
