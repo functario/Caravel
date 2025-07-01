@@ -31,11 +31,11 @@
         <ProjectReference Include="..\..\Caravel.Tests.Support\Caravel.Tests.Support.csproj" />
     </ItemGroup>
     <ItemGroup>
-      <None Update="Tests\FormatGraph\AsMermaidMarkdown.Test1.verified.txt">
-        <DependentUpon>AsMermaidMarkdown.cs</DependentUpon>
-      </None>
+        <None Update="Tests\FormatGraph\AsMermaidMarkdown.Test1.verified.txt">
+            <DependentUpon>AsMermaidMarkdown.cs</DependentUpon>
+        </None>
     </ItemGroup>
     <ItemGroup>
-      <Folder Include="Tests\FormatGraph\AsMermaidHtml_Snapshots\" />
+        <Folder Include="Tests\FormatGraph\AsMermaidHtml_Snapshots\" />
     </ItemGroup>
 </Project>

@@ -7,4 +7,3 @@
         <ProjectReference Include="..\Caravel.Core\Caravel.Core.csproj" />
     </ItemGroup>
 </Project>
-

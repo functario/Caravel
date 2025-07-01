@@ -1,12 +1,11 @@
 ﻿global using Caravel.Core.Extensions;
 global using Caravel.Core.UnitTests.Extensions;
-global using Caravel.Tests.Fixtures;
-global using Caravel.Tests.Fixtures.NodeSpies;
-global using Xunit;
 global using static Caravel.Core.UnitTests.Extensions.VerifyExtensions;
 global using static Caravel.Mermaid.GraphExtensions;
 global using static Caravel.Mermaid.JourneyExtensions;
 global using static Caravel.Mermaid.RouteExtensions;
+global using Caravel.Tests.Fixtures;
+global using Caravel.Tests.Fixtures.NodeSpies;
 global using static Caravel.Tests.Support.FeaturesUnderTest;
 global using static Caravel.Tests.Support.TestTypes;
-
+global using Xunit;

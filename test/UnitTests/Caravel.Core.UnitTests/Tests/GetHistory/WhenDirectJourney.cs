@@ -123,9 +123,7 @@ public class WhenDirectJourney
 
         var journey = builder.Build();
         //csharpier-ignore
-        var pastJourney = await journey
-            .GotoAsync<NodeSpy5>()
-            .GotoAsync<NodeSpy1>();
+        var pastJourney = await journey.GotoAsync<NodeSpy5>().GotoAsync<NodeSpy1>();
 
         // Act
         var sut = await pastJourney.ToMermaidSequenceDiagram(true);

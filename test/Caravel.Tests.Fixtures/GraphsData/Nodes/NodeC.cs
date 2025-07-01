@@ -29,7 +29,6 @@ public sealed class NodeC : INode
         return [this.CreateEdge<NodeA>(OpenNodeA), this.CreateEdge<NodeE>(OpenNodeE)];
     }
 
-
     public Task<NodeA> OpenNodeA(IJourney journey, CancellationToken _)
     {
         Debug.WriteLine($"{GetType().Name} to {typeof(NodeA).Name}");
