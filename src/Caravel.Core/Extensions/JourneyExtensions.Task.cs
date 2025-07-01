@@ -101,12 +101,14 @@ public static partial class JourneyExtensions
             var funcNode = await func(current, linkedCancellationTokenSource.Token)
                 .ConfigureAwait(false);
 
+            linkedCancellationTokenSource.Token.ThrowIfCancellationRequested();
             ThrowIfNotCurrentNode(journey.CurrentNode.GetType(), typeof(TCurrentNode));
 
             await funcNode
                 .OnNodeOpenedAsync(journey, linkedCancellationTokenSource.Token)
                 .ConfigureAwait(false);
 
+            linkedCancellationTokenSource.Token.ThrowIfCancellationRequested();
             ThrowIfNotCurrentNode(journey.CurrentNode.GetType(), typeof(TCurrentNode));
             return journey;
         }
