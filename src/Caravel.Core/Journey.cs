@@ -5,7 +5,7 @@ using Caravel.Core.Extensions;
 
 namespace Caravel.Core;
 
-public abstract class Journey : IJourney, IJourneLegPublisher
+public abstract class Journey : IJourney, IJourneyLegPublisher
 {
     private readonly TimeProvider _timeProvider;
 

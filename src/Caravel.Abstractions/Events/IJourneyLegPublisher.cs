@@ -1,6 +1,6 @@
 ﻿namespace Caravel.Abstractions.Events;
 
-public interface IJourneLegPublisher
+public interface IJourneyLegPublisher
 {
     public Guid Id { get; }
 
