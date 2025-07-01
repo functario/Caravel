@@ -1,7 +1,7 @@
 ﻿namespace Caravel.Core.UnitTests.Tests.FormatGraph;
 
 [Trait(TestType, Unit)]
-[Trait(FeatureUnderTest, FeatureFormatGraph)]
+[Trait(Feature, FeatureFormatGraph)]
 public class AsMermaidMarkdown
 {
     [Theory(DisplayName = "Journey of 2 routes displays graph with weights")]
