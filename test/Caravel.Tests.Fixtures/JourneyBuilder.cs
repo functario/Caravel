@@ -2,7 +2,6 @@
 using Caravel.Abstractions;
 using Caravel.Core;
 using Caravel.Graph.Dijkstra;
-using Caravel.Tests.Fixtures.NodeSpies;
 
 namespace Caravel.Tests.Fixtures;
 

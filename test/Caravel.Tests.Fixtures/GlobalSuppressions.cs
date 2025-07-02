@@ -6,13 +6,6 @@
 using System.Diagnostics.CodeAnalysis;
 
 [assembly: SuppressMessage(
-    "Naming",
-    "CA1707:Identifiers should not contain underscores",
-    Justification = "Readability",
-    Scope = "namespaceanddescendants",
-    Target = "~N:Caravel.Tests.Fixtures.GraphsData"
-)]
-[assembly: SuppressMessage(
     "Style",
     "IDE0290:Use primary constructor",
     Justification = "Suggestion not wanted."

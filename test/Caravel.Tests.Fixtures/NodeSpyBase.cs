@@ -1,7 +1,7 @@
 ﻿using System.Collections.Immutable;
 using Caravel.Abstractions;
 
-namespace Caravel.Tests.Fixtures.NodeSpies;
+namespace Caravel.Tests.Fixtures;
 
 public class NodeSpyBase : INodeSpy
 {

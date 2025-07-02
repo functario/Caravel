@@ -39,10 +39,10 @@ public class ThrowsException
             .WithMessage(
                 "Multiple IEdge with the same origin,"
                     + " neighbor and weight detected "
-                    + "('Caravel.Tests.Fixtures.NodeSpies.NodeSpy1"
-                    + " -->|1| Caravel.Tests.Fixtures.NodeSpies.NodeSpy2;"
-                    + "Caravel.Tests.Fixtures.NodeSpies.NodeSpy1 "
-                    + "-->|2| Caravel.Tests.Fixtures.NodeSpies.NodeSpy3')."
+                    + "('Caravel.Tests.Fixtures.NodeSpy1"
+                    + " -->|1| Caravel.Tests.Fixtures.NodeSpy2;"
+                    + "Caravel.Tests.Fixtures.NodeSpy1 "
+                    + "-->|2| Caravel.Tests.Fixtures.NodeSpy3')."
             );
     }
 }
