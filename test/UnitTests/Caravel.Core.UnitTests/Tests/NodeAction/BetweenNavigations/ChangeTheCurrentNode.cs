@@ -27,7 +27,6 @@ public class ChangeTheCurrentNode
 
         var journey = builder.Build();
         var map = builder.Map;
-        ArgumentNullException.ThrowIfNull(map);
 
         // Act
         var sut = await journey
