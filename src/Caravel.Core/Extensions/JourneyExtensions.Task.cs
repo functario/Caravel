@@ -116,7 +116,7 @@ public static partial class JourneyExtensions
         throw new UnexpectedNodeException(journey.CurrentNode.GetType(), typeof(TCurrentNode));
     }
 
-    public static CancellationTokenSource LinkJourneyAndLocalCancellationTokens(
+    internal static CancellationTokenSource LinkJourneyAndLocalCancellationTokens(
         this IJourney journey,
         CancellationToken localCancellationToken
     )
