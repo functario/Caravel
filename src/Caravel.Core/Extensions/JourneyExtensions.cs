@@ -69,7 +69,12 @@ public static partial class JourneyExtensions
         where TCurrentNode : INode
     {
         ArgumentNullException.ThrowIfNull(journey, nameof(journey));
-        return await journey.DoAsync(func, localCancellationToken).ConfigureAwait(false);
+        return await journey
+            .DoAsync<TCurrentNode, TCurrentNode>(
+                (_, node, token) => func(node, token),
+                localCancellationToken
+            )
+            .ConfigureAwait(false);
     }
 
     public static async Task<IJourney> DoAsync<TCurrentNode, TNodeOut>(
@@ -81,7 +86,12 @@ public static partial class JourneyExtensions
         where TNodeOut : INode
     {
         ArgumentNullException.ThrowIfNull(journey, nameof(journey));
-        return await journey.DoAsync(func, localCancellationToken).ConfigureAwait(false);
+        return await journey
+            .DoAsync<TCurrentNode, TNodeOut>(
+                (_, node, token) => func(node, token),
+                localCancellationToken
+            )
+            .ConfigureAwait(false);
     }
 
     public static async Task<IJourney> DoAsync<TCurrentNode>(

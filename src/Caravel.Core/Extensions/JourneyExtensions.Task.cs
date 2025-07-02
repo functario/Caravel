@@ -84,7 +84,9 @@ public static partial class JourneyExtensions
         ArgumentNullException.ThrowIfNull(func, nameof(func));
 
         var journey = await journeyTask.ConfigureAwait(false);
-        return await journey.DoAsync(func, localCancellationToken).ConfigureAwait(false);
+        return await journey
+            .DoAsync<TCurrentNode, TCurrentNode>(func, localCancellationToken)
+            .ConfigureAwait(false);
     }
 
     public static async Task<IJourney> DoAsync<TCurrentNode, TNodeOut>(
