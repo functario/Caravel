@@ -3,9 +3,9 @@
 [Trait(TestType, Unit)]
 [Trait(Feature, FeatureNodeAction)]
 [Trait(Domain, NodeDomain)]
-public class DoesNotChangeTheCurrentNode
+public class ChangeTheCurrentNode
 {
-    [Fact(DisplayName = "When action is done on current node")]
+    [Fact(DisplayName = "When action returns a different node")]
     public async Task Test1()
     {
         // Arrange
@@ -20,11 +20,11 @@ public class DoesNotChangeTheCurrentNode
             .Done();
 
         var journey = builder.Build();
+        var map = builder.Map;
 
         // Act
         var sut = await journey
-            .DoAsync<NodeSpy1>((node, ct) => Task.FromResult(node))
-            .GotoAsync<NodeSpy2>()
+            .DoAsync<NodeSpy1, NodeSpy2>((node, ct) => Task.FromResult(map.NodeSpy2))
             .GotoAsync<NodeSpy3>();
 
         // Assert
@@ -32,7 +32,7 @@ public class DoesNotChangeTheCurrentNode
         await result.VerifyMermaidMarkdownAsync();
     }
 
-    [Fact(DisplayName = "When action (with journey) is done on current node")]
+    [Fact(DisplayName = "When action (with journey) returns a different node")]
     public async Task Test2()
     {
         // Arrange
@@ -47,11 +47,11 @@ public class DoesNotChangeTheCurrentNode
             .Done();
 
         var journey = builder.Build();
+        var map = builder.Map;
 
         // Act
         var sut = await journey
-            .DoAsync<NodeSpy1>((journey, node, ct) => Task.FromResult(node))
-            .GotoAsync<NodeSpy2>()
+            .DoAsync<NodeSpy1, NodeSpy2>((journey, node, ct) => Task.FromResult(map.NodeSpy2))
             .GotoAsync<NodeSpy3>();
 
         // Assert

@@ -2,7 +2,6 @@
 using Caravel.Abstractions;
 using Caravel.Core;
 using Caravel.Graph.Dijkstra;
-using Caravel.Tests.Fixtures.NodeSpies;
 
 namespace Caravel.Tests.Fixtures;
 
@@ -10,6 +9,7 @@ public sealed class JourneyBuilder
 {
     private readonly Dictionary<Type, NodeBuilder> _nodes = [];
     private Type? _firstNodeType;
+    private Map? _map;
 
     public NodeBuilder AddNode<T>()
         where T : INodeSpy
@@ -28,6 +28,8 @@ public sealed class JourneyBuilder
     public ImmutableDictionary<Type, NodeBuilder> Nodes => _nodes.ToImmutableDictionary();
     public Type Node => _firstNodeType!;
 
+    public Map Map => _map!;
+
     public IJourney Build(TimeProvider? timeProvider = default, CancellationToken ct = default)
     {
         var nodeInstances = new Dictionary<Type, INodeSpy>();
@@ -41,6 +43,9 @@ public sealed class JourneyBuilder
             var node = builder.CreateNode(edges);
             nodeInstances[type] = node;
         }
+
+        // Set Map
+        _map = new Map([.. nodeInstances.Values]);
 
         // Link edge MoveNext handlers to return neighbor from map
         foreach (var builder in _nodes.Values)

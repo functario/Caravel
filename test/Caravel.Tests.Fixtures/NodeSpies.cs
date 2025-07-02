@@ -1,7 +1,7 @@
 ﻿using System.Collections.Immutable;
 using Caravel.Abstractions;
 
-namespace Caravel.Tests.Fixtures.NodeSpies;
+namespace Caravel.Tests.Fixtures;
 
 public sealed class NodeSpy1 : NodeSpyBase
 {
@@ -54,11 +54,5 @@ public sealed class NodeSpy8 : NodeSpyBase
 public sealed class NodeSpy9 : NodeSpyBase
 {
     public NodeSpy9(ImmutableHashSet<IEdge> edges, bool existValue = true)
-        : base(edges, existValue) { }
-}
-
-public sealed class NodeSpy10 : NodeSpyBase
-{
-    public NodeSpy10(ImmutableHashSet<IEdge> edges, bool existValue = true)
         : base(edges, existValue) { }
 }

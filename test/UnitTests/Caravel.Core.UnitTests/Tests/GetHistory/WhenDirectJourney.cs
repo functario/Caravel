@@ -1,7 +1,7 @@
 ﻿namespace Caravel.Core.UnitTests.Tests.GetHistory;
 
 [Trait(TestType, Unit)]
-[Trait(Feature, FeatureNavigation)]
+[Trait(Feature, FeatureNodeAction)]
 public class WhenDirectJourney
 {
     [Fact(DisplayName = "History shows only shortest path to 5 Nodes on 5")]
@@ -122,10 +122,8 @@ public class WhenDirectJourney
             .Done();
 
         var journey = builder.Build();
-        // csharpier-ignore
-        var pastJourney = await journey
-            .GotoAsync<NodeSpy5>()
-            .GotoAsync<NodeSpy1>();
+        //csharpier-ignore
+        var pastJourney = await journey.GotoAsync<NodeSpy5>().GotoAsync<NodeSpy1>();
 
         // Act
         var sut = await pastJourney.ToMermaidSequenceDiagram(true);
