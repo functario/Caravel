@@ -96,6 +96,47 @@ public abstract class Journey : IJourney, IJourneyLegPublisher
         return this;
     }
 
+    public async Task<IJourney> DoAsync<TCurrentNode, TNodeOut>(
+        Func<TCurrentNode, CancellationToken, Task<TNodeOut>> func,
+        CancellationToken localCancellationToken = default
+    )
+        where TCurrentNode : INode
+        where TNodeOut : INode
+    {
+        ArgumentNullException.ThrowIfNull(func, nameof(func));
+
+        using var linkedCancellationTokenSource = this.LinkJourneyAndLocalCancellationTokens(
+            localCancellationToken
+        );
+
+        linkedCancellationTokenSource.Token.ThrowIfCancellationRequested();
+
+        await CurrentNode
+            .OnNodeOpenedAsync(this, linkedCancellationTokenSource.Token)
+            .ConfigureAwait(false);
+
+        // Validate the CurrentNode at each steps.
+        if (CurrentNode is TCurrentNode current)
+        {
+            var funcNode = await func(current, linkedCancellationTokenSource.Token)
+                .ConfigureAwait(false);
+
+            funcNode.GetType().ThrowIfNotCurrentNode(typeof(TCurrentNode));
+
+            // Change the current node.
+            CurrentNode = funcNode;
+
+            linkedCancellationTokenSource.Token.ThrowIfCancellationRequested();
+            await funcNode
+                .OnNodeOpenedAsync(this, linkedCancellationTokenSource.Token)
+                .ConfigureAwait(false);
+
+            return this;
+        }
+
+        throw new UnexpectedNodeException(CurrentNode.GetType(), typeof(TCurrentNode));
+    }
+
     public abstract Task PublishOnJourneyLegCompletedAsync(
         IJourneyLegCompletedEvent journeyLegCompletedEvent,
         CancellationToken cancellationToken

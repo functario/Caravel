@@ -84,36 +84,21 @@ public static partial class JourneyExtensions
         ArgumentNullException.ThrowIfNull(func, nameof(func));
 
         var journey = await journeyTask.ConfigureAwait(false);
+        return await journey.DoAsync(func, localCancellationToken).ConfigureAwait(false);
+    }
 
-        using var linkedCancellationTokenSource = journey.LinkJourneyAndLocalCancellationTokens(
-            localCancellationToken
-        );
+    public static async Task<IJourney> DoAsync<TCurrentNode, TNodeOut>(
+        this Task<IJourney> journeyTask,
+        Func<TCurrentNode, CancellationToken, Task<TNodeOut>> func,
+        CancellationToken localCancellationToken = default
+    )
+        where TCurrentNode : INode
+        where TNodeOut : INode
+    {
+        ArgumentNullException.ThrowIfNull(journeyTask, nameof(journeyTask));
 
-        linkedCancellationTokenSource.Token.ThrowIfCancellationRequested();
-
-        await journey
-            .CurrentNode.OnNodeOpenedAsync(journey, linkedCancellationTokenSource.Token)
-            .ConfigureAwait(false);
-
-        // Validate the CurrentNode at each steps.
-        if (journey.CurrentNode is TCurrentNode current)
-        {
-            var funcNode = await func(current, linkedCancellationTokenSource.Token)
-                .ConfigureAwait(false);
-
-            linkedCancellationTokenSource.Token.ThrowIfCancellationRequested();
-            ThrowIfNotCurrentNode(journey.CurrentNode.GetType(), typeof(TCurrentNode));
-
-            await funcNode
-                .OnNodeOpenedAsync(journey, linkedCancellationTokenSource.Token)
-                .ConfigureAwait(false);
-
-            linkedCancellationTokenSource.Token.ThrowIfCancellationRequested();
-            ThrowIfNotCurrentNode(journey.CurrentNode.GetType(), typeof(TCurrentNode));
-            return journey;
-        }
-
-        throw new UnexpectedNodeException(journey.CurrentNode.GetType(), typeof(TCurrentNode));
+        var journey = await journeyTask.ConfigureAwait(false);
+        return await journey.DoAsync(func, localCancellationToken).ConfigureAwait(false);
     }
 
     internal static CancellationTokenSource LinkJourneyAndLocalCancellationTokens(
@@ -130,7 +115,7 @@ public static partial class JourneyExtensions
         return linkedCancellationTokenSource;
     }
 
-    private static void ThrowIfNotCurrentNode(Type current, Type expected)
+    internal static void ThrowIfNotCurrentNode(this Type current, Type expected)
     {
         if (current != expected)
         {
