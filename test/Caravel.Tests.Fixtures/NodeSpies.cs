@@ -56,9 +56,3 @@ public sealed class NodeSpy9 : NodeSpyBase
     public NodeSpy9(ImmutableHashSet<IEdge> edges, bool existValue = true)
         : base(edges, existValue) { }
 }
-
-public sealed class NodeSpy10 : NodeSpyBase
-{
-    public NodeSpy10(ImmutableHashSet<IEdge> edges, bool existValue = true)
-        : base(edges, existValue) { }
-}

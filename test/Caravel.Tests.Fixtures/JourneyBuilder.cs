@@ -26,6 +26,7 @@ public sealed class JourneyBuilder
 
     public ImmutableDictionary<Type, NodeBuilder> Nodes => _nodes.ToImmutableDictionary();
     public Type Node => _firstNodeType!;
+    public Map? Map { get; private set; }
 
     public IJourney Build(TimeProvider? timeProvider = default, CancellationToken ct = default)
     {
@@ -40,6 +41,9 @@ public sealed class JourneyBuilder
             var node = builder.CreateNode(edges);
             nodeInstances[type] = node;
         }
+
+        // Set Map
+        Map = new Map([.. nodeInstances.Values]);
 
         // Link edge MoveNext handlers to return neighbor from map
         foreach (var builder in _nodes.Values)

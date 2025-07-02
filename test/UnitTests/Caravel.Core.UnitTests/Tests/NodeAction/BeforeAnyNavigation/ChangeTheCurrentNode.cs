@@ -1,11 +1,11 @@
-﻿namespace Caravel.Core.UnitTests.Tests.NodeAction.BetweenNavigations;
+﻿namespace Caravel.Core.UnitTests.Tests.NodeAction.BeforeAnyNavigation;
 
 [Trait(TestType, Unit)]
 [Trait(Feature, FeatureNodeAction)]
 [Trait(Domain, NodeDomain)]
-public class DoesNotChangeTheCurrentNode
+public class ChangeTheCurrentNode
 {
-    [Fact(DisplayName = "When action is done on current node")]
+    [Fact(DisplayName = "When action returns a different node")]
     public async Task Test1()
     {
         // Arrange
@@ -20,11 +20,12 @@ public class DoesNotChangeTheCurrentNode
             .Done();
 
         var journey = builder.Build();
+        var map = builder.Map;
+        ArgumentNullException.ThrowIfNull(map);
 
         // Act
         var sut = await journey
-            .GotoAsync<NodeSpy2>()
-            .DoAsync<NodeSpy2>((node, ct) => Task.FromResult(node))
+            .DoAsync<NodeSpy1, NodeSpy2>((node, ct) => Task.FromResult(map.NodeSpy2))
             .GotoAsync<NodeSpy3>();
 
         // Assert

@@ -28,7 +28,7 @@ public class DoesNotChangeTheCurrentNode
             .GotoAsync<NodeSpy3>();
 
         // Assert
-        var result = await sut.ToMermaidSequenceDiagram();
+        var result = await sut.ToMermaidSequenceDiagram(isDescriptionDisplayed: true);
         await result.VerifyMermaidMarkdownAsync();
     }
 }

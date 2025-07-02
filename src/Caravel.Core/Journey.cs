@@ -78,19 +78,7 @@ public abstract class Journey : IJourney, IJourneyLegPublisher
                 .ConfigureAwait(false);
         }
 
-        await PublishOnJourneyLegCompletedAsync(
-                new JourneyLegCompletedEvent(_timeProvider.GetUtcNow(), journeyLeg),
-                localCancellationToken
-            )
-            .ConfigureAwait(false);
-
-        if (CurrentNode is not TDestination)
-        {
-            throw new UnexpectedNodeException(typeof(TDestination), CurrentNode.GetType());
-        }
-
-        await CurrentNode
-            .OnNodeOpenedAsync(this, linkedCancellationTokenSource.Token)
+        await CompleteJourneyLegAsync<TDestination>(journeyLeg, linkedCancellationTokenSource.Token)
             .ConfigureAwait(false);
 
         return this;
@@ -121,10 +109,14 @@ public abstract class Journey : IJourney, IJourneyLegPublisher
             var funcNode = await func(current, linkedCancellationTokenSource.Token)
                 .ConfigureAwait(false);
 
-            funcNode.GetType().ThrowIfNotCurrentNode(typeof(TCurrentNode));
-
-            // Change the current node.
-            CurrentNode = funcNode;
+            // Ensure the navigation from DoAsync is registered.
+            await SetNavigationFromDoAsync<TCurrentNode, TNodeOut>(
+                    current,
+                    funcNode,
+                    Id,
+                    linkedCancellationTokenSource.Token
+                )
+                .ConfigureAwait(false);
 
             linkedCancellationTokenSource.Token.ThrowIfCancellationRequested();
             await funcNode
@@ -155,4 +147,78 @@ public abstract class Journey : IJourney, IJourneyLegPublisher
     public abstract Task<IEnumerable<IJourneyLeg>> GetCompletedJourneyLegsAsync(
         CancellationToken cancellationToken
     );
+
+    private async Task SetNavigationFromDoAsync<TCurrentNode, TNodeOut>(
+        TCurrentNode currentNode,
+        TNodeOut nodeOut,
+        Guid id,
+        CancellationToken linkedCancellationToken
+    )
+        where TCurrentNode : INode
+        where TNodeOut : INode
+    {
+        // Change the current node.
+        CurrentNode = nodeOut;
+
+        // Publish start and end of navigation.
+        var journeyLeg = DynamicJourneyLeg<TCurrentNode, TNodeOut>(currentNode, id);
+
+        await PublishOnJourneyLegStartedAsync(
+                new JourneyLegStartedEvent(_timeProvider.GetUtcNow(), journeyLeg),
+                linkedCancellationToken
+            )
+            .ConfigureAwait(false);
+
+        await CompleteJourneyLegAsync<TNodeOut>(journeyLeg, linkedCancellationToken)
+            .ConfigureAwait(false);
+    }
+
+    private async Task CompleteJourneyLegAsync<TDestination>(
+        IJourneyLeg completedJourneyLeg,
+        CancellationToken cancellationToken
+    )
+        where TDestination : INode
+    {
+        await PublishOnJourneyLegCompletedAsync(
+                new JourneyLegCompletedEvent(_timeProvider.GetUtcNow(), completedJourneyLeg),
+                cancellationToken
+            )
+            .ConfigureAwait(false);
+
+        if (CurrentNode is not TDestination)
+        {
+            throw new UnexpectedNodeException(typeof(TDestination), CurrentNode.GetType());
+        }
+
+        await CurrentNode.OnNodeOpenedAsync(this, cancellationToken).ConfigureAwait(false);
+    }
+
+    private static JourneyLeg DynamicJourneyLeg<TCurrentNode, TNodeOut>(
+        TCurrentNode currentNode,
+        Guid id
+    )
+        where TCurrentNode : INode
+        where TNodeOut : INode
+    {
+        if (id.Version != 7)
+            throw new InvalidOperationException("Id must be Guid.V7.");
+
+        var neighborNavigator = new NeighborNavigator(
+            MoveNext(currentNode),
+            $"{nameof(Journey)}.{nameof(DoAsync)}"
+        );
+
+        var legEdges = new Queue<IEdge>(
+            [new Edge(typeof(TCurrentNode), typeof(TNodeOut), neighborNavigator)]
+        );
+
+        return new JourneyLeg(id, legEdges);
+    }
+
+    private static Func<IJourney, CancellationToken, Task<INode>> MoveNext(INode node)
+    {
+        Task<INode> Func(IJourney journey, CancellationToken cancellationToken) =>
+            Task.FromResult(node);
+        return Func;
+    }
 }

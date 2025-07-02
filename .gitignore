@@ -48,3 +48,4 @@ msbuild.wrn
 # Tests
 TestResults/
 StrykerOutput/
+*.received.*
