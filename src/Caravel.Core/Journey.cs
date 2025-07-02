@@ -31,6 +31,18 @@ public abstract class Journey : IJourney, IJourneyLegPublisher
     public CancellationToken JourneyCancellationToken { get; }
     public Guid Id { get; init; } = Guid.CreateVersion7();
 
+    public TJourney OfType<TJourney>()
+    {
+        if (this is TJourney journey)
+        {
+            return journey;
+        }
+
+        throw new InvalidCastException(
+            $"Could not cast '{this.GetType()}' to '{typeof(TJourney)}'."
+        );
+    }
+
     public async Task<IJourney> GotoAsync<TDestination>(
         IWaypoints waypoints,
         IExcludedNodes excludeNodes,

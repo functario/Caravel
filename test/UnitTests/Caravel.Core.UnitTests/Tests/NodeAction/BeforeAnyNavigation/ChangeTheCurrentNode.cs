@@ -48,10 +48,13 @@ public class ChangeTheCurrentNode
 
         var journey = builder.Build();
         var map = builder.Map;
-
         // Act
+        // csharpier-ignore
         var sut = await journey
-            .DoAsync<NodeSpy1, NodeSpy2>((journey, node, ct) => Task.FromResult(map.NodeSpy2))
+            .DoAsync<NodeSpy1, NodeSpy2>(
+                (journey, node, ct)
+                => Task.FromResult(journey.OfType<SmartJourney>().Map.NodeSpy2)
+            )
             .GotoAsync<NodeSpy3>();
 
         // Assert
