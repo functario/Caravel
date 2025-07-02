@@ -1,7 +1,7 @@
 ﻿namespace Caravel.Core.UnitTests.Tests.FormatGraph;
 
 [Trait(TestType, Unit)]
-[Trait(FeatureUnderTest, FeatureFormatGraph)]
+[Trait(Feature, FeatureFormatGraph)]
 public class AsMermaidHtml
 {
     [Fact(DisplayName = "Graph of 2 routes displays as html file")]

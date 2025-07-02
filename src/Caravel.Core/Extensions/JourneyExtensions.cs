@@ -60,4 +60,17 @@ public static partial class JourneyExtensions
             .GotoAsync<TDestination>(waypoints, excludeNodes, localCancellationToken)
             .ConfigureAwait(false);
     }
+
+    public static async Task<IJourney> DoAsync<TCurrentNode>(
+        this IJourney journey,
+        Func<TCurrentNode, CancellationToken, Task<TCurrentNode>> func,
+        CancellationToken localCancellationToken = default
+    )
+        where TCurrentNode : INode
+    {
+        ArgumentNullException.ThrowIfNull(journey, nameof(journey));
+        return await Task.FromResult(journey)
+            .DoAsync<TCurrentNode>(func, localCancellationToken)
+            .ConfigureAwait(false);
+    }
 }

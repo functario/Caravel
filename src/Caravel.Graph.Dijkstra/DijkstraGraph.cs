@@ -112,7 +112,10 @@ public sealed class DijkstraGraph : IGraph
             if (!_registeredNodes.TryGetValue(nodeVisited, out var currentNode))
                 throw new UnknownNodeException(nodeVisited);
 
-            foreach (var edge in currentNode.GetEdges())
+            var edges = currentNode.GetEdges();
+            ThrowIfDuplicatedEdges(edges);
+
+            foreach (var edge in edges)
             {
                 if (edge is null)
                     throw new InvalidEdgeException(InvalidEdgeReasons.Null);
@@ -147,5 +150,19 @@ public sealed class DijkstraGraph : IGraph
         }
 
         return path;
+    }
+
+    private static void ThrowIfDuplicatedEdges(ICollection<IEdge> edges)
+    {
+        var duplicates = edges
+            .GroupBy(x => (x.Origin, x.Neighbor, x.Weight))
+            .Where(g => g.Count() > 1)
+            .Select(g => g.First())
+            .ToList();
+
+        if (duplicates.Count > 0)
+        {
+            throw new DuplicatedEdgesException(duplicates);
+        }
     }
 }

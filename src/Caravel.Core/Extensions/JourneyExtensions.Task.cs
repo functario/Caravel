@@ -101,12 +101,14 @@ public static partial class JourneyExtensions
             var funcNode = await func(current, linkedCancellationTokenSource.Token)
                 .ConfigureAwait(false);
 
+            linkedCancellationTokenSource.Token.ThrowIfCancellationRequested();
             ThrowIfNotCurrentNode(journey.CurrentNode.GetType(), typeof(TCurrentNode));
 
             await funcNode
                 .OnNodeOpenedAsync(journey, linkedCancellationTokenSource.Token)
                 .ConfigureAwait(false);
 
+            linkedCancellationTokenSource.Token.ThrowIfCancellationRequested();
             ThrowIfNotCurrentNode(journey.CurrentNode.GetType(), typeof(TCurrentNode));
             return journey;
         }
@@ -114,15 +116,7 @@ public static partial class JourneyExtensions
         throw new UnexpectedNodeException(journey.CurrentNode.GetType(), typeof(TCurrentNode));
     }
 
-    private static void ThrowIfNotCurrentNode(Type current, Type expected)
-    {
-        if (current == expected)
-        {
-            throw new UnexpectedNodeException(current, expected);
-        }
-    }
-
-    public static CancellationTokenSource LinkJourneyAndLocalCancellationTokens(
+    internal static CancellationTokenSource LinkJourneyAndLocalCancellationTokens(
         this IJourney journey,
         CancellationToken localCancellationToken
     )
@@ -134,5 +128,13 @@ public static partial class JourneyExtensions
         );
 
         return linkedCancellationTokenSource;
+    }
+
+    private static void ThrowIfNotCurrentNode(Type current, Type expected)
+    {
+        if (current != expected)
+        {
+            throw new UnexpectedNodeException(current, expected);
+        }
     }
 }
