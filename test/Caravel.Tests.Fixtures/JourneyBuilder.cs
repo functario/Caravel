@@ -27,12 +27,11 @@ public sealed class JourneyBuilder
 
     public ImmutableDictionary<Type, NodeBuilder> Nodes => _nodes.ToImmutableDictionary();
     public Type Node => _firstNodeType!;
-
     public Map Map => _map!;
 
     public IJourney Build(TimeProvider? timeProvider = default, CancellationToken ct = default)
     {
-        var nodeInstances = new Dictionary<Type, INodeSpy>();
+        var nodesByType = new Dictionary<Type, INodeSpy>();
 
         // Create nodes with edges
         foreach (var kvp in _nodes)
@@ -41,23 +40,23 @@ public sealed class JourneyBuilder
             var builder = kvp.Value;
             var edges = builder.BuildEdges();
             var node = builder.CreateNode(edges);
-            nodeInstances[type] = node;
+            nodesByType[type] = node;
         }
 
         // Set Map
-        _map = new Map([.. nodeInstances.Values]);
+        _map = new Map([.. nodesByType.Values]);
 
         // Link edge MoveNext handlers to return neighbor from map
         foreach (var builder in _nodes.Values)
         {
-            builder.ResolveMoveNext(nodeInstances);
+            builder.ResolveMoveNext(nodesByType);
         }
 
-        var graph = new DijkstraGraph([.. nodeInstances.Values.Cast<INode>()]);
-        var startNode = nodeInstances[_firstNodeType!];
+        var graph = new DijkstraGraph([.. nodesByType.Values.Cast<INode>()]);
+        var startNode = nodesByType[_firstNodeType!];
 
         timeProvider ??= TimeProvider.System;
-        return new InMemoryJourney(startNode, graph, timeProvider, ct);
+        return new SmartJourney(startNode, graph, timeProvider, _map, ct);
     }
 }
 
@@ -120,9 +119,9 @@ public sealed class NodeBuilder
         return edges;
     }
 
-    public void ResolveMoveNext(Dictionary<Type, INodeSpy> map)
+    public void ResolveMoveNext(Dictionary<Type, INodeSpy> nodesByType)
     {
-        ArgumentNullException.ThrowIfNull(map, nameof(map));
+        ArgumentNullException.ThrowIfNull(nodesByType, nameof(nodesByType));
         if (_instance is null)
             throw new InvalidOperationException("Node instance not created yet.");
 
@@ -132,7 +131,7 @@ public sealed class NodeBuilder
                     new Edge(
                         edge.Origin,
                         edge.Neighbor,
-                        CreateNeighborNavigator(map, edge),
+                        CreateNeighborNavigator(nodesByType, edge),
                         edge.Weight
                     )
             )
@@ -143,18 +142,18 @@ public sealed class NodeBuilder
             ?? throw new InvalidOperationException("Node must have expected constructor.");
 
         var newNode = (INodeSpy)ctor.Invoke([newEdges, _auditValue]);
-        map[_type] = newNode;
+        nodesByType[_type] = newNode;
     }
 
     public JourneyBuilder Done() => _parent;
 
     private static NeighborNavigator CreateNeighborNavigator(
-        Dictionary<Type, INodeSpy> map,
+        Dictionary<Type, INodeSpy> nodesByType,
         IEdge edge
     )
     {
         return new NeighborNavigator(
-            (_, _) => Task.FromResult<INode>(map[edge.Neighbor]),
+            (_, _) => Task.FromResult<INode>(nodesByType[edge.Neighbor]),
             edge.NeighborNavigator.MetaData
         );
     }

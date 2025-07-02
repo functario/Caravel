@@ -6,11 +6,13 @@ public interface IJourney
     IGraph Graph { get; }
     INode CurrentNode { get; }
 
-    Task<IEnumerable<IJourneyLeg>> GetCompletedJourneyLegsAsync(
+    public Task<IEnumerable<IJourneyLeg>> GetCompletedJourneyLegsAsync(
         CancellationToken cancellationToken
     );
 
-    Task<IJourney> GotoAsync<TDestination>(
+    public TJourney OfType<TJourney>();
+
+    public Task<IJourney> GotoAsync<TDestination>(
         IWaypoints waypoints,
         IExcludedNodes excludeNodes,
         CancellationToken localCancellationToken
