@@ -20,6 +20,9 @@ public class ChangeTheCurrentNode
             .WithEdge<NodeSpy4>()
             .Done()
             .AddNode<NodeSpy4>()
+            .WithEdge<NodeSpy5>()
+            .Done()
+            .AddNode<NodeSpy5>()
             .Done();
 
         var journey = builder.Build();
@@ -30,7 +33,8 @@ public class ChangeTheCurrentNode
         var sut = await journey
             .GotoAsync<NodeSpy2>()
             .DoAsync<NodeSpy2, NodeSpy3>((node, ct) => Task.FromResult(map.NodeSpy3))
-            .GotoAsync<NodeSpy4>();
+            .DoAsync<NodeSpy3, NodeSpy4>((journey, node, ct) => Task.FromResult(map.NodeSpy4))
+            .GotoAsync<NodeSpy5>();
 
         // Assert
         var result = await sut.ToMermaidSequenceDiagram(isDescriptionDisplayed: true);

@@ -25,6 +25,7 @@ public class DoesNotChangeTheCurrentNode
         var sut = await journey
             .GotoAsync<NodeSpy2>()
             .DoAsync<NodeSpy2>((node, ct) => Task.FromResult(node))
+            .DoAsync<NodeSpy2>((journey, node, ct) => Task.FromResult(node))
             .GotoAsync<NodeSpy3>();
 
         // Assert

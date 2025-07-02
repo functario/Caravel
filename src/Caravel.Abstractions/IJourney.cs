@@ -23,4 +23,11 @@ public interface IJourney
     )
         where TCurrentNode : INode
         where TNodeOut : INode;
+
+    public Task<IJourney> DoAsync<TCurrentNode, TNodeOut>(
+        Func<IJourney, TCurrentNode, CancellationToken, Task<TNodeOut>> func,
+        CancellationToken localCancellationToken = default
+    )
+        where TCurrentNode : INode
+        where TNodeOut : INode;
 }

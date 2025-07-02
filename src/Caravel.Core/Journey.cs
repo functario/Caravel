@@ -85,13 +85,45 @@ public abstract class Journey : IJourney, IJourneyLegPublisher
     }
 
     public async Task<IJourney> DoAsync<TCurrentNode, TNodeOut>(
+        Func<IJourney, TCurrentNode, CancellationToken, Task<TNodeOut>> func,
+        CancellationToken localCancellationToken = default
+    )
+        where TCurrentNode : INode
+        where TNodeOut : INode
+    {
+        ArgumentNullException.ThrowIfNull(func);
+
+        return await InternalDoAsync<TCurrentNode, TNodeOut>(
+                (journey, node, token) => func(journey, node, token),
+                localCancellationToken
+            )
+            .ConfigureAwait(false);
+    }
+
+    public async Task<IJourney> DoAsync<TCurrentNode, TNodeOut>(
         Func<TCurrentNode, CancellationToken, Task<TNodeOut>> func,
         CancellationToken localCancellationToken = default
     )
         where TCurrentNode : INode
         where TNodeOut : INode
     {
-        ArgumentNullException.ThrowIfNull(func, nameof(func));
+        ArgumentNullException.ThrowIfNull(func);
+
+        return await InternalDoAsync<TCurrentNode, TNodeOut>(
+                (_, node, token) => func(node, token),
+                localCancellationToken
+            )
+            .ConfigureAwait(false);
+    }
+
+    private async Task<IJourney> InternalDoAsync<TCurrentNode, TNodeOut>(
+        Func<IJourney, TCurrentNode, CancellationToken, Task<TNodeOut>> wrappedFunc,
+        CancellationToken localCancellationToken = default
+    )
+        where TCurrentNode : INode
+        where TNodeOut : INode
+    {
+        ArgumentNullException.ThrowIfNull(wrappedFunc, nameof(wrappedFunc));
 
         using var linkedCancellationTokenSource = this.LinkJourneyAndLocalCancellationTokens(
             localCancellationToken
@@ -106,7 +138,7 @@ public abstract class Journey : IJourney, IJourneyLegPublisher
         // Validate the CurrentNode at each steps.
         if (CurrentNode is TCurrentNode current)
         {
-            var funcNode = await func(current, linkedCancellationTokenSource.Token)
+            var funcNode = await wrappedFunc(this, current, linkedCancellationTokenSource.Token)
                 .ConfigureAwait(false);
 
             // Ensure the navigation from DoAsync is registered.
