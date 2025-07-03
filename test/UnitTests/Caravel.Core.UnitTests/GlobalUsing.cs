@@ -3,6 +3,7 @@ global using Caravel.Core.UnitTests.Extensions;
 global using Caravel.Tests.Fixtures;
 global using Xunit;
 global using static Caravel.Core.UnitTests.Extensions.VerifyExtensions;
+global using static Caravel.Core.UnitTests.MermaidTestOptions;
 global using static Caravel.Mermaid.GraphExtensions;
 global using static Caravel.Mermaid.JourneyExtensions;
 global using static Caravel.Mermaid.RouteExtensions;

@@ -12,3 +12,8 @@ using System.Diagnostics.CodeAnalysis;
     Scope = "namespaceanddescendants",
     Target = "~N:Caravel.Mermaid.Exceptions"
 )]
+[assembly: SuppressMessage(
+    "Style",
+    "IDE0290:Use primary constructor",
+    Justification = "Suggestion not wanted."
+)]

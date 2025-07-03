@@ -6,16 +6,14 @@ namespace Caravel.Mermaid;
 
 public static class RouteExtensions
 {
-    public static string ToMermaidGraph(
-        this IRoute route,
-        MermaidGraphDirections mermaidGraphDirection = MermaidGraphDirections.TD
-    )
+    public static string ToMermaidMarkdown(this IRoute route, MermaidOptions? options = null)
     {
         ArgumentNullException.ThrowIfNull(route, nameof(route));
         var stringBuilder = new StringBuilder();
+        options ??= MermaidOptions.Default();
         stringBuilder.AppendLine(
             CultureInfo.InvariantCulture,
-            $"graph {mermaidGraphDirection.ToString()}"
+            $"graph {options.GraphDirection.ToString()}"
         );
 
         IEdge[] edges = [.. route.Edges.OrderBy(x => x.Neighbor.Name)];

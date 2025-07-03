@@ -4,13 +4,9 @@ namespace Caravel.Mermaid;
 
 public static partial class JourneyExtensions
 {
-    public static string ToMermaidGraph(
-        this IJourney journey,
-        bool isDescriptionDisplayed = false,
-        MermaidGraphDirections mermaidGraphDirection = default
-    )
+    public static string ToMermaidMarkdown(this IJourney journey, MermaidOptions? options = null)
     {
         ArgumentNullException.ThrowIfNull(journey, nameof(journey));
-        return journey.Graph.ToMermaidGraph(isDescriptionDisplayed, mermaidGraphDirection);
+        return journey.Graph.ToMermaidMarkdown(options);
     }
 }

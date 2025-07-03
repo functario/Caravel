@@ -9,4 +9,6 @@ public static class Domains
     public const string NodeDomain = "Node";
 
     public const string RouteDomain = "Route";
+
+    public const string WaypointsDomain = "Waypoints";
 }
