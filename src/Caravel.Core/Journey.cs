@@ -64,7 +64,7 @@ public abstract class Journey : IJourney, IJourneyLegPublisher
         var destinationType = typeof(TDestination);
         var route = Graph.GetRoute(originType, destinationType, waypoints, excludeNodes);
         var legEdges = new Queue<IEdge>();
-        var journeyLeg = new JourneyLeg(Id, legEdges);
+        var journeyLeg = new JourneyLeg(Id, legEdges, route);
         await PublishOnJourneyLegStartedAsync(
                 new JourneyLegStartedEvent(_timeProvider.GetUtcNow(), journeyLeg),
                 linkedCancellationTokenSource.Token
@@ -84,13 +84,17 @@ public abstract class Journey : IJourney, IJourneyLegPublisher
 
             journeyLeg.Edges.Enqueue(edge);
             await PublishOnJourneyLegUpdatedAsync(
-                    new JourneyLegUpdatedEvent(_timeProvider.GetUtcNow(), journeyLeg),
+                    new JourneyLegUpdatedEvent(_timeProvider.GetUtcNow(), journeyLeg, edge),
                     linkedCancellationTokenSource.Token
                 )
                 .ConfigureAwait(false);
         }
 
-        await CompleteJourneyLegAsync<TDestination>(journeyLeg, linkedCancellationTokenSource.Token)
+        await CompleteJourneyLegAsync<TDestination>(
+                journeyLeg,
+                journeyLeg.Edges.Last(),
+                linkedCancellationTokenSource.Token
+            )
             .ConfigureAwait(false);
 
         return this;
@@ -163,7 +167,7 @@ public abstract class Journey : IJourney, IJourneyLegPublisher
     private async Task SetNavigationFromDoAsync<TCurrentNode, TNodeOut>(
         TCurrentNode currentNode,
         TNodeOut nodeOut,
-        Guid id,
+        Guid journeyId,
         CancellationToken linkedCancellationToken
     )
         where TCurrentNode : INode
@@ -173,7 +177,7 @@ public abstract class Journey : IJourney, IJourneyLegPublisher
         CurrentNode = nodeOut;
 
         // Publish start and end of navigation.
-        var journeyLeg = DynamicJourneyLeg<TCurrentNode, TNodeOut>(currentNode, id);
+        var journeyLeg = DynamicJourneyLeg<TCurrentNode, TNodeOut>(currentNode, journeyId);
 
         await PublishOnJourneyLegStartedAsync(
                 new JourneyLegStartedEvent(_timeProvider.GetUtcNow(), journeyLeg),
@@ -181,18 +185,27 @@ public abstract class Journey : IJourney, IJourneyLegPublisher
             )
             .ConfigureAwait(false);
 
-        await CompleteJourneyLegAsync<TNodeOut>(journeyLeg, linkedCancellationToken)
+        await CompleteJourneyLegAsync<TNodeOut>(
+                journeyLeg,
+                journeyLeg.Edges.Last(),
+                linkedCancellationToken
+            )
             .ConfigureAwait(false);
     }
 
     private async Task CompleteJourneyLegAsync<TDestination>(
         IJourneyLeg completedJourneyLeg,
+        IEdge finishingEdge,
         CancellationToken cancellationToken
     )
         where TDestination : INode
     {
         await PublishOnJourneyLegCompletedAsync(
-                new JourneyLegCompletedEvent(_timeProvider.GetUtcNow(), completedJourneyLeg),
+                new JourneyLegCompletedEvent(
+                    _timeProvider.GetUtcNow(),
+                    completedJourneyLeg,
+                    finishingEdge
+                ),
                 cancellationToken
             )
             .ConfigureAwait(false);
@@ -207,12 +220,12 @@ public abstract class Journey : IJourney, IJourneyLegPublisher
 
     private static JourneyLeg DynamicJourneyLeg<TCurrentNode, TNodeOut>(
         TCurrentNode currentNode,
-        Guid id
+        Guid journeyId
     )
         where TCurrentNode : INode
         where TNodeOut : INode
     {
-        if (id.Version != 7)
+        if (journeyId.Version != 7)
             throw new InvalidOperationException("Id must be Guid.V7.");
 
         var neighborNavigator = new NeighborNavigator(
@@ -224,7 +237,8 @@ public abstract class Journey : IJourney, IJourneyLegPublisher
             [new Edge(typeof(TCurrentNode), typeof(TNodeOut), neighborNavigator)]
         );
 
-        return new JourneyLeg(id, legEdges);
+        var doRoute = new DoRoute([.. legEdges]);
+        return new JourneyLeg(journeyId, legEdges, doRoute);
     }
 
     private static Func<IJourney, CancellationToken, Task<INode>> MoveNext(INode node)
