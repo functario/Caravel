@@ -34,4 +34,34 @@ public class GotoDestination
         var result = await sut.ToMermaidSequenceDiagramMarkdownAsync(WithQuadrant);
         await result.VerifyMermaidMarkdownAsync();
     }
+
+    [Fact(DisplayName = "When origin is also destination with waypoints")]
+    public async Task Test2()
+    {
+        // Arrange
+        // csharpier-ignore-start
+        Waypoints waypoints = [typeof(Node1), typeof(Node3)];
+        var journey = new JourneyBuilder()
+            .AddNode<Node1>()
+            .WithEdge<Node2>()
+            .Done()
+            .AddNode<Node2>()
+            .WithEdge<Node1>()
+            .WithEdge<Node3>()
+            .Done()
+            .AddNode<Node3>()
+            .WithEdge<Node2>()
+            .Done()
+            .Build();
+
+        // Act
+        var sut = await journey
+            .GotoAsync<Node2>() // In this test, Node2 is origin of the second GotoAsync
+            .GotoAsync<Node2>(waypoints); // self reference
+
+        // Assert
+        var result = await sut.ToMermaidSequenceDiagramMarkdownAsync(WithQuadrant);
+        await result.VerifyMermaidMarkdownAsync();
+        // csharpier-ignore-stop
+    }
 }

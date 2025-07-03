@@ -101,4 +101,36 @@ public class ThrowsException
             .ThrowExactlyAsync<InvalidEdgeException>()
             .WithMessage("Invalid IEdge detected with reason 'NodeHasEdgeToItself'.");
     }
+
+    [Fact(DisplayName = "When origin is also a waypoint")]
+    public async Task Test4()
+    {
+        // Arrange
+        // csharpier-ignore
+        Waypoints waypoints = [typeof(Node2), typeof(Node1)];
+        var journey = new JourneyBuilder()
+            .AddNode<Node1>()
+            .WithEdge<Node2>()
+            .Done()
+            .AddNode<Node2>()
+            .WithEdge<Node3>()
+            .WithEdge<Node1>()
+            .Done()
+            .AddNode<Node3>()
+            .Done()
+            .Build();
+
+        // Act
+        var sut = async () => await journey.GotoAsync<Node1>(waypoints);
+
+        // Assert
+        await sut.Should()
+            .ThrowExactlyAsync<InvalidRouteException>()
+            .WithMessage(
+                "Invalid IRoute detected "
+                    + "with reason 'OriginIsAlsoWaypoint' "
+                    + "(origin: 'Caravel.Tests.Fixtures.Node1', "
+                    + "destination: 'Caravel.Tests.Fixtures.Node1')."
+            );
+    }
 }
