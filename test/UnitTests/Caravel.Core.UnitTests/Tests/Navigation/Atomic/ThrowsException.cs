@@ -47,7 +47,7 @@ public class ThrowsException
     }
 
     [Fact(DisplayName = $"When no route found between waypoints")]
-    public async Task Tes2()
+    public async Task Test2()
     {
         // Arrange
         var builder = new JourneyBuilder()
@@ -80,5 +80,25 @@ public class ThrowsException
                     + "origin INode 'Caravel.Tests.Fixtures.Node3' "
                     + "and destination INode 'Caravel.Tests.Fixtures.Node5'."
             );
+    }
+
+    [Fact(DisplayName = "When origin self references itself in edge")]
+    public async Task Test3()
+    {
+        // Arrange
+        // csharpier-ignore
+        var journey = new JourneyBuilder()
+            .AddNode<Node1>()
+            .WithEdge<Node1>()
+            .Done()
+            .Build();
+
+        // Act
+        var sut = async () => await journey.GotoAsync<Node1>();
+
+        // Assert
+        await sut.Should()
+            .ThrowExactlyAsync<InvalidEdgeException>()
+            .WithMessage("Invalid IEdge detected with reason 'NodeHasEdgeToItself'.");
     }
 }

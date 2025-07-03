@@ -15,4 +15,5 @@ public class InvalidEdgeException : CaravelException
 public enum InvalidEdgeReasons
 {
     Null = 0,
+    NodeHasEdgeToItself,
 }

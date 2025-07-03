@@ -45,24 +45,26 @@ public abstract class Journey : IJourney, IJourneyLegPublisher
 
     public async Task<IJourney> GotoAsync<TDestination>(
         IWaypoints waypoints,
-        IExcludedNodes excludeNodes,
+        IExcludedNodes excludedNodes,
         CancellationToken localCancellationToken
     )
         where TDestination : INode
     {
+        ArgumentNullException.ThrowIfNull(waypoints, nameof(waypoints));
+
         using var linkedCancellationTokenSource = this.LinkJourneyAndLocalCancellationTokens(
             localCancellationToken
         );
 
         linkedCancellationTokenSource.Token.ThrowIfCancellationRequested();
+        var originType = CurrentNode.GetType();
+        var destinationType = typeof(TDestination);
 
         await CurrentNode
             .OnNodeOpenedAsync(this, linkedCancellationTokenSource.Token)
             .ConfigureAwait(false);
 
-        var originType = CurrentNode.GetType();
-        var destinationType = typeof(TDestination);
-        var route = Graph.GetRoute(originType, destinationType, waypoints, excludeNodes);
+        var route = GetRoute(originType, destinationType, waypoints, excludedNodes);
         var legEdges = new Queue<IEdge>();
         var journeyLeg = new JourneyLeg(Id, legEdges, route);
         await PublishOnJourneyLegStartedAsync(
@@ -99,6 +101,33 @@ public abstract class Journey : IJourney, IJourneyLegPublisher
 
         return this;
     }
+
+    // TODO: Document the fact that a Node cannot declare itself via a edge.
+    // But navigation to itself is possible otherwise via Goto.
+    private IRoute GetRoute(
+        Type originType,
+        Type destinationType,
+        IWaypoints waypoints,
+        IExcludedNodes excludedNodes
+    )
+    {
+        // Cannot allow explicit self reference.
+        if (HasExplicitEdgeToItself(CurrentNode))
+        {
+            throw new InvalidEdgeException(InvalidEdgeReasons.NodeHasEdgeToItself);
+        }
+
+        // Manage cases where origin is destination without self reference.
+        if (originType == destinationType && waypoints.Count == 0)
+        {
+            return Graph.GetSelfRoute(CurrentNode);
+        }
+
+        return Graph.GetRoute(originType, destinationType, waypoints, excludedNodes);
+    }
+
+    private static bool HasExplicitEdgeToItself(INode node) =>
+        node.GetEdges().Where(x => x.Origin == x.Neighbor).FirstOrDefault() is not null;
 
     public async Task<IJourney> DoAsync<TCurrentNode, TNodeOut>(
         Func<IJourney, TCurrentNode, CancellationToken, Task<TNodeOut>> func,

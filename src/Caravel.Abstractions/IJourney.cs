@@ -14,7 +14,7 @@ public interface IJourney
 
     public Task<IJourney> GotoAsync<TDestination>(
         IWaypoints waypoints,
-        IExcludedNodes excludeNodes,
+        IExcludedNodes excludedNodes,
         CancellationToken localCancellationToken
     )
         where TDestination : INode;
