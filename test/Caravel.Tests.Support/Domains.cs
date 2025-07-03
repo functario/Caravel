@@ -11,4 +11,6 @@ public static class Domains
     public const string RouteDomain = "Route";
 
     public const string WaypointsDomain = "Waypoints";
+
+    public const string GotoDomain = "Goto";
 }

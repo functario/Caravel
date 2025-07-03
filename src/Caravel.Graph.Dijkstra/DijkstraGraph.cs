@@ -1,6 +1,7 @@
 ﻿using System.Collections.Frozen;
 using Caravel.Abstractions;
 using Caravel.Abstractions.Exceptions;
+using Caravel.Core;
 
 namespace Caravel.Graph.Dijkstra;
 
@@ -13,8 +14,19 @@ public sealed class DijkstraGraph : IGraph
         _registeredNodes = nodes.ToDictionary(n => n.GetType(), n => n).ToFrozenDictionary();
     }
 
+    /// <inheritdoc />
     public FrozenDictionary<Type, INode> Nodes => _registeredNodes;
 
+    /// <inheritdoc />
+    public IRoute GetSelfRoute(INode node)
+    {
+        ArgumentNullException.ThrowIfNull(node);
+        var type = node.GetType();
+        var selfEdge = new Edge(type, type, new NeighborNavigator((_, _) => Task.FromResult(node)));
+        return new Route([selfEdge]);
+    }
+
+    /// <inheritdoc />
     public IRoute GetRoute(
         Type origin,
         Type destination,

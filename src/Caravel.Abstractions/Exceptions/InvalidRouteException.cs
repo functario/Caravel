@@ -34,4 +34,6 @@ public enum InvalidRouteReasons
     ExtremityNodesExcluded = 0,
     OriginNodeExcluded,
     DestinationNodeExcluded,
+    OriginIsAlsoWaypoint,
+    DestinationIsAlsoWaypoint,
 }

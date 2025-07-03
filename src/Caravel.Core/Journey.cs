@@ -45,11 +45,13 @@ public abstract class Journey : IJourney, IJourneyLegPublisher
 
     public async Task<IJourney> GotoAsync<TDestination>(
         IWaypoints waypoints,
-        IExcludedNodes excludeNodes,
+        IExcludedNodes excludedNodes,
         CancellationToken localCancellationToken
     )
         where TDestination : INode
     {
+        ArgumentNullException.ThrowIfNull(waypoints, nameof(waypoints));
+
         using var linkedCancellationTokenSource = this.LinkJourneyAndLocalCancellationTokens(
             localCancellationToken
         );
@@ -62,7 +64,7 @@ public abstract class Journey : IJourney, IJourneyLegPublisher
 
         var originType = CurrentNode.GetType();
         var destinationType = typeof(TDestination);
-        var route = Graph.GetRoute(originType, destinationType, waypoints, excludeNodes);
+        var route = GetRoute(originType, destinationType, waypoints, excludedNodes);
         var legEdges = new Queue<IEdge>();
         var journeyLeg = new JourneyLeg(Id, legEdges, route);
         await PublishOnJourneyLegStartedAsync(
@@ -99,6 +101,57 @@ public abstract class Journey : IJourney, IJourneyLegPublisher
 
         return this;
     }
+
+    private IRoute GetRoute(
+        Type originType,
+        Type destinationType,
+        IWaypoints waypoints,
+        IExcludedNodes excludedNodes
+    )
+    {
+        // Cannot allow explicit self reference.
+        if (HasExplicitEdgeToItself(CurrentNode))
+        { // TODO: Document that a Node cannot declare itself via a edge.
+            // But navigation to itself is possible otherwise via Goto.
+            throw new InvalidEdgeException(InvalidEdgeReasons.NodeHasEdgeToItself);
+        }
+
+        if (OriginIsAlsoAWaypoint(originType, waypoints))
+        { // TODO: Document that origin cannot be in Waypoints too
+            throw new InvalidRouteException(
+                InvalidRouteReasons.OriginIsAlsoWaypoint,
+                originType,
+                destinationType
+            );
+        }
+
+        if (DestinationIsAlsoAWaypoint(destinationType, waypoints))
+        { // TODO: Document that destination cannot be in Waypoints too
+            // (because will become origin at the end).
+            throw new InvalidRouteException(
+                InvalidRouteReasons.DestinationIsAlsoWaypoint,
+                originType,
+                destinationType
+            );
+        }
+
+        // Manage cases where origin is destination without self reference or waypoint.
+        if (originType == destinationType && waypoints.Count == 0)
+        {
+            return Graph.GetSelfRoute(CurrentNode);
+        }
+
+        return Graph.GetRoute(originType, destinationType, waypoints, excludedNodes);
+    }
+
+    private static bool HasExplicitEdgeToItself(INode node) =>
+        node.GetEdges().Where(x => x.Origin == x.Neighbor).FirstOrDefault() is not null;
+
+    private static bool OriginIsAlsoAWaypoint(Type originType, IWaypoints waypoints) =>
+        waypoints.Any(x => x == originType);
+
+    private static bool DestinationIsAlsoAWaypoint(Type destinationType, IWaypoints waypoints) =>
+        waypoints.Any(x => x == destinationType);
 
     public async Task<IJourney> DoAsync<TCurrentNode, TNodeOut>(
         Func<IJourney, TCurrentNode, CancellationToken, Task<TNodeOut>> func,

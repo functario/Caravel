@@ -47,7 +47,7 @@ public class ThrowsException
     }
 
     [Fact(DisplayName = $"When no route found between waypoints")]
-    public async Task Tes2()
+    public async Task Test2()
     {
         // Arrange
         var builder = new JourneyBuilder()
@@ -79,6 +79,90 @@ public class ThrowsException
                 "No IRoute found between "
                     + "origin INode 'Caravel.Tests.Fixtures.Node3' "
                     + "and destination INode 'Caravel.Tests.Fixtures.Node5'."
+            );
+    }
+
+    [Fact(DisplayName = "When origin self references itself in edge")]
+    public async Task Test3()
+    {
+        // Arrange
+        // csharpier-ignore
+        var journey = new JourneyBuilder()
+            .AddNode<Node1>()
+            .WithEdge<Node1>()
+            .Done()
+            .Build();
+
+        // Act
+        var sut = async () => await journey.GotoAsync<Node1>();
+
+        // Assert
+        await sut.Should()
+            .ThrowExactlyAsync<InvalidEdgeException>()
+            .WithMessage("Invalid IEdge detected with reason 'NodeHasEdgeToItself'.");
+    }
+
+    [Fact(DisplayName = "When origin is also a waypoint")]
+    public async Task Test4()
+    {
+        // Arrange
+        // csharpier-ignore
+        Waypoints waypoints = [typeof(Node2), typeof(Node1)];
+        var journey = new JourneyBuilder()
+            .AddNode<Node1>()
+            .WithEdge<Node2>()
+            .Done()
+            .AddNode<Node2>()
+            .WithEdge<Node3>()
+            .WithEdge<Node1>()
+            .Done()
+            .AddNode<Node3>()
+            .Done()
+            .Build();
+
+        // Act
+        var sut = async () => await journey.GotoAsync<Node1>(waypoints);
+
+        // Assert
+        await sut.Should()
+            .ThrowExactlyAsync<InvalidRouteException>()
+            .WithMessage(
+                "Invalid IRoute detected "
+                    + "with reason 'OriginIsAlsoWaypoint' "
+                    + "(origin: 'Caravel.Tests.Fixtures.Node1', "
+                    + "destination: 'Caravel.Tests.Fixtures.Node1')."
+            );
+    }
+
+    [Fact(DisplayName = "When destination is also a waypoint")]
+    public async Task Test5()
+    {
+        // Arrange
+        // csharpier-ignore
+        Waypoints waypoints = [typeof(Node3), typeof(Node2)];
+        var journey = new JourneyBuilder()
+            .AddNode<Node1>()
+            .WithEdge<Node2>()
+            .Done()
+            .AddNode<Node2>()
+            .WithEdge<Node3>()
+            .WithEdge<Node1>()
+            .Done()
+            .AddNode<Node3>()
+            .Done()
+            .Build();
+
+        // Act
+        var sut = async () => await journey.GotoAsync<Node2>(waypoints);
+
+        // Assert
+        await sut.Should()
+            .ThrowExactlyAsync<InvalidRouteException>()
+            .WithMessage(
+                "Invalid IRoute detected "
+                    + "with reason 'DestinationIsAlsoWaypoint' "
+                    + "(origin: 'Caravel.Tests.Fixtures.Node1', "
+                    + "destination: 'Caravel.Tests.Fixtures.Node2')."
             );
     }
 }
