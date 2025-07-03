@@ -45,4 +45,40 @@ public class ThrowsException
                     + "-->|2| Caravel.Tests.Fixtures.NodeSpy3')."
             );
     }
+
+    [Fact(DisplayName = $"When no route found between waypoints")]
+    public async Task Tes2()
+    {
+        // Arrange
+        var builder = new JourneyBuilder()
+            .AddNode<NodeSpy1>()
+            .WithEdge<NodeSpy2>()
+            .WithEdge<NodeSpy3>()
+            .Done()
+            .AddNode<NodeSpy2>()
+            .WithEdge<NodeSpy4>()
+            .Done()
+            .AddNode<NodeSpy3>() // dead end
+            .Done()
+            .AddNode<NodeSpy4>()
+            .WithEdge<NodeSpy5>()
+            .Done()
+            .AddNode<NodeSpy5>()
+            .Done();
+
+        var journey = builder.Build();
+        Waypoints waypoints = [typeof(NodeSpy3)];
+
+        // Act
+        var sut = async () => await journey.GotoAsync<NodeSpy5>(waypoints);
+
+        // Assert
+        await sut.Should()
+            .ThrowExactlyAsync<RouteNotFoundException>()
+            .WithMessage(
+                "No IRoute found between "
+                    + "origin INode 'Caravel.Tests.Fixtures.NodeSpy3' "
+                    + "and destination INode 'Caravel.Tests.Fixtures.NodeSpy5'."
+            );
+    }
 }

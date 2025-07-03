@@ -50,21 +50,6 @@ public static partial class GraphExtensions
         ;
     }
 
-    private static QuadrantAttribute GetQuadrant(this Type nodeType)
-    {
-        return nodeType.GetCustomAttribute<QuadrantAttribute>() ?? new QuadrantAttribute(0, 0);
-    }
-
-    private static int GetQuadrantRow(this Type nodeType)
-    {
-        return nodeType.GetCustomAttribute<QuadrantAttribute>()?.Row ?? int.MaxValue;
-    }
-
-    private static int GetQuadrantColumn(this Type nodeType)
-    {
-        return nodeType.GetCustomAttribute<QuadrantAttribute>()?.Column ?? int.MaxValue;
-    }
-
     public static string ToMermaidHtml(this IGraph graph, MermaidOptions? options = null)
     {
         ArgumentNullException.ThrowIfNull(graph, nameof(graph));
@@ -79,7 +64,7 @@ public static partial class GraphExtensions
         return mermaid.WithOneGraph().FormatHtml();
     }
 
-    public static async Task<string> ToMermaidHtml(
+    public static async Task<string> ToMermaidHtmlAsync(
         this IJourney journey,
         MermaidOptions? options = null,
         CancellationToken cancellationToken = default
@@ -87,13 +72,13 @@ public static partial class GraphExtensions
     {
         ArgumentNullException.ThrowIfNull(journey, nameof(journey));
         var mermaid = await journey
-            .ToMermaidSequenceDiagramMarkdown(options, cancellationToken)
+            .ToMermaidSequenceDiagramMarkdownAsync(options, cancellationToken)
             .ConfigureAwait(false);
 
         return mermaid.WithOneGraph().FormatHtml();
     }
 
-    public static async Task<string> ToManyMermaidHtml(
+    public static async Task<string> ToManyMermaidHtmlAsync(
         this IJourney journey,
         MermaidOptions? options = null,
         CancellationToken cancellationToken = default
@@ -109,7 +94,7 @@ public static partial class GraphExtensions
         return mermaidLegs.WithManyGraphs().FormatHtml();
     }
 
-    public static async Task<string> ToMermaidSequenceDiagramMarkdown(
+    public static async Task<string> ToMermaidSequenceDiagramMarkdownAsync(
         this IJourney journey,
         MermaidOptions? options = null,
         CancellationToken cancellationToken = default
@@ -289,6 +274,21 @@ public static partial class GraphExtensions
         return $"""
             <div class="mermaid">{graph}</div>
             """;
+    }
+
+    private static QuadrantAttribute GetQuadrant(this Type nodeType)
+    {
+        return nodeType.GetCustomAttribute<QuadrantAttribute>() ?? new QuadrantAttribute(0, 0);
+    }
+
+    private static int GetQuadrantRow(this Type nodeType)
+    {
+        return nodeType.GetCustomAttribute<QuadrantAttribute>()?.Row ?? int.MaxValue;
+    }
+
+    private static int GetQuadrantColumn(this Type nodeType)
+    {
+        return nodeType.GetCustomAttribute<QuadrantAttribute>()?.Column ?? int.MaxValue;
     }
 
     // Note: Mermaid config is space sensitive.

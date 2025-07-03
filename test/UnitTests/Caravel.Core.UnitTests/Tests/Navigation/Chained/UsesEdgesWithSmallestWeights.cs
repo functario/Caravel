@@ -29,7 +29,7 @@ public class UsesEdgesWithSmallestWeights
         var sut = await journey.GotoAsync<NodeSpy2>().GotoAsync<NodeSpy3>();
 
         // Assert
-        var result = await sut.ToMermaidSequenceDiagramMarkdown();
+        var result = await sut.ToMermaidSequenceDiagramMarkdownAsync();
         await result.VerifyMermaidMarkdownAsync();
     }
 
@@ -53,7 +53,7 @@ public class UsesEdgesWithSmallestWeights
         var sut = await journey.GotoAsync<NodeSpy2>().GotoAsync<NodeSpy3>();
 
         // Assert
-        var result = await sut.ToMermaidSequenceDiagramMarkdown();
+        var result = await sut.ToMermaidSequenceDiagramMarkdownAsync();
         await result.VerifyMermaidMarkdownAsync();
     }
 
@@ -87,7 +87,7 @@ public class UsesEdgesWithSmallestWeights
             .GotoAsync<NodeSpy4>();
 
         // Assert
-        var result = await sut.ToMermaidSequenceDiagramMarkdown();
+        var result = await sut.ToMermaidSequenceDiagramMarkdownAsync();
         await result.VerifyMermaidMarkdownAsync();
     }
 }

@@ -39,7 +39,7 @@ public class ChangeTheCurrentNode
             .GotoAsync<NodeSpy5>();
 
         // Assert
-        var result = await sut.ToMermaidSequenceDiagramMarkdown(WithDescription);
+        var result = await sut.ToMermaidSequenceDiagramMarkdownAsync(WithDescription);
         await result.VerifyMermaidMarkdownAsync();
     }
 }
