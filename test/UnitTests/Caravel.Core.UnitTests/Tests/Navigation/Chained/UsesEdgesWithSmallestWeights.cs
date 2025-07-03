@@ -1,4 +1,4 @@
-﻿namespace Caravel.Core.UnitTests.Tests.Navigation.HappyPaths;
+﻿namespace Caravel.Core.UnitTests.Tests.Navigation.Chained;
 
 [Trait(TestType, Unit)]
 [Trait(Feature, FeatureNavigation)]
