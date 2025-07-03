@@ -17,21 +17,21 @@ public class ThrowsException
     {
         // Arrange
         var builder = new JourneyBuilder()
-            .AddNode<NodeSpy1>()
-            .WithEdge<NodeSpy2>(1, "Node2-1")
-            .WithEdge<NodeSpy2>(1, "Node2-2")
-            .WithEdge<NodeSpy2>(2, "Node2-3")
-            .WithEdge<NodeSpy3>(2, "Node3-1")
-            .WithEdge<NodeSpy3>(1, "Node3-2")
-            .WithEdge<NodeSpy3>(2, "Node3-3")
+            .AddNode<Node1>()
+            .WithEdge<Node2>(1, "Node2-1")
+            .WithEdge<Node2>(1, "Node2-2")
+            .WithEdge<Node2>(2, "Node2-3")
+            .WithEdge<Node3>(2, "Node3-1")
+            .WithEdge<Node3>(1, "Node3-2")
+            .WithEdge<Node3>(2, "Node3-3")
             .Done()
-            .AddNode<NodeSpy2>()
+            .AddNode<Node2>()
             .Done();
 
         var journey = builder.Build();
 
         // Act
-        var sut = async () => await journey.GotoAsync<NodeSpy2>();
+        var sut = async () => await journey.GotoAsync<Node2>();
 
         // Assert
         await sut.Should()
@@ -39,10 +39,10 @@ public class ThrowsException
             .WithMessage(
                 "Multiple IEdge with the same origin,"
                     + " neighbor and weight detected "
-                    + "('Caravel.Tests.Fixtures.NodeSpy1"
-                    + " -->|1| Caravel.Tests.Fixtures.NodeSpy2;"
-                    + "Caravel.Tests.Fixtures.NodeSpy1 "
-                    + "-->|2| Caravel.Tests.Fixtures.NodeSpy3')."
+                    + "('Caravel.Tests.Fixtures.Node1"
+                    + " -->|1| Caravel.Tests.Fixtures.Node2;"
+                    + "Caravel.Tests.Fixtures.Node1 "
+                    + "-->|2| Caravel.Tests.Fixtures.Node3')."
             );
     }
 
@@ -51,34 +51,34 @@ public class ThrowsException
     {
         // Arrange
         var builder = new JourneyBuilder()
-            .AddNode<NodeSpy1>()
-            .WithEdge<NodeSpy2>()
-            .WithEdge<NodeSpy3>()
+            .AddNode<Node1>()
+            .WithEdge<Node2>()
+            .WithEdge<Node3>()
             .Done()
-            .AddNode<NodeSpy2>()
-            .WithEdge<NodeSpy4>()
+            .AddNode<Node2>()
+            .WithEdge<Node4>()
             .Done()
-            .AddNode<NodeSpy3>() // dead end
+            .AddNode<Node3>() // dead end
             .Done()
-            .AddNode<NodeSpy4>()
-            .WithEdge<NodeSpy5>()
+            .AddNode<Node4>()
+            .WithEdge<Node5>()
             .Done()
-            .AddNode<NodeSpy5>()
+            .AddNode<Node5>()
             .Done();
 
         var journey = builder.Build();
-        Waypoints waypoints = [typeof(NodeSpy3)];
+        Waypoints waypoints = [typeof(Node3)];
 
         // Act
-        var sut = async () => await journey.GotoAsync<NodeSpy5>(waypoints);
+        var sut = async () => await journey.GotoAsync<Node5>(waypoints);
 
         // Assert
         await sut.Should()
             .ThrowExactlyAsync<RouteNotFoundException>()
             .WithMessage(
                 "No IRoute found between "
-                    + "origin INode 'Caravel.Tests.Fixtures.NodeSpy3' "
-                    + "and destination INode 'Caravel.Tests.Fixtures.NodeSpy5'."
+                    + "origin INode 'Caravel.Tests.Fixtures.Node3' "
+                    + "and destination INode 'Caravel.Tests.Fixtures.Node5'."
             );
     }
 }

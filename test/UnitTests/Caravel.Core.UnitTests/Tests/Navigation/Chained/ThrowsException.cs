@@ -17,26 +17,26 @@ public class ThrowsException
     {
         // Arrange
         var builder = new JourneyBuilder()
-            .AddNode<NodeSpy1>()
-            .WithEdge<NodeSpy2>()
+            .AddNode<Node1>()
+            .WithEdge<Node2>()
             .Done()
-            .AddNode<NodeSpy2>()
-            .WithEdge<NodeSpy3>(1, "Node3-1")
-            .WithEdge<NodeSpy3>(1, "Node3-2")
-            .WithEdge<NodeSpy3>(2, "Node3-3")
-            .WithEdge<NodeSpy4>(2, "Node4-1")
-            .WithEdge<NodeSpy4>(1, "Node4-2")
-            .WithEdge<NodeSpy4>(2, "Node4-3")
+            .AddNode<Node2>()
+            .WithEdge<Node3>(1, "Node3-1")
+            .WithEdge<Node3>(1, "Node3-2")
+            .WithEdge<Node3>(2, "Node3-3")
+            .WithEdge<Node4>(2, "Node4-1")
+            .WithEdge<Node4>(1, "Node4-2")
+            .WithEdge<Node4>(2, "Node4-3")
             .Done()
-            .AddNode<NodeSpy3>()
+            .AddNode<Node3>()
             .Done()
-            .AddNode<NodeSpy4>()
+            .AddNode<Node4>()
             .Done();
 
         var journey = builder.Build();
 
         // Act
-        var sut = async () => await journey.GotoAsync<NodeSpy4>();
+        var sut = async () => await journey.GotoAsync<Node4>();
 
         // Assert
         await sut.Should()
@@ -44,10 +44,10 @@ public class ThrowsException
             .WithMessage(
                 "Multiple IEdge with the same origin,"
                     + " neighbor and weight detected "
-                    + "('Caravel.Tests.Fixtures.NodeSpy2"
-                    + " -->|1| Caravel.Tests.Fixtures.NodeSpy3;"
-                    + "Caravel.Tests.Fixtures.NodeSpy2 "
-                    + "-->|2| Caravel.Tests.Fixtures.NodeSpy4')."
+                    + "('Caravel.Tests.Fixtures.Node2"
+                    + " -->|1| Caravel.Tests.Fixtures.Node3;"
+                    + "Caravel.Tests.Fixtures.Node2 "
+                    + "-->|2| Caravel.Tests.Fixtures.Node4')."
             );
     }
 }

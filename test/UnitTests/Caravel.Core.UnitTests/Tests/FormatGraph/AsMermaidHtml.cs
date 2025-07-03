@@ -8,20 +8,20 @@ public class AsMermaidHtml
     public async Task Test1()
     {
         var builder = new JourneyBuilder()
-            .AddNode<NodeSpy1>()
-            .WithEdge<NodeSpy2>(description: "Open Node2")
+            .AddNode<Node1>()
+            .WithEdge<Node2>(description: "Open Node2")
             .Done()
-            .AddNode<NodeSpy2>()
-            .WithEdge<NodeSpy3>(50) // The weight setting the route
-            .WithEdge<NodeSpy4>(100) // The weight setting the route
+            .AddNode<Node2>()
+            .WithEdge<Node3>(50) // The weight setting the route
+            .WithEdge<Node4>(100) // The weight setting the route
             .Done()
-            .AddNode<NodeSpy3>()
-            .WithEdge<NodeSpy5>(description: "Open Node5")
+            .AddNode<Node3>()
+            .WithEdge<Node5>(description: "Open Node5")
             .Done()
-            .AddNode<NodeSpy4>()
-            .WithEdge<NodeSpy5>()
+            .AddNode<Node4>()
+            .WithEdge<Node5>()
             .Done()
-            .AddNode<NodeSpy5>()
+            .AddNode<Node5>()
             .Done();
 
         var journey = builder.Build();
@@ -37,24 +37,24 @@ public class AsMermaidHtml
     public async Task Test2()
     {
         var builder = new JourneyBuilder()
-            .AddNode<NodeSpy1>()
-            .WithEdge<NodeSpy2>(description: "Open Node2")
+            .AddNode<Node1>()
+            .WithEdge<Node2>(description: "Open Node2")
             .Done()
-            .AddNode<NodeSpy2>()
-            .WithEdge<NodeSpy3>(50) // The weight setting the route
-            .WithEdge<NodeSpy4>(100) // The weight setting the route
+            .AddNode<Node2>()
+            .WithEdge<Node3>(50) // The weight setting the route
+            .WithEdge<Node4>(100) // The weight setting the route
             .Done()
-            .AddNode<NodeSpy3>()
-            .WithEdge<NodeSpy5>(description: "Open Node5")
+            .AddNode<Node3>()
+            .WithEdge<Node5>(description: "Open Node5")
             .Done()
-            .AddNode<NodeSpy4>()
-            .WithEdge<NodeSpy5>()
+            .AddNode<Node4>()
+            .WithEdge<Node5>()
             .Done()
-            .AddNode<NodeSpy5>()
+            .AddNode<Node5>()
             .Done();
 
         var journey = builder.Build();
-        var pastJourney = await journey.GotoAsync<NodeSpy5>();
+        var pastJourney = await journey.GotoAsync<Node5>();
 
         // Act
         var sut = await pastJourney.ToMermaidHtmlAsync(WithDescription);
@@ -67,29 +67,29 @@ public class AsMermaidHtml
     public async Task Test3()
     {
         var builder = new JourneyBuilder()
-            .AddNode<NodeSpy1>()
-            .WithEdge<NodeSpy2>(description: "Open Node2")
+            .AddNode<Node1>()
+            .WithEdge<Node2>(description: "Open Node2")
             .Done()
-            .AddNode<NodeSpy2>()
-            .WithEdge<NodeSpy3>(50, description: "Open Node3") // The weight setting the route
-            .WithEdge<NodeSpy4>(100, description: "Open Node4") // The weight setting the route
+            .AddNode<Node2>()
+            .WithEdge<Node3>(50, description: "Open Node3") // The weight setting the route
+            .WithEdge<Node4>(100, description: "Open Node4") // The weight setting the route
             .Done()
-            .AddNode<NodeSpy3>()
-            .WithEdge<NodeSpy5>(description: "Open Node5")
+            .AddNode<Node3>()
+            .WithEdge<Node5>(description: "Open Node5")
             .Done()
-            .AddNode<NodeSpy4>()
-            .WithEdge<NodeSpy5>(description: "Open Node5")
-            .WithEdge<NodeSpy1>(description: "Open Node1")
+            .AddNode<Node4>()
+            .WithEdge<Node5>(description: "Open Node5")
+            .WithEdge<Node1>(description: "Open Node1")
             .Done()
-            .AddNode<NodeSpy5>()
-            .WithEdge<NodeSpy4>(description: "Open Node4")
+            .AddNode<Node5>()
+            .WithEdge<Node4>(description: "Open Node4")
             .Done();
 
         var journey = builder.Build();
         // csharpier-ignore
         var pastJourney = await journey
-            .GotoAsync<NodeSpy5>()
-            .GotoAsync<NodeSpy1>();
+            .GotoAsync<Node5>()
+            .GotoAsync<Node1>();
 
         // Act
         var sut = await pastJourney.ToManyMermaidHtmlAsync(WithDescription);

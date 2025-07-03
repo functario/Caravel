@@ -9,23 +9,23 @@ public class WhenDirectJourney
     {
         // Arrange
         var builder = new JourneyBuilder()
-            .AddNode<NodeSpy1>()
-            .WithEdge<NodeSpy2>()
+            .AddNode<Node1>()
+            .WithEdge<Node2>()
             .Done()
-            .AddNode<NodeSpy2>()
-            .WithEdge<NodeSpy3>()
+            .AddNode<Node2>()
+            .WithEdge<Node3>()
             .Done()
-            .AddNode<NodeSpy3>()
-            .WithEdge<NodeSpy4>()
+            .AddNode<Node3>()
+            .WithEdge<Node4>()
             .Done()
-            .AddNode<NodeSpy4>()
-            .WithEdge<NodeSpy5>()
+            .AddNode<Node4>()
+            .WithEdge<Node5>()
             .Done()
-            .AddNode<NodeSpy5>()
+            .AddNode<Node5>()
             .Done();
 
         var journey = builder.Build();
-        var pastJourney = await journey.GotoAsync<NodeSpy5>();
+        var pastJourney = await journey.GotoAsync<Node5>();
 
         // Act
         var sut = await pastJourney.ToMermaidSequenceDiagramMarkdownAsync();
@@ -41,23 +41,23 @@ public class WhenDirectJourney
     {
         // Arrange
         var builder = new JourneyBuilder()
-            .AddNode<NodeSpy1>()
-            .WithEdge<NodeSpy2>()
+            .AddNode<Node1>()
+            .WithEdge<Node2>()
             .Done()
-            .AddNode<NodeSpy2>()
-            .WithEdge<NodeSpy3>()
+            .AddNode<Node2>()
+            .WithEdge<Node3>()
             .Done()
-            .AddNode<NodeSpy3>()
-            .WithEdge<NodeSpy4>()
+            .AddNode<Node3>()
+            .WithEdge<Node4>()
             .Done()
-            .AddNode<NodeSpy4>()
-            .WithEdge<NodeSpy5>()
+            .AddNode<Node4>()
+            .WithEdge<Node5>()
             .Done()
-            .AddNode<NodeSpy5>()
+            .AddNode<Node5>()
             .Done();
 
         var journey = builder.Build();
-        var pastJourney = await journey.GotoAsync<NodeSpy3>();
+        var pastJourney = await journey.GotoAsync<Node3>();
 
         // Act
         var sut = await pastJourney.ToMermaidSequenceDiagramMarkdownAsync();
@@ -73,24 +73,24 @@ public class WhenDirectJourney
     {
         // Arrange
         var builder = new JourneyBuilder()
-            .AddNode<NodeSpy1>()
-            .WithEdge<NodeSpy2>()
+            .AddNode<Node1>()
+            .WithEdge<Node2>()
             .Done()
-            .AddNode<NodeSpy2>()
-            .WithEdge<NodeSpy3>(node3Weight) // The weight setting the route
-            .WithEdge<NodeSpy4>(node4Weight) // The weight setting the route
+            .AddNode<Node2>()
+            .WithEdge<Node3>(node3Weight) // The weight setting the route
+            .WithEdge<Node4>(node4Weight) // The weight setting the route
             .Done()
-            .AddNode<NodeSpy3>()
-            .WithEdge<NodeSpy5>()
+            .AddNode<Node3>()
+            .WithEdge<Node5>()
             .Done()
-            .AddNode<NodeSpy4>()
-            .WithEdge<NodeSpy5>()
+            .AddNode<Node4>()
+            .WithEdge<Node5>()
             .Done()
-            .AddNode<NodeSpy5>()
+            .AddNode<Node5>()
             .Done();
 
         var journey = builder.Build();
-        var pastJourney = await journey.GotoAsync<NodeSpy5>();
+        var pastJourney = await journey.GotoAsync<Node5>();
 
         // Act
         var sut = await pastJourney.ToMermaidSequenceDiagramMarkdownAsync();
@@ -104,28 +104,28 @@ public class WhenDirectJourney
     {
         // Arrange
         var builder = new JourneyBuilder()
-            .AddNode<NodeSpy1>()
-            .WithEdge<NodeSpy2>(description: "Open Node2")
+            .AddNode<Node1>()
+            .WithEdge<Node2>(description: "Open Node2")
             .Done()
-            .AddNode<NodeSpy2>()
-            .WithEdge<NodeSpy3>()
+            .AddNode<Node2>()
+            .WithEdge<Node3>()
             .Done()
-            .AddNode<NodeSpy3>()
-            .WithEdge<NodeSpy4>()
+            .AddNode<Node3>()
+            .WithEdge<Node4>()
             .Done()
-            .AddNode<NodeSpy4>()
-            .WithEdge<NodeSpy5>()
-            .WithEdge<NodeSpy1>()
+            .AddNode<Node4>()
+            .WithEdge<Node5>()
+            .WithEdge<Node1>()
             .Done()
-            .AddNode<NodeSpy5>()
-            .WithEdge<NodeSpy4>()
+            .AddNode<Node5>()
+            .WithEdge<Node4>()
             .Done();
 
         var journey = builder.Build();
         // csharpier-ignore
         var pastJourney = await journey
-            .GotoAsync<NodeSpy5>()
-            .GotoAsync<NodeSpy1>();
+            .GotoAsync<Node5>()
+            .GotoAsync<Node1>();
 
         // Act
         var sut = await pastJourney.ToMermaidSequenceDiagramMarkdownAsync(WithDescription);

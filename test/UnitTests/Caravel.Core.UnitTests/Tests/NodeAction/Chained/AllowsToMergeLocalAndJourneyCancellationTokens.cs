@@ -24,13 +24,13 @@ public sealed class AllowsToMergeLocalAndJourneyCancellationTokens : IDisposable
     {
         // Arrange
         var builder = new JourneyBuilder()
-            .AddNode<NodeSpy1>()
-            .WithEdge<NodeSpy2>()
+            .AddNode<Node1>()
+            .WithEdge<Node2>()
             .Done()
-            .AddNode<NodeSpy2>()
-            .WithEdge<NodeSpy3>()
+            .AddNode<Node2>()
+            .WithEdge<Node3>()
             .Done()
-            .AddNode<NodeSpy3>()
+            .AddNode<Node3>()
             .Done();
 
         var journey = builder.Build();
@@ -38,8 +38,8 @@ public sealed class AllowsToMergeLocalAndJourneyCancellationTokens : IDisposable
         // Act
         var sut = async () =>
             await journey
-                .GotoAsync<NodeSpy2>()
-                .DoAsync<NodeSpy2>(
+                .GotoAsync<Node2>()
+                .DoAsync<Node2>(
                     async (node, ct) =>
                     {
                         // cancel only local token
@@ -48,7 +48,7 @@ public sealed class AllowsToMergeLocalAndJourneyCancellationTokens : IDisposable
                     },
                     _localTokenSource30mins.Token
                 )
-                .GotoAsync<NodeSpy3>();
+                .GotoAsync<Node3>();
 
         // Assert
         await sut.Should().ThrowExactlyAsync<OperationCanceledException>();
@@ -61,13 +61,13 @@ public sealed class AllowsToMergeLocalAndJourneyCancellationTokens : IDisposable
     {
         // Arrange
         var builder = new JourneyBuilder()
-            .AddNode<NodeSpy1>()
-            .WithEdge<NodeSpy2>()
+            .AddNode<Node1>()
+            .WithEdge<Node2>()
             .Done()
-            .AddNode<NodeSpy2>()
-            .WithEdge<NodeSpy3>()
+            .AddNode<Node2>()
+            .WithEdge<Node3>()
             .Done()
-            .AddNode<NodeSpy3>()
+            .AddNode<Node3>()
             .Done();
 
         using var journeyTokenSource = new CancellationTokenSource();
@@ -76,8 +76,8 @@ public sealed class AllowsToMergeLocalAndJourneyCancellationTokens : IDisposable
         // Act
         var sut = async () =>
             await journey
-                .GotoAsync<NodeSpy2>()
-                .DoAsync<NodeSpy2>(
+                .GotoAsync<Node2>()
+                .DoAsync<Node2>(
                     async (node, ct) =>
                     {
                         // cancel only journey token
@@ -85,7 +85,7 @@ public sealed class AllowsToMergeLocalAndJourneyCancellationTokens : IDisposable
                         return node;
                     }
                 )
-                .GotoAsync<NodeSpy3>();
+                .GotoAsync<Node3>();
 
         // Assert
         await sut.Should().ThrowExactlyAsync<OperationCanceledException>();
@@ -98,22 +98,22 @@ public sealed class AllowsToMergeLocalAndJourneyCancellationTokens : IDisposable
     {
         // Arrange
         var builder = new JourneyBuilder()
-            .AddNode<NodeSpy1>()
-            .WithEdge<NodeSpy2>()
+            .AddNode<Node1>()
+            .WithEdge<Node2>()
             .Done()
-            .AddNode<NodeSpy2>()
-            .WithEdge<NodeSpy3>()
+            .AddNode<Node2>()
+            .WithEdge<Node3>()
             .Done()
-            .AddNode<NodeSpy3>()
+            .AddNode<Node3>()
             .Done();
 
         var journey = builder.Build(ct: CancellationToken.None);
 
         // Act
         var sut = await journey
-            .GotoAsync<NodeSpy2>()
-            .DoAsync<NodeSpy2>((node, ct) => Task.FromResult(node), CancellationToken.None)
-            .GotoAsync<NodeSpy3>();
+            .GotoAsync<Node2>()
+            .DoAsync<Node2>((node, ct) => Task.FromResult(node), CancellationToken.None)
+            .GotoAsync<Node3>();
 
         // Assert
         journey.JourneyCancellationToken.IsCancellationRequested.Should().BeFalse();

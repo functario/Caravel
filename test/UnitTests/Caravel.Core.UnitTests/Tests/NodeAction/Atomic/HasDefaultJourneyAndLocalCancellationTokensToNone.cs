@@ -24,10 +24,10 @@ public sealed class HasDefaultJourneyAndLocalCancellationTokensToNone : IDisposa
     {
         // Arrange
         var builder = new JourneyBuilder()
-            .AddNode<NodeSpy1>()
-            .WithEdge<NodeSpy2>()
+            .AddNode<Node1>()
+            .WithEdge<Node2>()
             .Done()
-            .AddNode<NodeSpy2>()
+            .AddNode<Node2>()
             .Done();
 
         // CancellationToken not set
@@ -35,8 +35,8 @@ public sealed class HasDefaultJourneyAndLocalCancellationTokensToNone : IDisposa
 
         // Act
         var sut = await journey
-            .DoAsync<NodeSpy1>((node, ct) => Task.FromResult(node))
-            .GotoAsync<NodeSpy2>(); // CancellationToken not set
+            .DoAsync<Node1>((node, ct) => Task.FromResult(node))
+            .GotoAsync<Node2>(); // CancellationToken not set
 
         // Assert
         journey.JourneyCancellationToken.IsCancellationRequested.Should().BeFalse();

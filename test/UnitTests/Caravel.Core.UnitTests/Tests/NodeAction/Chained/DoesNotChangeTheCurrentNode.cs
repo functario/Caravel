@@ -10,23 +10,23 @@ public class DoesNotChangeTheCurrentNode
     {
         // Arrange
         var builder = new JourneyBuilder()
-            .AddNode<NodeSpy1>()
-            .WithEdge<NodeSpy2>()
+            .AddNode<Node1>()
+            .WithEdge<Node2>()
             .Done()
-            .AddNode<NodeSpy2>()
-            .WithEdge<NodeSpy3>()
+            .AddNode<Node2>()
+            .WithEdge<Node3>()
             .Done()
-            .AddNode<NodeSpy3>()
+            .AddNode<Node3>()
             .Done();
 
         var journey = builder.Build();
 
         // Act
         var sut = await journey
-            .GotoAsync<NodeSpy2>()
-            .DoAsync<NodeSpy2>((node, ct) => Task.FromResult(node))
-            .DoAsync<NodeSpy2>((journey, node, ct) => Task.FromResult(node))
-            .GotoAsync<NodeSpy3>();
+            .GotoAsync<Node2>()
+            .DoAsync<Node2>((node, ct) => Task.FromResult(node))
+            .DoAsync<Node2>((journey, node, ct) => Task.FromResult(node))
+            .GotoAsync<Node3>();
 
         // Assert
         var result = await sut.ToMermaidSequenceDiagramMarkdownAsync(WithDescription);

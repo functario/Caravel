@@ -10,23 +10,23 @@ public class UsesEdgesWithSmallestWeights
     {
         // Arrange
         var builder = new JourneyBuilder()
-            .AddNode<NodeSpy1>()
-            .WithEdge<NodeSpy2>(3)
-            .WithEdge<NodeSpy2>(1)
-            .WithEdge<NodeSpy2>(2)
+            .AddNode<Node1>()
+            .WithEdge<Node2>(3)
+            .WithEdge<Node2>(1)
+            .WithEdge<Node2>(2)
             .Done()
-            .AddNode<NodeSpy2>()
-            .WithEdge<NodeSpy3>(3)
-            .WithEdge<NodeSpy3>(1)
-            .WithEdge<NodeSpy3>(2)
+            .AddNode<Node2>()
+            .WithEdge<Node3>(3)
+            .WithEdge<Node3>(1)
+            .WithEdge<Node3>(2)
             .Done()
-            .AddNode<NodeSpy3>()
+            .AddNode<Node3>()
             .Done();
 
         var journey = builder.Build();
 
         // Act
-        var sut = await journey.GotoAsync<NodeSpy2>().GotoAsync<NodeSpy3>();
+        var sut = await journey.GotoAsync<Node2>().GotoAsync<Node3>();
 
         // Assert
         var result = await sut.ToMermaidSequenceDiagramMarkdownAsync();
@@ -38,19 +38,19 @@ public class UsesEdgesWithSmallestWeights
     {
         // Arrange
         var builder = new JourneyBuilder()
-            .AddNode<NodeSpy1>()
-            .WithEdge<NodeSpy2>()
+            .AddNode<Node1>()
+            .WithEdge<Node2>()
             .Done()
-            .AddNode<NodeSpy2>()
-            .WithEdge<NodeSpy3>()
+            .AddNode<Node2>()
+            .WithEdge<Node3>()
             .Done()
-            .AddNode<NodeSpy3>()
+            .AddNode<Node3>()
             .Done();
 
         var journey = builder.Build();
 
         // Act
-        var sut = await journey.GotoAsync<NodeSpy2>().GotoAsync<NodeSpy3>();
+        var sut = await journey.GotoAsync<Node2>().GotoAsync<Node3>();
 
         // Assert
         var result = await sut.ToMermaidSequenceDiagramMarkdownAsync();
@@ -62,29 +62,29 @@ public class UsesEdgesWithSmallestWeights
     {
         // Arrange
         var builder = new JourneyBuilder()
-            .AddNode<NodeSpy1>()
-            .WithEdge<NodeSpy2>()
-            .WithEdge<NodeSpy2>(1)
-            .WithEdge<NodeSpy2>(99)
+            .AddNode<Node1>()
+            .WithEdge<Node2>()
+            .WithEdge<Node2>(1)
+            .WithEdge<Node2>(99)
             .Done()
-            .AddNode<NodeSpy2>()
-            .WithEdge<NodeSpy3>(99)
-            .WithEdge<NodeSpy3>()
-            .WithEdge<NodeSpy3>(1)
+            .AddNode<Node2>()
+            .WithEdge<Node3>(99)
+            .WithEdge<Node3>()
+            .WithEdge<Node3>(1)
             .Done()
-            .AddNode<NodeSpy3>()
-            .WithEdge<NodeSpy4>(99)
-            .WithEdge<NodeSpy4>(1)
+            .AddNode<Node3>()
+            .WithEdge<Node4>(99)
+            .WithEdge<Node4>(1)
             .Done()
-            .AddNode<NodeSpy4>()
+            .AddNode<Node4>()
             .Done();
 
         var journey = builder.Build();
         // Act
         // csharpier-ignore
         var sut = await journey
-            .GotoAsync<NodeSpy2>()
-            .GotoAsync<NodeSpy4>();
+            .GotoAsync<Node2>()
+            .GotoAsync<Node4>();
 
         // Assert
         var result = await sut.ToMermaidSequenceDiagramMarkdownAsync();

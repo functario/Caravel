@@ -5,106 +5,106 @@ using Caravel.Mermaid;
 namespace Caravel.Tests.Fixtures;
 
 [Quadrant(1, 1)]
-public sealed class NodeSpy1 : NodeSpyBase
+public sealed class Node1 : NodeSpyBase
 {
-    public NodeSpy1(ImmutableHashSet<IEdge> edges, bool existValue = true)
+    public Node1(ImmutableHashSet<IEdge> edges, bool existValue = true)
         : base(edges, existValue) { }
 }
 
 [Quadrant(2, 1)]
-public sealed class NodeSpy2 : NodeSpyBase
+public sealed class Node2 : NodeSpyBase
 {
-    public NodeSpy2(ImmutableHashSet<IEdge> edges, bool existValue = true)
+    public Node2(ImmutableHashSet<IEdge> edges, bool existValue = true)
         : base(edges, existValue) { }
 }
 
 [Quadrant(2, 2)]
-public sealed class NodeSpy3 : NodeSpyBase
+public sealed class Node3 : NodeSpyBase
 {
-    public NodeSpy3(ImmutableHashSet<IEdge> edges, bool existValue = true)
+    public Node3(ImmutableHashSet<IEdge> edges, bool existValue = true)
         : base(edges, existValue) { }
 }
 
 [Quadrant(3, 1)]
-public sealed class NodeSpy4 : NodeSpyBase
+public sealed class Node4 : NodeSpyBase
 {
-    public NodeSpy4(ImmutableHashSet<IEdge> edges, bool existValue = true)
+    public Node4(ImmutableHashSet<IEdge> edges, bool existValue = true)
         : base(edges, existValue) { }
 }
 
 [Quadrant(3, 2)]
-public sealed class NodeSpy5 : NodeSpyBase
+public sealed class Node5 : NodeSpyBase
 {
-    public NodeSpy5(ImmutableHashSet<IEdge> edges, bool existValue = true)
+    public Node5(ImmutableHashSet<IEdge> edges, bool existValue = true)
         : base(edges, existValue) { }
 }
 
 [Quadrant(3, 3)]
-public sealed class NodeSpy6 : NodeSpyBase
+public sealed class Node6 : NodeSpyBase
 {
-    public NodeSpy6(ImmutableHashSet<IEdge> edges, bool existValue = true)
+    public Node6(ImmutableHashSet<IEdge> edges, bool existValue = true)
         : base(edges, existValue) { }
 }
 
 [Quadrant(3, 4)]
-public sealed class NodeSpy7 : NodeSpyBase
+public sealed class Node7 : NodeSpyBase
 {
-    public NodeSpy7(ImmutableHashSet<IEdge> edges, bool existValue = true)
+    public Node7(ImmutableHashSet<IEdge> edges, bool existValue = true)
         : base(edges, existValue) { }
 }
 
 [Quadrant(4, 1)]
-public sealed class NodeSpy8 : NodeSpyBase
+public sealed class Node8 : NodeSpyBase
 {
-    public NodeSpy8(ImmutableHashSet<IEdge> edges, bool existValue = true)
+    public Node8(ImmutableHashSet<IEdge> edges, bool existValue = true)
         : base(edges, existValue) { }
 }
 
 [Quadrant(4, 2)]
-public sealed class NodeSpy9 : NodeSpyBase
+public sealed class Node9 : NodeSpyBase
 {
-    public NodeSpy9(ImmutableHashSet<IEdge> edges, bool existValue = true)
+    public Node9(ImmutableHashSet<IEdge> edges, bool existValue = true)
         : base(edges, existValue) { }
 }
 
 [Quadrant(4, 3)]
-public sealed class NodeSpy10 : NodeSpyBase
+public sealed class Node10 : NodeSpyBase
 {
-    public NodeSpy10(ImmutableHashSet<IEdge> edges, bool existValue = true)
+    public Node10(ImmutableHashSet<IEdge> edges, bool existValue = true)
         : base(edges, existValue) { }
 }
 
 [Quadrant(4, 4)]
-public sealed class NodeSpy11 : NodeSpyBase
+public sealed class Node11 : NodeSpyBase
 {
-    public NodeSpy11(ImmutableHashSet<IEdge> edges, bool existValue = true)
+    public Node11(ImmutableHashSet<IEdge> edges, bool existValue = true)
         : base(edges, existValue) { }
 }
 
 [Quadrant(4, 5)]
-public sealed class NodeSpy12 : NodeSpyBase
+public sealed class Node12 : NodeSpyBase
 {
-    public NodeSpy12(ImmutableHashSet<IEdge> edges, bool existValue = true)
+    public Node12(ImmutableHashSet<IEdge> edges, bool existValue = true)
         : base(edges, existValue) { }
 }
 
 [Quadrant(4, 6)]
-public sealed class NodeSpy13 : NodeSpyBase
+public sealed class Node13 : NodeSpyBase
 {
-    public NodeSpy13(ImmutableHashSet<IEdge> edges, bool existValue = true)
+    public Node13(ImmutableHashSet<IEdge> edges, bool existValue = true)
         : base(edges, existValue) { }
 }
 
 [Quadrant(4, 7)]
-public sealed class NodeSpy14 : NodeSpyBase
+public sealed class Node14 : NodeSpyBase
 {
-    public NodeSpy14(ImmutableHashSet<IEdge> edges, bool existValue = true)
+    public Node14(ImmutableHashSet<IEdge> edges, bool existValue = true)
         : base(edges, existValue) { }
 }
 
 [Quadrant(4, 8)]
-public sealed class NodeSpy15 : NodeSpyBase
+public sealed class Node15 : NodeSpyBase
 {
-    public NodeSpy15(ImmutableHashSet<IEdge> edges, bool existValue = true)
+    public Node15(ImmutableHashSet<IEdge> edges, bool existValue = true)
         : base(edges, existValue) { }
 }

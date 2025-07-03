@@ -24,10 +24,10 @@ public sealed class AllowsToMergeLocalAndJourneyCancellationTokens : IDisposable
     {
         // Arrange
         var builder = new JourneyBuilder()
-            .AddNode<NodeSpy1>()
-            .WithEdge<NodeSpy2>()
+            .AddNode<Node1>()
+            .WithEdge<Node2>()
             .Done()
-            .AddNode<NodeSpy2>()
+            .AddNode<Node2>()
             .Done();
 
         var journey = builder.Build();
@@ -35,7 +35,7 @@ public sealed class AllowsToMergeLocalAndJourneyCancellationTokens : IDisposable
         // Act
         var sut = async () =>
             await journey
-                .DoAsync<NodeSpy1>(
+                .DoAsync<Node1>(
                     async (node, ct) =>
                     {
                         // cancel only local token
@@ -44,7 +44,7 @@ public sealed class AllowsToMergeLocalAndJourneyCancellationTokens : IDisposable
                     },
                     _localTokenSource30mins.Token
                 )
-                .GotoAsync<NodeSpy2>();
+                .GotoAsync<Node2>();
 
         // Assert
         await sut.Should().ThrowExactlyAsync<OperationCanceledException>();
@@ -57,10 +57,10 @@ public sealed class AllowsToMergeLocalAndJourneyCancellationTokens : IDisposable
     {
         // Arrange
         var builder = new JourneyBuilder()
-            .AddNode<NodeSpy1>()
-            .WithEdge<NodeSpy2>()
+            .AddNode<Node1>()
+            .WithEdge<Node2>()
             .Done()
-            .AddNode<NodeSpy2>()
+            .AddNode<Node2>()
             .Done();
 
         using var journeyTokenSource = new CancellationTokenSource();
@@ -69,7 +69,7 @@ public sealed class AllowsToMergeLocalAndJourneyCancellationTokens : IDisposable
         // Act
         var sut = async () =>
             await journey
-                .DoAsync<NodeSpy1>(
+                .DoAsync<Node1>(
                     async (node, ct) =>
                     {
                         // cancel only journey token
@@ -77,7 +77,7 @@ public sealed class AllowsToMergeLocalAndJourneyCancellationTokens : IDisposable
                         return node;
                     }
                 )
-                .GotoAsync<NodeSpy2>();
+                .GotoAsync<Node2>();
 
         // Assert
         await sut.Should().ThrowExactlyAsync<OperationCanceledException>();
@@ -90,18 +90,18 @@ public sealed class AllowsToMergeLocalAndJourneyCancellationTokens : IDisposable
     {
         // Arrange
         var builder = new JourneyBuilder()
-            .AddNode<NodeSpy1>()
-            .WithEdge<NodeSpy2>()
+            .AddNode<Node1>()
+            .WithEdge<Node2>()
             .Done()
-            .AddNode<NodeSpy2>()
+            .AddNode<Node2>()
             .Done();
 
         var journey = builder.Build(ct: CancellationToken.None);
 
         // Act
         var sut = await journey
-            .DoAsync<NodeSpy1>((node, ct) => Task.FromResult(node), CancellationToken.None)
-            .GotoAsync<NodeSpy2>();
+            .DoAsync<Node1>((node, ct) => Task.FromResult(node), CancellationToken.None)
+            .GotoAsync<Node2>();
 
         // Assert
         journey.JourneyCancellationToken.IsCancellationRequested.Should().BeFalse();

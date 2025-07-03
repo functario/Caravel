@@ -10,13 +10,13 @@ public class ChangeTheCurrentNode
     {
         // Arrange
         var builder = new JourneyBuilder()
-            .AddNode<NodeSpy1>()
-            .WithEdge<NodeSpy2>()
+            .AddNode<Node1>()
+            .WithEdge<Node2>()
             .Done()
-            .AddNode<NodeSpy2>()
-            .WithEdge<NodeSpy3>()
+            .AddNode<Node2>()
+            .WithEdge<Node3>()
             .Done()
-            .AddNode<NodeSpy3>()
+            .AddNode<Node3>()
             .Done();
 
         var journey = builder.Build();
@@ -24,8 +24,8 @@ public class ChangeTheCurrentNode
 
         // Act
         var sut = await journey
-            .DoAsync<NodeSpy1, NodeSpy2>((node, ct) => Task.FromResult(map.NodeSpy2))
-            .GotoAsync<NodeSpy3>();
+            .DoAsync<Node1, Node2>((node, ct) => Task.FromResult(map.NodeSpy2))
+            .GotoAsync<Node3>();
 
         // Assert
         var result = await sut.ToMermaidSequenceDiagramMarkdownAsync(WithDescription);
@@ -37,13 +37,13 @@ public class ChangeTheCurrentNode
     {
         // Arrange
         var builder = new JourneyBuilder()
-            .AddNode<NodeSpy1>()
-            .WithEdge<NodeSpy2>()
+            .AddNode<Node1>()
+            .WithEdge<Node2>()
             .Done()
-            .AddNode<NodeSpy2>()
-            .WithEdge<NodeSpy3>()
+            .AddNode<Node2>()
+            .WithEdge<Node3>()
             .Done()
-            .AddNode<NodeSpy3>()
+            .AddNode<Node3>()
             .Done();
 
         var journey = builder.Build();
@@ -51,11 +51,11 @@ public class ChangeTheCurrentNode
         // Act
         // csharpier-ignore
         var sut = await journey
-            .DoAsync<NodeSpy1, NodeSpy2>(
+            .DoAsync<Node1, Node2>(
                 (journey, node, ct)
                 => Task.FromResult(journey.OfType<SmartJourney>().Map.NodeSpy2)
             )
-            .GotoAsync<NodeSpy3>();
+            .GotoAsync<Node3>();
 
         // Assert
         var result = await sut.ToMermaidSequenceDiagramMarkdownAsync(WithDescription);

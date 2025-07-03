@@ -8,30 +8,30 @@ namespace Caravel.Core.UnitTests.Tests.Navigation.Atomic;
 public class GoThroughWaypoints
 {
     [Theory(DisplayName = "Whith single waypoint")]
-    [InlineData(typeof(NodeSpy2))]
-    [InlineData(typeof(NodeSpy3))]
+    [InlineData(typeof(Node2))]
+    [InlineData(typeof(Node3))]
     public async Task Test1(Type waypoint)
     {
         // Arrange
         var builder = new JourneyBuilder()
-            .AddNode<NodeSpy1>()
-            .WithEdge<NodeSpy2>()
-            .WithEdge<NodeSpy3>()
+            .AddNode<Node1>()
+            .WithEdge<Node2>()
+            .WithEdge<Node3>()
             .Done()
-            .AddNode<NodeSpy2>()
-            .WithEdge<NodeSpy4>()
+            .AddNode<Node2>()
+            .WithEdge<Node4>()
             .Done()
-            .AddNode<NodeSpy3>()
-            .WithEdge<NodeSpy4>()
+            .AddNode<Node3>()
+            .WithEdge<Node4>()
             .Done()
-            .AddNode<NodeSpy4>()
+            .AddNode<Node4>()
             .Done();
 
         var journey = builder.Build();
         Waypoints waypoints = [waypoint];
 
         // Act
-        var sut = await journey.GotoAsync<NodeSpy4>(waypoints);
+        var sut = await journey.GotoAsync<Node4>(waypoints);
 
         // Assert
         var result = await sut.ToMermaidSequenceDiagramMarkdownAsync(WithQuadrant);
@@ -43,16 +43,10 @@ public class GoThroughWaypoints
     {
         // Arrange
         var journey = JourneyFixtures.JourneyWithJoinRightFractalGraph3Levels.Build();
-        Waypoints waypoints =
-        [
-            typeof(NodeSpy2),
-            typeof(NodeSpy3),
-            typeof(NodeSpy6),
-            typeof(NodeSpy12),
-        ];
+        Waypoints waypoints = [typeof(Node2), typeof(Node3), typeof(Node6), typeof(Node12)];
 
         // Act
-        var sut = await journey.GotoAsync<NodeSpy14>(waypoints);
+        var sut = await journey.GotoAsync<Node14>(waypoints);
 
         // Assert
         var result = await sut.ToMermaidSequenceDiagramMarkdownAsync(WithQuadrant);

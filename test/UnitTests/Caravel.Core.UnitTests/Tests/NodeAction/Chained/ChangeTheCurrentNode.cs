@@ -10,19 +10,19 @@ public class ChangeTheCurrentNode
     {
         // Arrange
         var builder = new JourneyBuilder()
-            .AddNode<NodeSpy1>()
-            .WithEdge<NodeSpy2>()
+            .AddNode<Node1>()
+            .WithEdge<Node2>()
             .Done()
-            .AddNode<NodeSpy2>()
-            .WithEdge<NodeSpy3>()
+            .AddNode<Node2>()
+            .WithEdge<Node3>()
             .Done()
-            .AddNode<NodeSpy3>()
-            .WithEdge<NodeSpy4>()
+            .AddNode<Node3>()
+            .WithEdge<Node4>()
             .Done()
-            .AddNode<NodeSpy4>()
-            .WithEdge<NodeSpy5>()
+            .AddNode<Node4>()
+            .WithEdge<Node5>()
             .Done()
-            .AddNode<NodeSpy5>()
+            .AddNode<Node5>()
             .Done();
 
         var journey = builder.Build();
@@ -30,13 +30,13 @@ public class ChangeTheCurrentNode
         // Act
         // csharpier-ignore
         var sut = await journey
-            .GotoAsync<NodeSpy2>()
-            .DoAsync<NodeSpy2, NodeSpy3>((node, ct) => Task.FromResult(map.NodeSpy3))
-            .DoAsync<NodeSpy3, NodeSpy4>(
+            .GotoAsync<Node2>()
+            .DoAsync<Node2, Node3>((node, ct) => Task.FromResult(map.NodeSpy3))
+            .DoAsync<Node3, Node4>(
                 (journey, node, ct)
                 => Task.FromResult(journey.OfType<SmartJourney>().Map.NodeSpy4)
             )
-            .GotoAsync<NodeSpy5>();
+            .GotoAsync<Node5>();
 
         // Assert
         var result = await sut.ToMermaidSequenceDiagramMarkdownAsync(WithDescription);
