@@ -1,6 +1,6 @@
 ﻿using AwesomeAssertions;
 
-namespace Caravel.Core.UnitTests.Tests.NodeAction.BeforeAnyNavigation;
+namespace Caravel.Core.UnitTests.Tests.NodeAction.Chained;
 
 [Trait(TestType, Unit)]
 [Trait(Feature, FeatureNodeAction)]
@@ -28,6 +28,9 @@ public sealed class AllowsToMergeLocalAndJourneyCancellationTokens : IDisposable
             .WithEdge<NodeSpy2>()
             .Done()
             .AddNode<NodeSpy2>()
+            .WithEdge<NodeSpy3>()
+            .Done()
+            .AddNode<NodeSpy3>()
             .Done();
 
         var journey = builder.Build();
@@ -35,7 +38,8 @@ public sealed class AllowsToMergeLocalAndJourneyCancellationTokens : IDisposable
         // Act
         var sut = async () =>
             await journey
-                .DoAsync<NodeSpy1>(
+                .GotoAsync<NodeSpy2>()
+                .DoAsync<NodeSpy2>(
                     async (node, ct) =>
                     {
                         // cancel only local token
@@ -44,7 +48,7 @@ public sealed class AllowsToMergeLocalAndJourneyCancellationTokens : IDisposable
                     },
                     _localTokenSource30mins.Token
                 )
-                .GotoAsync<NodeSpy2>();
+                .GotoAsync<NodeSpy3>();
 
         // Assert
         await sut.Should().ThrowExactlyAsync<OperationCanceledException>();
@@ -52,7 +56,7 @@ public sealed class AllowsToMergeLocalAndJourneyCancellationTokens : IDisposable
         _localTokenSource30mins.IsCancellationRequested.Should().BeTrue();
     }
 
-    [Fact(DisplayName = "When journey CancellationToken is default and local is set")]
+    [Fact(DisplayName = "When journey CancellationToken is set and local is not")]
     public async Task Test2()
     {
         // Arrange
@@ -61,6 +65,9 @@ public sealed class AllowsToMergeLocalAndJourneyCancellationTokens : IDisposable
             .WithEdge<NodeSpy2>()
             .Done()
             .AddNode<NodeSpy2>()
+            .WithEdge<NodeSpy3>()
+            .Done()
+            .AddNode<NodeSpy3>()
             .Done();
 
         using var journeyTokenSource = new CancellationTokenSource();
@@ -69,7 +76,8 @@ public sealed class AllowsToMergeLocalAndJourneyCancellationTokens : IDisposable
         // Act
         var sut = async () =>
             await journey
-                .DoAsync<NodeSpy1>(
+                .GotoAsync<NodeSpy2>()
+                .DoAsync<NodeSpy2>(
                     async (node, ct) =>
                     {
                         // cancel only journey token
@@ -77,7 +85,7 @@ public sealed class AllowsToMergeLocalAndJourneyCancellationTokens : IDisposable
                         return node;
                     }
                 )
-                .GotoAsync<NodeSpy2>();
+                .GotoAsync<NodeSpy3>();
 
         // Assert
         await sut.Should().ThrowExactlyAsync<OperationCanceledException>();
@@ -94,14 +102,18 @@ public sealed class AllowsToMergeLocalAndJourneyCancellationTokens : IDisposable
             .WithEdge<NodeSpy2>()
             .Done()
             .AddNode<NodeSpy2>()
+            .WithEdge<NodeSpy3>()
+            .Done()
+            .AddNode<NodeSpy3>()
             .Done();
 
         var journey = builder.Build(ct: CancellationToken.None);
 
         // Act
         var sut = await journey
-            .DoAsync<NodeSpy1>((node, ct) => Task.FromResult(node), CancellationToken.None)
-            .GotoAsync<NodeSpy2>();
+            .GotoAsync<NodeSpy2>()
+            .DoAsync<NodeSpy2>((node, ct) => Task.FromResult(node), CancellationToken.None)
+            .GotoAsync<NodeSpy3>();
 
         // Assert
         journey.JourneyCancellationToken.IsCancellationRequested.Should().BeFalse();

@@ -1,6 +1,6 @@
 ﻿using AwesomeAssertions;
 
-namespace Caravel.Core.UnitTests.Tests.NodeAction.BetweenNavigations;
+namespace Caravel.Core.UnitTests.Tests.NodeAction.Atomic;
 
 [Trait(TestType, Unit)]
 [Trait(Feature, FeatureNodeAction)]
@@ -28,9 +28,6 @@ public sealed class HasDefaultJourneyAndLocalCancellationTokensToNone : IDisposa
             .WithEdge<NodeSpy2>()
             .Done()
             .AddNode<NodeSpy2>()
-            .WithEdge<NodeSpy3>()
-            .Done()
-            .AddNode<NodeSpy3>()
             .Done();
 
         // CancellationToken not set
@@ -38,9 +35,8 @@ public sealed class HasDefaultJourneyAndLocalCancellationTokensToNone : IDisposa
 
         // Act
         var sut = await journey
-            .GotoAsync<NodeSpy2>()
-            .DoAsync<NodeSpy2>((node, ct) => Task.FromResult(node)) // CancellationToken not set
-            .GotoAsync<NodeSpy3>();
+            .DoAsync<NodeSpy1>((node, ct) => Task.FromResult(node))
+            .GotoAsync<NodeSpy2>(); // CancellationToken not set
 
         // Assert
         journey.JourneyCancellationToken.IsCancellationRequested.Should().BeFalse();

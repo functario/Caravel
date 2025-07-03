@@ -1,7 +1,7 @@
 ﻿using AwesomeAssertions;
 using Caravel.Abstractions.Exceptions;
 
-namespace Caravel.Core.UnitTests.Tests.Navigation.OnChainedNavigations;
+namespace Caravel.Core.UnitTests.Tests.Navigation.Chained;
 
 [Trait(TestType, Unit)]
 [Trait(Feature, FeatureNavigation)]

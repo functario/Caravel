@@ -1,4 +1,4 @@
-﻿namespace Caravel.Core.UnitTests.Tests.NodeAction.BetweenNavigations;
+﻿namespace Caravel.Core.UnitTests.Tests.NodeAction.Chained;
 
 [Trait(TestType, Unit)]
 [Trait(Feature, FeatureNodeAction)]
