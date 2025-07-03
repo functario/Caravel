@@ -20,6 +20,12 @@ public sealed class Map
     public NodeSpy7 NodeSpy7 => GetNode<NodeSpy7>();
     public NodeSpy8 NodeSpy8 => GetNode<NodeSpy8>();
     public NodeSpy9 NodeSpy9 => GetNode<NodeSpy9>();
+    public NodeSpy10 NodeSpy10 => GetNode<NodeSpy10>();
+    public NodeSpy11 NodeSpy11 => GetNode<NodeSpy11>();
+    public NodeSpy12 NodeSpy12 => GetNode<NodeSpy12>();
+    public NodeSpy13 NodeSpy13 => GetNode<NodeSpy13>();
+    public NodeSpy14 NodeSpy14 => GetNode<NodeSpy14>();
+    public NodeSpy15 NodeSpy15 => GetNode<NodeSpy15>();
 
     private T GetNode<T>()
         where T : INode => (T)_nodes.Where(x => x.GetType() == typeof(T)).Single();

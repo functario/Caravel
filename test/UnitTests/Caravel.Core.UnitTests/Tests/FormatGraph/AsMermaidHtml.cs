@@ -27,7 +27,7 @@ public class AsMermaidHtml
         var journey = builder.Build();
 
         // Act
-        var sut = journey.Graph.ToMermaidHtml(true);
+        var sut = journey.Graph.ToMermaidHtml(WithDescription);
 
         // Assert
         await sut.VerifyMermaidHtmlAsync();
@@ -57,7 +57,7 @@ public class AsMermaidHtml
         var pastJourney = await journey.GotoAsync<NodeSpy5>();
 
         // Act
-        var sut = await pastJourney.ToMermaidHtml(true);
+        var sut = await pastJourney.ToMermaidHtml(WithDescription);
 
         // Assert
         await sut.VerifyMermaidHtmlAsync();
@@ -92,7 +92,7 @@ public class AsMermaidHtml
             .GotoAsync<NodeSpy1>();
 
         // Act
-        var sut = await pastJourney.ToManyMermaidHtml(true);
+        var sut = await pastJourney.ToManyMermaidHtml(WithDescription);
 
         // Assert
         await sut.VerifyMermaidHtmlAsync();

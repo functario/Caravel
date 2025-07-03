@@ -41,7 +41,7 @@ public sealed class HasDefaultJourneyAndLocalCancellationTokensToNone : IDisposa
         // Assert
         journey.JourneyCancellationToken.IsCancellationRequested.Should().BeFalse();
         _localTokenSource30mins.IsCancellationRequested.Should().BeFalse();
-        var result = await sut.ToMermaidSequenceDiagram(isDescriptionDisplayed: true);
+        var result = await sut.ToMermaidSequenceDiagramMarkdown(WithDescription);
         await result.VerifyMermaidMarkdownAsync();
     }
 }

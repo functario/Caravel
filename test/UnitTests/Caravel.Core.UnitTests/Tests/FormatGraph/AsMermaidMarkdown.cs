@@ -30,7 +30,7 @@ public class AsMermaidMarkdown
         var journey = builder.Build();
 
         // Act
-        var sut = journey.ToMermaidGraph(true);
+        var sut = journey.ToMermaidMarkdown(WithDescription);
 
         // Assert
         await sut.VerifyMermaidMarkdownAsync(node3Weight, node4Weight);
