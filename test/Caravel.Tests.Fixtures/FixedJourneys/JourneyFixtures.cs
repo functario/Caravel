@@ -1,6 +1,6 @@
 ﻿namespace Caravel.Tests.Fixtures.FixedJourneys;
 
-public static class JourneyMany
+public static class JourneyFixtures
 {
     public static JourneyBuilder JourneyWithFractalGraph3Levels =>
         new JourneyBuilder()

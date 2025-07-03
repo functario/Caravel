@@ -42,7 +42,7 @@ public class GoThroughWaypoints
     public async Task Test2()
     {
         // Arrange
-        var journey = JourneyMany.JourneyWithJoinRightFractalGraph3Levels.Build();
+        var journey = JourneyFixtures.JourneyWithJoinRightFractalGraph3Levels.Build();
         Waypoints waypoints =
         [
             typeof(NodeSpy2),
