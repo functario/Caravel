@@ -50,4 +50,42 @@ public class ThrowsException
                     + "-->|2| Caravel.Tests.Fixtures.Node4')."
             );
     }
+
+    [Fact(DisplayName = $"When no route found between waypoints")]
+    public async Task Tes2()
+    {
+        // Arrange
+        var builder = new JourneyBuilder()
+            .AddNode<Node1>()
+            .WithEdge<Node2>()
+            .WithEdge<Node3>()
+            .Done()
+            .AddNode<Node2>()
+            .WithEdge<Node4>()
+            .Done()
+            .AddNode<Node3>() // dead end
+            .Done()
+            .AddNode<Node4>()
+            .WithEdge<Node5>()
+            .Done()
+            .AddNode<Node5>()
+            .Done();
+
+        var journey = builder.Build();
+        Waypoints waypoints = [typeof(Node4)];
+        // Act
+        // csharpier-ignore
+        var sut = async () => await journey
+            .GotoAsync<Node3>()
+            .GotoAsync<Node5>(waypoints);
+
+        // Assert
+        await sut.Should()
+            .ThrowExactlyAsync<RouteNotFoundException>()
+            .WithMessage(
+                "No IRoute found between "
+                    + "origin INode 'Caravel.Tests.Fixtures.Node3' "
+                    + "and destination INode 'Caravel.Tests.Fixtures.Node4'."
+            );
+    }
 }
