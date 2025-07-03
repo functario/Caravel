@@ -27,7 +27,7 @@ public class GotoDestination
     }
 
     [Fact(DisplayName = "When origin is also destination with waypoints")]
-    public async Task Test4()
+    public async Task Test2()
     {
         // Arrange
         // csharpier-ignore

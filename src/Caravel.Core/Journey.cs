@@ -125,6 +125,16 @@ public abstract class Journey : IJourney, IJourneyLegPublisher
             );
         }
 
+        if (DestinationIsAlsoAWaypoint(destinationType, waypoints))
+        { // TODO: Document that destination cannot be in Waypoints too
+            // (because will become origin at the end).
+            throw new InvalidRouteException(
+                InvalidRouteReasons.DestinationIsAlsoWaypoint,
+                originType,
+                destinationType
+            );
+        }
+
         // Manage cases where origin is destination without self reference or waypoint.
         if (originType == destinationType && waypoints.Count == 0)
         {
@@ -139,6 +149,9 @@ public abstract class Journey : IJourney, IJourneyLegPublisher
 
     private static bool OriginIsAlsoAWaypoint(Type originType, IWaypoints waypoints) =>
         waypoints.Any(x => x == originType);
+
+    private static bool DestinationIsAlsoAWaypoint(Type destinationType, IWaypoints waypoints) =>
+        waypoints.Any(x => x == destinationType);
 
     public async Task<IJourney> DoAsync<TCurrentNode, TNodeOut>(
         Func<IJourney, TCurrentNode, CancellationToken, Task<TNodeOut>> func,

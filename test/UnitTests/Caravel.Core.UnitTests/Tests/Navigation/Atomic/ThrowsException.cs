@@ -133,4 +133,36 @@ public class ThrowsException
                     + "destination: 'Caravel.Tests.Fixtures.Node1')."
             );
     }
+
+    [Fact(DisplayName = "When destination is also a waypoint")]
+    public async Task Test5()
+    {
+        // Arrange
+        // csharpier-ignore
+        Waypoints waypoints = [typeof(Node3), typeof(Node2)];
+        var journey = new JourneyBuilder()
+            .AddNode<Node1>()
+            .WithEdge<Node2>()
+            .Done()
+            .AddNode<Node2>()
+            .WithEdge<Node3>()
+            .WithEdge<Node1>()
+            .Done()
+            .AddNode<Node3>()
+            .Done()
+            .Build();
+
+        // Act
+        var sut = async () => await journey.GotoAsync<Node2>(waypoints);
+
+        // Assert
+        await sut.Should()
+            .ThrowExactlyAsync<InvalidRouteException>()
+            .WithMessage(
+                "Invalid IRoute detected "
+                    + "with reason 'DestinationIsAlsoWaypoint' "
+                    + "(origin: 'Caravel.Tests.Fixtures.Node1', "
+                    + "destination: 'Caravel.Tests.Fixtures.Node2')."
+            );
+    }
 }
