@@ -52,4 +52,78 @@ public class AtomicIgnoresExcludedNodes
         var result = await sut.ToMermaidSequenceDiagramMarkdownAsync(WithQuadrant);
         await result.VerifyMermaidMarkdownAsync();
     }
+
+    [Fact(DisplayName = "Whith single weighted excluded nodes")]
+    public async Task Test3()
+    {
+        // Arrange
+        var builder = new JourneyBuilder()
+            .AddNode<Node1>()
+            .WithEdge<Node2>(99)
+            .WithEdge<Node3>()
+            .Done()
+            .AddNode<Node2>()
+            .WithEdge<Node4>(99)
+            .WithEdge<Node5>()
+            .Done()
+            .AddNode<Node3>()
+            .WithEdge<Node4>()
+            .WithEdge<Node5>()
+            .Done()
+            .AddNode<Node4>()
+            .WithEdge<Node6>(99)
+            .Done()
+            .AddNode<Node5>()
+            .WithEdge<Node6>()
+            .Done()
+            .AddNode<Node6>()
+            .Done();
+
+        var journey = builder.Build();
+        ExcludedNodes excludedNodes = [typeof(Node3)];
+
+        // Act
+        var sut = await journey.GotoAsync<Node6>(excludedNodes);
+
+        // Assert
+        var result = await sut.ToMermaidSequenceDiagramMarkdownAsync(WithQuadrant);
+        await result.VerifyMermaidMarkdownAsync();
+    }
+
+    [Fact(DisplayName = "Whith many weighted excluded nodes")]
+    public async Task Test4()
+    {
+        // Arrange
+        var builder = new JourneyBuilder()
+            .AddNode<Node1>()
+            .WithEdge<Node2>(99)
+            .WithEdge<Node3>()
+            .Done()
+            .AddNode<Node2>()
+            .WithEdge<Node4>(99)
+            .WithEdge<Node5>()
+            .Done()
+            .AddNode<Node3>()
+            .WithEdge<Node4>()
+            .WithEdge<Node5>()
+            .Done()
+            .AddNode<Node4>()
+            .WithEdge<Node6>(99)
+            .Done()
+            .AddNode<Node5>()
+            .WithEdge<Node6>()
+            .Done()
+            .AddNode<Node6>()
+            .Done();
+
+        var journey = builder.Build();
+        ExcludedNodes excludedNodes = [typeof(Node3), typeof(Node5)];
+
+        // Act
+        var sut = await journey.GotoAsync<Node6>(excludedNodes);
+
+        // Assert
+        var result = await sut.ToMermaidSequenceDiagramMarkdownAsync(WithQuadrant);
+        await result.VerifyMermaidMarkdownAsync();
+    }
 }
