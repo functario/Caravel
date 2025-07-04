@@ -1,4 +1,5 @@
 ﻿using System.Collections.Frozen;
+using System.Collections.Immutable;
 using Caravel.Abstractions;
 using Caravel.Abstractions.Exceptions;
 using Caravel.Core;
@@ -124,7 +125,7 @@ public sealed class DijkstraGraph : IGraph
             if (!_registeredNodes.TryGetValue(nodeVisited, out var currentNode))
                 throw new UnknownNodeException(nodeVisited);
 
-            var edges = currentNode.GetEdges();
+            var edges = OrderedEdges(currentNode.GetEdges());
             ThrowIfDuplicatedEdges(edges);
 
             foreach (var edge in edges)
@@ -163,6 +164,10 @@ public sealed class DijkstraGraph : IGraph
 
         return path;
     }
+
+    // Edges have to be ordered to ensure a deterministic route behavior
+    private static List<IEdge> OrderedEdges(ImmutableHashSet<IEdge> edges) =>
+        [.. edges.OrderBy(e => e.Neighbor.FullName)];
 
     private static void ThrowIfDuplicatedEdges(ICollection<IEdge> edges)
     {
