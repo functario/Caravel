@@ -1,15 +1,15 @@
 ﻿using AwesomeAssertions;
 
-namespace Caravel.Core.UnitTests.Tests.NodeAction.Chained;
+namespace Caravel.Core.UnitTests.Tests.NodeAction.Atomic;
 
 [Trait(TestType, Unit)]
 [Trait(Feature, FeatureNodeAction)]
 [Trait(Domain, NodeDomain)]
-public sealed class HasDefaultJourneyAndLocalCancellationTokensToNone : IDisposable
+public sealed class AtomicHasDefaultJourneyAndLocalCancellationTokensToNone : IDisposable
 {
     private readonly CancellationTokenSource _localTokenSource30mins;
 
-    public HasDefaultJourneyAndLocalCancellationTokensToNone()
+    public AtomicHasDefaultJourneyAndLocalCancellationTokensToNone()
     {
         _localTokenSource30mins = new CancellationTokenSource(TimeSpan.FromMinutes(30));
     }
@@ -28,9 +28,6 @@ public sealed class HasDefaultJourneyAndLocalCancellationTokensToNone : IDisposa
             .WithEdge<Node2>()
             .Done()
             .AddNode<Node2>()
-            .WithEdge<Node3>()
-            .Done()
-            .AddNode<Node3>()
             .Done();
 
         // CancellationToken not set
@@ -38,9 +35,8 @@ public sealed class HasDefaultJourneyAndLocalCancellationTokensToNone : IDisposa
 
         // Act
         var sut = await journey
-            .GotoAsync<Node2>()
-            .DoAsync<Node2>((node, ct) => Task.FromResult(node)) // CancellationToken not set
-            .GotoAsync<Node3>();
+            .DoAsync<Node1>((node, ct) => Task.FromResult(node))
+            .GotoAsync<Node2>(); // CancellationToken not set
 
         // Assert
         journey.JourneyCancellationToken.IsCancellationRequested.Should().BeFalse();

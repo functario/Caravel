@@ -5,7 +5,7 @@ namespace Caravel.Core.UnitTests.Tests.Navigation.Chained;
 [Trait(TestType, Unit)]
 [Trait(Feature, FeatureNavigation)]
 [Trait(Domain, WaypointsDomain)]
-public class GoThroughWaypoints
+public class ChainedGoThroughWaypoints
 {
     [Theory(DisplayName = "Whith single waypoint")]
     [InlineData(typeof(Node4))]

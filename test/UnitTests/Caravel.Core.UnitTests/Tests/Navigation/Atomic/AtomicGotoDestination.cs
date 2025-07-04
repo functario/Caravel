@@ -3,7 +3,7 @@
 [Trait(TestType, Unit)]
 [Trait(Feature, FeatureNavigation)]
 [Trait(Domain, GotoDomain)]
-public class GotoDestination
+public class AtomicGotoDestination
 {
     [Fact(
         DisplayName = "When origin is also destination without waypoints or explicit self reference edge"

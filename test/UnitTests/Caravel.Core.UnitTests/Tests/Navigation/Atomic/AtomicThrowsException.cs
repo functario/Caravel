@@ -10,7 +10,7 @@ namespace Caravel.Core.UnitTests.Tests.Navigation.Atomic;
     "CA1711:Identifiers should not have incorrect suffix",
     Justification = "Test nomenclature."
 )]
-public class ThrowsException
+public class AtomicThrowsException
 {
     [Fact(DisplayName = $"When duplicated edges")]
     public async Task Test1()

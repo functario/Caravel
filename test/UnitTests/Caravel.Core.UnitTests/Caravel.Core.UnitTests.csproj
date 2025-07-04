@@ -38,6 +38,6 @@
     </ItemGroup>
     <ItemGroup>
         <Folder Include="Tests\FormatGraph\AsMermaidHtml_Snapshots\" />
-        <Folder Include="Tests\Navigation\Atomic\GoThroughWaypoints_Snapshots\" />
+        <Folder Include="Tests\Navigation\Atomic\AtomicGoThroughWaypoints_Snapshots\" />
     </ItemGroup>
 </Project>

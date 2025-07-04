@@ -3,9 +3,9 @@
 [Trait(TestType, Unit)]
 [Trait(Feature, FeatureNodeAction)]
 [Trait(Domain, NodeDomain)]
-public class ChangeTheCurrentNode
+public class ChainedDoesNotChangeTheCurrentNode
 {
-    [Fact(DisplayName = "When action returns a different node")]
+    [Fact(DisplayName = "When action is done on current node")]
     public async Task Test1()
     {
         // Arrange
@@ -17,26 +17,16 @@ public class ChangeTheCurrentNode
             .WithEdge<Node3>()
             .Done()
             .AddNode<Node3>()
-            .WithEdge<Node4>()
-            .Done()
-            .AddNode<Node4>()
-            .WithEdge<Node5>()
-            .Done()
-            .AddNode<Node5>()
             .Done();
 
         var journey = builder.Build();
-        var map = builder.Map;
+
         // Act
-        // csharpier-ignore
         var sut = await journey
             .GotoAsync<Node2>()
-            .DoAsync<Node2, Node3>((node, ct) => Task.FromResult(map.NodeSpy3))
-            .DoAsync<Node3, Node4>(
-                (journey, node, ct)
-                => Task.FromResult(journey.OfType<SmartJourney>().Map.NodeSpy4)
-            )
-            .GotoAsync<Node5>();
+            .DoAsync<Node2>((node, ct) => Task.FromResult(node))
+            .DoAsync<Node2>((journey, node, ct) => Task.FromResult(node))
+            .GotoAsync<Node3>();
 
         // Assert
         var result = await sut.ToMermaidSequenceDiagramMarkdownAsync(WithDescription);
