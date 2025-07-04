@@ -170,4 +170,34 @@ public class AtomicThrowsException
                     + "destination: 'Caravel.Tests.Fixtures.Node2')."
             );
     }
+
+    [Fact(DisplayName = "When only route possible has ExcludedNodes")]
+    public async Task Test6()
+    {
+        // Arrange
+        // csharpier-ignore
+        ExcludedNodes waypoints = [typeof(Node2)];
+        var journey = new JourneyBuilder()
+            .AddNode<Node1>()
+            .WithEdge<Node2>()
+            .Done()
+            .AddNode<Node2>()
+            .WithEdge<Node3>()
+            .Done()
+            .AddNode<Node3>()
+            .Done()
+            .Build();
+
+        // Act
+        var sut = async () => await journey.GotoAsync<Node3>(waypoints);
+
+        // Assert
+        await sut.Should()
+            .ThrowExactlyAsync<RouteNotFoundException>()
+            .WithMessage(
+                "No IRoute found between "
+                    + "origin INode 'Caravel.Tests.Fixtures.Node1' and "
+                    + "destination INode 'Caravel.Tests.Fixtures.Node3'."
+            );
+    }
 }
