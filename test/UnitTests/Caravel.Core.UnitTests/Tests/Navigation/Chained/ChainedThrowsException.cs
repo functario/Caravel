@@ -16,6 +16,11 @@ public class ChainedThrowsException
     public async Task Test1()
     {
         // Arrange
+        // NOTE:
+        // Since ImmutableHashSet eliminates duplicates
+        // We need to add a description to add a difference
+        // (expect to be a diff in delegate in real usage).
+
         var builder = new JourneyBuilder()
             .AddNode<Node1>()
             .WithEdge<Node2>()
