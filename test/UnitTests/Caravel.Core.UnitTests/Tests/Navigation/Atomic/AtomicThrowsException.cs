@@ -1,5 +1,6 @@
 ﻿using AwesomeAssertions;
 using Caravel.Abstractions.Exceptions;
+using Caravel.Tests.Fixtures.FixedJourneys;
 
 namespace Caravel.Core.UnitTests.Tests.Navigation.Atomic;
 
@@ -198,6 +199,29 @@ public class AtomicThrowsException
                 "No IRoute found between "
                     + "origin INode 'Caravel.Tests.Fixtures.Node1' and "
                     + "destination INode 'Caravel.Tests.Fixtures.Node3'."
+            );
+    }
+
+    [Fact(DisplayName = "When nodes are waypoints and excluded nodes")]
+    public async Task Test7()
+    {
+        // Arrange
+        // csharpier-ignore
+        var nodeWaypointAndExcluded = typeof(Node6);
+        Waypoints waypoints = [nodeWaypointAndExcluded, typeof(Node14)];
+        ExcludedNodes excludedNodes = [typeof(Node13), nodeWaypointAndExcluded];
+        var journey = JourneyFixtures.JourneyWithJoinRightFractalGraph3Levels.Build();
+
+        // Act
+        var sut = async () => await journey.GotoAsync<Node15>(waypoints, excludedNodes);
+
+        // Assert
+        await sut.Should()
+            .ThrowExactlyAsync<InvalidWaypointsException>()
+            .WithMessage(
+                "Invalid IWaypoints detected"
+                    + " with reason WaypointsInExcludedNodes: "
+                    + "Caravel.Tests.Fixtures.Node6."
             );
     }
 }

@@ -1,4 +1,6 @@
-﻿namespace Caravel.Core.UnitTests.Tests.Navigation.Atomic;
+﻿using Caravel.Tests.Fixtures.FixedJourneys;
+
+namespace Caravel.Core.UnitTests.Tests.Navigation.Atomic;
 
 [Trait(TestType, Unit)]
 [Trait(Feature, FeatureNavigation)]
@@ -47,6 +49,23 @@ public class AtomicGotoDestination
 
         // Act
         var sut = await journey.GotoAsync<Node1>(waypoints);
+
+        // Assert
+        var result = await sut.ToMermaidSequenceDiagramMarkdownAsync(WithQuadrant);
+        await result.VerifyMermaidMarkdownAsync();
+    }
+
+    [Fact(DisplayName = "Whith waypoints and excluded nodes")]
+    public async Task Test3()
+    {
+        // Arrange
+        // csharpier-ignore
+        Waypoints waypoints = [typeof(Node6), typeof(Node14)];
+        ExcludedNodes excludedNodes = [typeof(Node3), typeof(Node7)];
+        var journey = JourneyFixtures.JourneyWithJoinRightFractalGraph3Levels.Build();
+
+        // Act
+        var sut = await journey.GotoAsync<Node15>(waypoints, excludedNodes);
 
         // Assert
         var result = await sut.ToMermaidSequenceDiagramMarkdownAsync(WithQuadrant);
