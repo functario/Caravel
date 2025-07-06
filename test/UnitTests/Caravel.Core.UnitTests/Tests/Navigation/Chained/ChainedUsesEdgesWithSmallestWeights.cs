@@ -3,7 +3,7 @@
 [Trait(TestType, Unit)]
 [Trait(Feature, FeatureNavigation)]
 [Trait(Domain, EdgeDomain)]
-public class UsesEdgesWithSmallestWeights
+public class ChainedUsesEdgesWithSmallestWeights
 {
     [Fact(DisplayName = "When same edge with different weights")]
     public async Task Test1()

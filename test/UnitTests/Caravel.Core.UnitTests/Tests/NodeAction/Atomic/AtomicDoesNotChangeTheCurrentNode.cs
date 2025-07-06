@@ -3,7 +3,7 @@
 [Trait(TestType, Unit)]
 [Trait(Feature, FeatureNodeAction)]
 [Trait(Domain, NodeDomain)]
-public class DoesNotChangeTheCurrentNode
+public class AtomicDoesNotChangeTheCurrentNode
 {
     [Fact(DisplayName = "When action is done on current node")]
     public async Task Test1()

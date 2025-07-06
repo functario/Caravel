@@ -1,5 +1,6 @@
 ﻿using AwesomeAssertions;
 using Caravel.Abstractions.Exceptions;
+using Caravel.Tests.Fixtures.FixedJourneys;
 
 namespace Caravel.Core.UnitTests.Tests.Navigation.Atomic;
 
@@ -10,12 +11,17 @@ namespace Caravel.Core.UnitTests.Tests.Navigation.Atomic;
     "CA1711:Identifiers should not have incorrect suffix",
     Justification = "Test nomenclature."
 )]
-public class ThrowsException
+public class AtomicThrowsException
 {
     [Fact(DisplayName = $"When duplicated edges")]
     public async Task Test1()
     {
         // Arrange
+        // NOTE:
+        // Since ImmutableHashSet eliminates duplicates
+        // We need to add a description to add a difference
+        // (expect to be a diff in delegate in real usage).
+
         var builder = new JourneyBuilder()
             .AddNode<Node1>()
             .WithEdge<Node2>(1, "Node2-1")
@@ -163,6 +169,59 @@ public class ThrowsException
                     + "with reason 'DestinationIsAlsoWaypoint' "
                     + "(origin: 'Caravel.Tests.Fixtures.Node1', "
                     + "destination: 'Caravel.Tests.Fixtures.Node2')."
+            );
+    }
+
+    [Fact(DisplayName = "When only route possible has ExcludedNodes")]
+    public async Task Test6()
+    {
+        // Arrange
+        // csharpier-ignore
+        ExcludedNodes waypoints = [typeof(Node2)];
+        var journey = new JourneyBuilder()
+            .AddNode<Node1>()
+            .WithEdge<Node2>()
+            .Done()
+            .AddNode<Node2>()
+            .WithEdge<Node3>()
+            .Done()
+            .AddNode<Node3>()
+            .Done()
+            .Build();
+
+        // Act
+        var sut = async () => await journey.GotoAsync<Node3>(waypoints);
+
+        // Assert
+        await sut.Should()
+            .ThrowExactlyAsync<RouteNotFoundException>()
+            .WithMessage(
+                "No IRoute found between "
+                    + "origin INode 'Caravel.Tests.Fixtures.Node1' and "
+                    + "destination INode 'Caravel.Tests.Fixtures.Node3'."
+            );
+    }
+
+    [Fact(DisplayName = "When nodes are waypoints and excluded nodes")]
+    public async Task Test7()
+    {
+        // Arrange
+        // csharpier-ignore
+        var nodeWaypointAndExcluded = typeof(Node6);
+        Waypoints waypoints = [nodeWaypointAndExcluded, typeof(Node14)];
+        ExcludedNodes excludedNodes = [typeof(Node13), nodeWaypointAndExcluded];
+        var journey = JourneyFixtures.JourneyWithJoinRightFractalGraph3Levels.Build();
+
+        // Act
+        var sut = async () => await journey.GotoAsync<Node15>(waypoints, excludedNodes);
+
+        // Assert
+        await sut.Should()
+            .ThrowExactlyAsync<InvalidWaypointsException>()
+            .WithMessage(
+                "Invalid IWaypoints detected"
+                    + " with reason WaypointsInExcludedNodes: "
+                    + "Caravel.Tests.Fixtures.Node6."
             );
     }
 }

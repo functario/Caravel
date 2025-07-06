@@ -5,11 +5,11 @@ namespace Caravel.Core.UnitTests.Tests.NodeAction.Atomic;
 [Trait(TestType, Unit)]
 [Trait(Feature, FeatureNodeAction)]
 [Trait(Domain, NodeDomain)]
-public sealed class AllowsToMergeLocalAndJourneyCancellationTokens : IDisposable
+public sealed class AtomicAllowsToMergeLocalAndJourneyCancellationTokens : IDisposable
 {
     private readonly CancellationTokenSource _localTokenSource30mins;
 
-    public AllowsToMergeLocalAndJourneyCancellationTokens()
+    public AtomicAllowsToMergeLocalAndJourneyCancellationTokens()
     {
         _localTokenSource30mins = new CancellationTokenSource(TimeSpan.FromMinutes(30));
     }

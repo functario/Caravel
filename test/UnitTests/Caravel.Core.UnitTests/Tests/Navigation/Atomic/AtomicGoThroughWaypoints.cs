@@ -5,7 +5,7 @@ namespace Caravel.Core.UnitTests.Tests.Navigation.Atomic;
 [Trait(TestType, Unit)]
 [Trait(Feature, FeatureNavigation)]
 [Trait(Domain, WaypointsDomain)]
-public class GoThroughWaypoints
+public class AtomicGoThroughWaypoints
 {
     [Theory(DisplayName = "Whith single waypoint")]
     [InlineData(typeof(Node2))]

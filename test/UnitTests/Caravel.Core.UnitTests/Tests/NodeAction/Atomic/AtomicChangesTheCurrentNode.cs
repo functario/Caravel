@@ -3,7 +3,7 @@
 [Trait(TestType, Unit)]
 [Trait(Feature, FeatureNodeAction)]
 [Trait(Domain, NodeDomain)]
-public class ChangeTheCurrentNode
+public class AtomicChangesTheCurrentNode
 {
     [Fact(DisplayName = "When action returns a different node")]
     public async Task Test1()
