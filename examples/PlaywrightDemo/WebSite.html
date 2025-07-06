@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <title>Simple Static Page Switcher</title>
+    <style>
+        body {
+            font-family: sans-serif;
+            text-align: center;
+            margin: 2em;
+        }
+
+        button {
+            margin: 0.5em;
+            padding: 0.5em 1em;
+            font-size: 1em;
+        }
+
+        .page {
+            display: none;
+        }
+
+        .active {
+            display: block;
+        }
+
+        h1 {
+            color: #333;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Shared Title -->
+    <h1 id="txt-title" data-testid="txt-title">This is Page A</h1>
+
+    <!-- Navigation Buttons -->
+    <div id="navigation">
+        <button data-testid="btn-PageA" onclick="showPage('PageA')">Go to Page A</button>
+        <button data-testid="btn-PageB" onclick="showPage('PageB')">Go to Page B</button>
+        <button data-testid="btn-PageC" onclick="showPage('PageC')">Go to Page C</button>
+        <button data-testid="btn-PageD" onclick="showPage('PageD')">Go to Page D</button>
+        <button data-testid="btn-PageE" onclick="showPage('PageE')">Go to Page E</button>
+    </div>
+
+    <!-- Page content containers -->
+    <div id="PageA" class="page active"></div>
+    <div id="PageB" class="page"></div>
+    <div id="PageC" class="page"></div>
+    <div id="PageD" class="page"></div>
+    <div id="PageE" class="page"></div>
+
+    <script>
+        const pageIds = ["PageA", "PageB", "PageC", "PageD", "PageE"];
+
+        function showPage(id) {
+            // Update visible page (show the div)
+            pageIds.forEach(page => {
+                document.getElementById(page).classList.toggle("active", page === id);
+            });
+
+            // Update title text
+            document.getElementById("page-title").textContent = `This is ${id}`;
+
+            // Enable/disable buttons based on selected page
+            pageIds.forEach(page => {
+                const button = document.querySelector(`[data-testid="btn-${page}"]`);
+                if (page === id) {
+                    button.disabled = true;
+                } else {
+                    button.disabled = false;
+                }
+            });
+        }
+
+        // On first load, initialize with PageA selected
+        showPage("PageA");
+    </script>
+
+</body>
+</html>
