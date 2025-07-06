@@ -32,6 +32,7 @@ public abstract class Journey : IJourney, IJourneyLegPublisher
     public Guid Id { get; init; } = Guid.CreateVersion7();
 
     public TJourney OfType<TJourney>()
+        where TJourney : IJourney
     {
         if (this is TJourney journey)
         {

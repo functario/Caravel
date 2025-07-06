@@ -10,7 +10,8 @@ public interface IJourney
         CancellationToken cancellationToken
     );
 
-    public TJourney OfType<TJourney>();
+    public TJourney OfType<TJourney>()
+        where TJourney : IJourney;
 
     public Task<IJourney> GotoAsync<TDestination>(
         IWaypoints waypoints,
