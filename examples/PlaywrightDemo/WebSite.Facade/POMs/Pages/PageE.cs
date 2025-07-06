@@ -21,6 +21,11 @@ public sealed class PageE : BasePage, IPOM
         throw new NotImplementedException();
     }
 
+    public async Task DoSomething(IJourney _, CancellationToken __)
+    {
+        await Task.FromResult(_page.Url);
+    }
+
     public async Task OnNodeOpenedAsync(IJourney journey, CancellationToken cancellationToken)
     {
         await Assertions.Expect(PageTitle.TxtTitle).ToHaveTextAsync("This is Page E");

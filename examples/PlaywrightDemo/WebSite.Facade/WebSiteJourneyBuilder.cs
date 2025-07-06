@@ -26,7 +26,7 @@ public sealed class WebSiteJourneyBuilder
         _map = map;
     }
 
-    public WebSiteJourney Create(CancellationToken cancellationToken)
+    public WebSiteJourney Create(CancellationToken cancellationToken = default)
     {
         return new WebSiteJourney(_current, _graph, _timeProvider, _app, _map, cancellationToken);
     }

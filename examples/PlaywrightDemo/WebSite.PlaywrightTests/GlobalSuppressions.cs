@@ -24,3 +24,10 @@ using System.Diagnostics.CodeAnalysis;
     Scope = "type",
     Target = "~T:WebSite.PlaywrightTests.PlaywrightFixture"
 )]
+[assembly: SuppressMessage(
+    "Naming",
+    "CA1707:Identifiers should not contain underscores",
+    Justification = "Test nomenclature",
+    Scope = "namespaceanddescendants",
+    Target = "~N:WebSite.PlaywrightTests.Tests"
+)]
