@@ -3,6 +3,7 @@ using AwesomeAssertions.Execution;
 using Caravel.Core.Extensions;
 using WebSite.Facade;
 using WebSite.Facade.POMs.Pages;
+using WebSite.PlaywrightTests.Extensions;
 
 namespace WebSite.PlaywrightTests.Tests;
 
@@ -11,15 +12,18 @@ public sealed class Navigations : TestBase
     public Navigations(PlaywrightFixture playwrightFixture)
         : base(playwrightFixture) { }
 
-    [Fact]
-    public async Task GotoB_Test()
+    [Fact(DisplayName = "From PageA Goto PageB")]
+    public async Task Test1()
     {
         await WebSiteJourney.App.OpenWebSiteAsync(JourneyCTSource.Token);
         await WebSiteJourney.GotoAsync<PageB>();
+
+        // Route validation
+        await WebSiteJourney.VerifyRouteAsync();
     }
 
-    [Fact]
-    public async Task GotoB_ThenE_ThenC_Test()
+    [Fact(DisplayName = "From PageA Goto PageB - PageE - PageC")]
+    public async Task Test2()
     {
         using var localCancellationTokenSource = new CancellationTokenSource(
             TimeSpan.FromSeconds(60)
@@ -34,10 +38,13 @@ public sealed class Navigations : TestBase
             .GotoAsync<PageC>(
              localCancellationTokenSource.Token // local token merged with journeyCancellationToken
             );
+
+        // Route validation
+        await WebSiteJourney.VerifyRouteAsync();
     }
 
-    [Fact]
-    public async Task GotoThenE_ThenDoSomethingOnE_Test()
+    [Fact(DisplayName = "From PageA Goto PageE - Do something on PageE - Continue from PageE")]
+    public async Task Test3()
     {
         await WebSiteJourney.App.OpenWebSiteAsync(JourneyCTSource.Token);
         // csharpier-ignore
@@ -54,10 +61,15 @@ public sealed class Navigations : TestBase
                     return currentNode;
                 }
             );
+
+        // Route validation
+        await WebSiteJourney.VerifyRouteAsync();
     }
 
-    [Fact]
-    public async Task GotoThenE_ThenDoSomethingOnE_ThenGotoA_Test()
+    [Fact(
+        DisplayName = "From PageA Goto PageE - Do something on PageE - Continue from PageE to PageA"
+    )]
+    public async Task Test4()
     {
         using var localCancellationTokenSource = new CancellationTokenSource(
             TimeSpan.FromSeconds(60)
@@ -80,10 +92,15 @@ public sealed class Navigations : TestBase
                 localCancellationTokenSource.Token // local token merged with journeyCancellationToken
             )
             .GotoAsync<PageA>();
+
+        // Route validation
+        await WebSiteJourney.VerifyRouteAsync();
     }
 
-    [Fact]
-    public async Task GotoThenE_ThenDoSomethingOpeningD_Test()
+    [Fact(
+        DisplayName = "From PageA Goto PageE - Do something on PageE - But continue from PageD to Page C"
+    )]
+    public async Task Test5()
     {
         await WebSiteJourney.App.OpenWebSiteAsync(JourneyCTSource.Token);
         // csharpier-ignore
@@ -103,6 +120,9 @@ public sealed class Navigations : TestBase
                     // Return a different page than origin
                     return await pageE.OpenPageD(journey, ct);
                 }
-            );
+            ).GotoAsync<PageC>();
+
+        // Route validation
+        await WebSiteJourney.VerifyRouteAsync();
     }
 }
