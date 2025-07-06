@@ -11,8 +11,12 @@
             <PrivateAssets>all</PrivateAssets>
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
+        <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" />
+        <PackageReference Include="Microsoft.Extensions.Hosting" />
         <PackageReference Include="Microsoft.NET.Test.Sdk" />
+        <PackageReference Include="Microsoft.Playwright.Xunit" />
         <PackageReference Include="System.Net.Http" />
+        <PackageReference Include="System.Text.RegularExpressions" />
         <PackageReference Include="Verify.Xunit" />
         <PackageReference Include="xunit" />
         <PackageReference Include="xunit.runner.visualstudio">
@@ -22,11 +26,18 @@
         <PackageReference Include="AwesomeAssertions" />
     </ItemGroup>
     <ItemGroup>
-        <ProjectReference Include="..\..\..\src\Caravel.Abstractions\Caravel.Abstractions.csproj" />
-        <ProjectReference Include="..\..\..\src\Caravel.Core\Caravel.Core.csproj" />
+        <Content Include="..\WebSite.html">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </Content>
+    </ItemGroup>
+    <ItemGroup>
         <ProjectReference Include="..\..\..\src\Caravel.Graph.Dijkstra\Caravel.Graph.Dijkstra.csproj" />
         <ProjectReference Include="..\..\..\src\Caravel.Mermaid\Caravel.Mermaid.csproj" />
-        <ProjectReference Include="..\..\Caravel.Tests.Fixtures\Caravel.Tests.Fixtures.csproj" />
-        <ProjectReference Include="..\..\Caravel.Tests.Support\Caravel.Tests.Support.csproj" />
+        <ProjectReference Include="..\WebSite.Facade\WebSite.Facade.csproj" />
+    </ItemGroup>
+    <ItemGroup>
+      <None Update="appsettings.json">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </None>
     </ItemGroup>
 </Project>

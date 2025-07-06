@@ -10,7 +10,7 @@ public sealed class DijkstraGraph : IGraph
 {
     private readonly FrozenDictionary<Type, INode> _registeredNodes;
 
-    public DijkstraGraph(ICollection<INode> nodes)
+    public DijkstraGraph(IEnumerable<INode> nodes)
     {
         _registeredNodes = nodes.ToDictionary(n => n.GetType(), n => n).ToFrozenDictionary();
     }
