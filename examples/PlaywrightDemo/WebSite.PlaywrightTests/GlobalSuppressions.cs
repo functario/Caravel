@@ -31,3 +31,8 @@ using System.Diagnostics.CodeAnalysis;
     Scope = "namespaceanddescendants",
     Target = "~N:WebSite.PlaywrightTests.Tests"
 )]
+[assembly: SuppressMessage(
+    "Style",
+    "IDE0290:Use primary constructor",
+    Justification = "Unwanted recommendation"
+)]

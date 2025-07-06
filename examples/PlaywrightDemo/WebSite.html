@@ -59,22 +59,20 @@
                 document.getElementById(page).classList.toggle("active", page === id);
             });
 
-            // Update title text
-            document.getElementById("page-title").textContent = `This is ${id}`;
+            // ✅ Update the correct title element
+            const title = document.getElementById("txt-title");
+            title.textContent = `This is ${id}`;
 
-            // Enable/disable buttons based on selected page
+            // ✅ Enable/disable buttons
             pageIds.forEach(page => {
-                const button = document.querySelector(`[data-testid="btn-${page}"]`);
-                if (page === id) {
-                    button.disabled = true;
-                } else {
-                    button.disabled = false;
-                }
+                const btn = document.querySelector(`[data-testid="btn-${page}"]`);
+                btn.disabled = (page === id);
             });
         }
 
-        // On first load, initialize with PageA selected
-        showPage("PageA");
+        // ✅ Initialize based on the page that has .active
+        const initial = pageIds.find(p => document.getElementById(p).classList.contains("active")) || "PageA";
+        showPage(initial);
     </script>
 
 </body>

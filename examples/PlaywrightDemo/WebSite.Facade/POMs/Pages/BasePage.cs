@@ -1,4 +1,5 @@
 ﻿using Caravel.Abstractions;
+using Microsoft.Playwright;
 using WebSite.Facade.POMs.Abstractions;
 using WebSite.Facade.POMs.Components;
 
@@ -35,5 +36,13 @@ public class BasePage
 
         await btnOpen.ClickAsync().WaitAsync(cancellationToken);
         return journey.OfType<WebSiteJourney>().Map.GetPOM<TPOM>();
+    }
+
+    public async Task OnNodeOpenedAsync(IJourney _, CancellationToken cancellationToken)
+    {
+        await Assertions
+            .Expect(PageTitle.TxtTitle)
+            .ToHaveTextAsync($"This is {GetType().Name}")
+            .WaitAsync(cancellationToken);
     }
 }

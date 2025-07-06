@@ -1,5 +1,6 @@
 ﻿using System.Collections.Immutable;
 using Caravel.Abstractions;
+using Caravel.Core.Extensions;
 using Microsoft.Playwright;
 using WebSite.Facade.POMs.Abstractions;
 using WebSite.Facade.POMs.Components;
@@ -18,16 +19,20 @@ public sealed class PageE : BasePage, IPOM
 
     public ImmutableHashSet<IEdge> GetEdges()
     {
-        throw new NotImplementedException();
+        return
+        [
+            this.CreateEdge<PageA>(OpenNextPageAsync<PageA>),
+            this.CreateEdge<PageB>(OpenNextPageAsync<PageB>),
+            this.CreateEdge<PageC>(OpenNextPageAsync<PageC>),
+            this.CreateEdge<PageD>(OpenNextPageAsync<PageD>),
+        ];
     }
+
+    public async Task<PageD> OpenPageD(IJourney journey, CancellationToken cancellationToken) =>
+        await OpenNextPageAsync<PageD>(journey, cancellationToken);
 
     public async Task DoSomething(IJourney _, CancellationToken __)
     {
         await Task.FromResult(_page.Url);
-    }
-
-    public async Task OnNodeOpenedAsync(IJourney journey, CancellationToken cancellationToken)
-    {
-        await Assertions.Expect(PageTitle.TxtTitle).ToHaveTextAsync("This is Page E");
     }
 }

@@ -1,37 +1,26 @@
 ﻿using AwesomeAssertions;
 using AwesomeAssertions.Execution;
 using Caravel.Core.Extensions;
-using Microsoft.Playwright;
 using WebSite.Facade;
 using WebSite.Facade.POMs.Pages;
 
 namespace WebSite.PlaywrightTests.Tests;
 
-//[Collection(nameof(PlaywrightCollection))]
-public sealed class Navigations : IClassFixture<PlaywrightFixture>, IDisposable
+[System.Diagnostics.CodeAnalysis.SuppressMessage(
+    "Design",
+    "CA1001:Types that own disposable fields should be disposable",
+    Justification = "Implement IAsyncLifetime"
+)]
+public sealed class Navigations : TestBase
 {
-    private readonly PlaywrightFixture _playwrightFixture;
-    private readonly IPage _page;
-    private readonly CancellationTokenSource _journeyCTSource;
-
     public Navigations(PlaywrightFixture playwrightFixture)
-    {
-        _playwrightFixture = playwrightFixture;
-        _page = _playwrightFixture.Page;
-        _journeyCTSource = new CancellationTokenSource(TimeSpan.FromSeconds(30));
-    }
-
-    public void Dispose()
-    {
-        _journeyCTSource?.Dispose();
-    }
+        : base(playwrightFixture) { }
 
     [Fact]
     public async Task GotoB_Test()
     {
-        var webSiteJourney = _playwrightFixture.WebSiteJourneyBuilder.Create();
-        await webSiteJourney.App.OpenWebSiteAsync(_journeyCTSource.Token);
-        await webSiteJourney.GotoAsync<PageB>();
+        await WebSiteJourney.App.OpenWebSiteAsync(JourneyCTSource.Token);
+        await WebSiteJourney.GotoAsync<PageB>();
     }
 
     [Fact]
@@ -41,14 +30,13 @@ public sealed class Navigations : IClassFixture<PlaywrightFixture>, IDisposable
             TimeSpan.FromSeconds(60)
         );
 
-        var journeyCancellationToken = _journeyCTSource.Token;
-        var webSiteJourney = _playwrightFixture.WebSiteJourneyBuilder.Create();
-        await webSiteJourney.App.OpenWebSiteAsync(journeyCancellationToken);
+        var journeyCancellationToken = JourneyCTSource.Token;
+        await WebSiteJourney.App.OpenWebSiteAsync(journeyCancellationToken);
         // csharpier-ignore
-        await webSiteJourney
+        await WebSiteJourney
             .GotoAsync<PageB>()
             .GotoAsync<PageE>()
-            .GotoAsync<PageE>(
+            .GotoAsync<PageC>(
              localCancellationTokenSource.Token // local token merged with journeyCancellationToken
             );
     }
@@ -56,10 +44,9 @@ public sealed class Navigations : IClassFixture<PlaywrightFixture>, IDisposable
     [Fact]
     public async Task GotoThenE_ThenDoSomethingOnE_Test()
     {
-        var webSiteJourney = _playwrightFixture.WebSiteJourneyBuilder.Create();
-        await webSiteJourney.App.OpenWebSiteAsync(_journeyCTSource.Token);
+        await WebSiteJourney.App.OpenWebSiteAsync(JourneyCTSource.Token);
         // csharpier-ignore
-        await webSiteJourney
+        await WebSiteJourney
             .GotoAsync<PageE>()
             .DoAsync<PageE>(
                 async (currentNode, ct) =>
@@ -81,10 +68,9 @@ public sealed class Navigations : IClassFixture<PlaywrightFixture>, IDisposable
             TimeSpan.FromSeconds(60)
         );
 
-        var webSiteJourney = _playwrightFixture.WebSiteJourneyBuilder.Create();
-        await webSiteJourney.App.OpenWebSiteAsync(_journeyCTSource.Token);
+        await WebSiteJourney.App.OpenWebSiteAsync(JourneyCTSource.Token);
         // csharpier-ignore
-        await webSiteJourney
+        await WebSiteJourney
             .GotoAsync<PageE>()
             .DoAsync<PageE>(
                 async (pageE, ct) =>
@@ -104,10 +90,9 @@ public sealed class Navigations : IClassFixture<PlaywrightFixture>, IDisposable
     [Fact]
     public async Task GotoThenE_ThenDoSomethingOpeningD_Test()
     {
-        var webSiteJourney = _playwrightFixture.WebSiteJourneyBuilder.Create();
-        await webSiteJourney.App.OpenWebSiteAsync(_journeyCTSource.Token);
+        await WebSiteJourney.App.OpenWebSiteAsync(JourneyCTSource.Token);
         // csharpier-ignore
-        await webSiteJourney
+        await WebSiteJourney
             .GotoAsync<PageE>()
             .DoAsync<PageE, PageD>(
                 async (journey, pageE, ct) =>
@@ -115,15 +100,13 @@ public sealed class Navigations : IClassFixture<PlaywrightFixture>, IDisposable
                     // Cast the IJourney to specify WebSiteJourney.
                     var webSiteJourney = journey.OfType<WebSiteJourney>();
 
-                    // busy work
-                    await pageE.DoSomething(journey, ct);
 
                     // validations
                     using var assertionScope = new AssertionScope();
                     webSiteJourney.CurrentNode.Should().BeEquivalentTo(pageE);
 
                     // Return a different page than origin
-                    return webSiteJourney.Map.PageD;
+                    return await pageE.OpenPageD(journey, ct);
                 }
             );
     }

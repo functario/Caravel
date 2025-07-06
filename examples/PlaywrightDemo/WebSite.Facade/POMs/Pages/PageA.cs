@@ -29,9 +29,4 @@ public sealed class PageA : BasePage, IStartingPOM
             this.CreateEdge<PageE>(OpenNextPageAsync<PageE>),
         ];
     }
-
-    public async Task OnNodeOpenedAsync(IJourney journey, CancellationToken cancellationToken)
-    {
-        await Assertions.Expect(PageTitle.TxtTitle).ToHaveTextAsync("This is Page A");
-    }
 }
