@@ -6,11 +6,6 @@ using WebSite.Facade.POMs.Pages;
 
 namespace WebSite.PlaywrightTests.Tests;
 
-[System.Diagnostics.CodeAnalysis.SuppressMessage(
-    "Design",
-    "CA1001:Types that own disposable fields should be disposable",
-    Justification = "Implement IAsyncLifetime"
-)]
 public sealed class Navigations : TestBase
 {
     public Navigations(PlaywrightFixture playwrightFixture)
