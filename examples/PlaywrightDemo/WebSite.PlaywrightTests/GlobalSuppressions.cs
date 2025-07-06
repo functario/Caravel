@@ -24,17 +24,3 @@ using System.Diagnostics.CodeAnalysis;
     Scope = "type",
     Target = "~T:WebSite.PlaywrightTests.PlaywrightFixture"
 )]
-[assembly: SuppressMessage(
-    "Maintainability",
-    "CA1515:Consider making public types internal",
-    Justification = "Required for testing.",
-    Scope = "type",
-    Target = "~T:WebSite.PlaywrightTests.PlaywrightCollection"
-)]
-[assembly: SuppressMessage(
-    "Naming",
-    "CA1711:Identifiers should not have incorrect suffix",
-    Justification = "Xunit nomenclature",
-    Scope = "type",
-    Target = "~T:WebSite.PlaywrightTests.PlaywrightCollection"
-)]

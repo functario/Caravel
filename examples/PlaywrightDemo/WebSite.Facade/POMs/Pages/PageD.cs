@@ -23,6 +23,6 @@ public sealed class PageD : BasePage, IPOM
 
     public async Task OnNodeOpenedAsync(IJourney journey, CancellationToken cancellationToken)
     {
-        await Assertions.Expect(PageTitle.TxtTitle).ToHaveTextAsync(nameof(PageD));
+        await Assertions.Expect(PageTitle.TxtTitle).ToHaveTextAsync("This is Page D");
     }
 }

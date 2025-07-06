@@ -6,11 +6,11 @@ namespace WebSite.Facade;
 
 public sealed class Map
 {
-    private readonly ICollection<IPOM> _poms;
+    private readonly List<IPOM> _poms;
 
-    public Map(ICollection<IPOM> poms)
+    public Map(IEnumerable<IPOM> poms)
     {
-        _poms = poms;
+        _poms = [.. poms];
     }
 
     public PageA PageA => GetPOM<PageA>();

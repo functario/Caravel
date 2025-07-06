@@ -15,7 +15,7 @@ public class BasePage
     public NavigationButtons NavigationButtons { get; }
     public PageTitle PageTitle { get; }
 
-    public async Task<TPOM> OpenNextPage<TPOM>(
+    public async Task<TPOM> OpenNextPageAsync<TPOM>(
         IJourney journey,
         CancellationToken cancellationToken
     )
@@ -26,7 +26,7 @@ public class BasePage
         var btnOpen = typeof(TPOM) switch
         {
             var t when t == typeof(PageA) => NavigationButtons.BtnOpenPageA,
-            var t when t == typeof(PageB) => NavigationButtons.BtnOpenPageE,
+            var t when t == typeof(PageB) => NavigationButtons.BtnOpenPageB,
             var t when t == typeof(PageC) => NavigationButtons.BtnOpenPageC,
             var t when t == typeof(PageD) => NavigationButtons.BtnOpenPageD,
             var t when t == typeof(PageE) => NavigationButtons.BtnOpenPageE,

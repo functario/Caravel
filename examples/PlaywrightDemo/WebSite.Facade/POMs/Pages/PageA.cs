@@ -7,7 +7,7 @@ using WebSite.Facade.POMs.Components;
 
 namespace WebSite.Facade.POMs.Pages;
 
-public sealed class PageA : BasePage, IPOM
+public sealed class PageA : BasePage, IStartingPOM
 {
     private readonly IPage _page;
 
@@ -23,15 +23,15 @@ public sealed class PageA : BasePage, IPOM
     {
         return
         [
-            this.CreateEdge<PageB>(OpenNextPage<PageB>),
-            this.CreateEdge<PageC>(OpenNextPage<PageC>),
-            this.CreateEdge<PageD>(OpenNextPage<PageD>),
-            this.CreateEdge<PageE>(OpenNextPage<PageE>),
+            this.CreateEdge<PageB>(OpenNextPageAsync<PageB>),
+            this.CreateEdge<PageC>(OpenNextPageAsync<PageC>),
+            this.CreateEdge<PageD>(OpenNextPageAsync<PageD>),
+            this.CreateEdge<PageE>(OpenNextPageAsync<PageE>),
         ];
     }
 
     public async Task OnNodeOpenedAsync(IJourney journey, CancellationToken cancellationToken)
     {
-        await Assertions.Expect(PageTitle.TxtTitle).ToHaveTextAsync(nameof(PageA));
+        await Assertions.Expect(PageTitle.TxtTitle).ToHaveTextAsync("This is Page A");
     }
 }

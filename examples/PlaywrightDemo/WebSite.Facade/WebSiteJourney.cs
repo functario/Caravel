@@ -1,12 +1,13 @@
 ﻿using Caravel.Abstractions;
 using Caravel.Core;
+using WebSite.Facade.POMs.Abstractions;
 
 namespace WebSite.Facade;
 
 public sealed class WebSiteJourney : InMemoryJourney
 {
     public WebSiteJourney(
-        INode current,
+        IStartingPOM current,
         IGraph graph,
         TimeProvider timeProvider,
         App app,
