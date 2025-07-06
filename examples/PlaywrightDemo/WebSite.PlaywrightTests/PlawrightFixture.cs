@@ -5,14 +5,6 @@ using WebSite.Facade;
 
 namespace WebSite.PlaywrightTests;
 
-//[CollectionDefinition(nameof(PlaywrightCollection))]
-//public class PlaywrightCollection : ICollectionFixture<PlaywrightFixture>
-//{
-//    // This class has no code, and is never created. Its purpose is simply
-//    // to be the place to apply [CollectionDefinition] and all the
-//    // ICollectionFixture<> interfaces.
-//}
-
 public sealed class PlaywrightFixture : IAsyncLifetime
 {
     public PlaywrightFixture() { }
@@ -28,7 +20,11 @@ public sealed class PlaywrightFixture : IAsyncLifetime
     }
 
     private static BrowserTypeLaunchOptions BrowserTypeLaunchOptions =>
-        new() { Headless = false, SlowMo = 500 };
+        new()
+        {
+            Headless = true,
+            /*SlowMo = 500*/
+        };
 
     [System.Diagnostics.CodeAnalysis.SuppressMessage(
         "Performance",

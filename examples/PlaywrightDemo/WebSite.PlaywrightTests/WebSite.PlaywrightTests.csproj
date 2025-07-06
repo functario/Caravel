@@ -40,7 +40,4 @@
         <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       </None>
     </ItemGroup>
-    <ItemGroup>
-      <Folder Include="Tests\Navigations_Snapshots\" />
-    </ItemGroup>
 </Project>

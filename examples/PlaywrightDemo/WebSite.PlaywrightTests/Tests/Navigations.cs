@@ -36,30 +36,7 @@ public sealed class Navigations : TestBase
             .GotoAsync<PageB>()
             .GotoAsync<PageE>()
             .GotoAsync<PageC>(
-             localCancellationTokenSource.Token // local token merged with journeyCancellationToken
-            );
-
-        // Route validation
-        await WebSiteJourney.VerifyRouteAsync();
-    }
-
-    [Fact(DisplayName = "From PageA Goto PageE - Do something on PageE - Continue from PageE")]
-    public async Task Test3()
-    {
-        await WebSiteJourney.App.OpenWebSiteAsync(JourneyCTSource.Token);
-        // csharpier-ignore
-        await WebSiteJourney
-            .GotoAsync<PageE>()
-            .DoAsync<PageE>(
-                async (currentNode, ct) =>
-                {
-                    // busy work
-                    await Task.FromResult(true);
-                    currentNode.Should().BeAssignableTo<PageE>();
-
-                    // Returns the same page than origin.
-                    return currentNode;
-                }
+             localCancellationTokenSource.Token // (optional) local token merged with journeyCancellationToken
             );
 
         // Route validation
@@ -69,7 +46,7 @@ public sealed class Navigations : TestBase
     [Fact(
         DisplayName = "From PageA Goto PageE - Do something on PageE - Continue from PageE to PageA"
     )]
-    public async Task Test4()
+    public async Task Test3()
     {
         using var localCancellationTokenSource = new CancellationTokenSource(
             TimeSpan.FromSeconds(60)
@@ -89,7 +66,7 @@ public sealed class Navigations : TestBase
                     // Returns the same page than origin.
                     return pageE;
                 },
-                localCancellationTokenSource.Token // local token merged with journeyCancellationToken
+                localCancellationTokenSource.Token // (optional) local token merged with journeyCancellationToken
             )
             .GotoAsync<PageA>();
 
@@ -100,7 +77,7 @@ public sealed class Navigations : TestBase
     [Fact(
         DisplayName = "From PageA Goto PageE - Do something on PageE - But continue from PageD to Page C"
     )]
-    public async Task Test5()
+    public async Task Test4()
     {
         await WebSiteJourney.App.OpenWebSiteAsync(JourneyCTSource.Token);
         // csharpier-ignore
