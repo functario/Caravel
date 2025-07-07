@@ -1,10 +1,38 @@
-﻿using Microsoft.Extensions.Options;
+﻿using Caravel.Abstractions;
+using Microsoft.Extensions.Options;
 using Microsoft.Playwright;
 
 namespace WebSite.Facade;
 
 public sealed class App : IAsyncDisposable
 {
+    private const string DefaultWebSiteGraph = """
+        PageA->>PageB
+        PageA->>PageC
+        PageA->>PageD
+        PageA->>PageE
+
+        PageB->>PageA
+        PageB->>PageC
+        PageB->>PageD
+        PageB->>PageE
+
+        PageC->>PageA
+        PageC->>PageB
+        PageC->>PageD
+        PageC->>PageE
+
+        PageD->>PageA
+        PageD->>PageB
+        PageD->>PageC
+        PageD->>PageE
+
+        PageE->>PageA
+        PageE->>PageB
+        PageE->>PageC
+        PageE->>PageD
+        """;
+
     public App(IPage page, IOptionsMonitor<AppOptions> options)
     {
         ArgumentNullException.ThrowIfNull(options, nameof(options));
@@ -13,10 +41,29 @@ public sealed class App : IAsyncDisposable
     }
 
     public IPage Page { get; }
-    public Uri Uri { get; }
+    public Uri Uri { get; private set; }
 
-    public async Task OpenWebSiteAsync(CancellationToken cancellationToken) =>
+    public async Task OpenWebSiteAsync(CancellationToken cancellationToken)
+    {
+        SetGraph(DefaultWebSiteGraph);
         await Page.GotoAsync(Uri.AbsoluteUri).WaitAsync(cancellationToken);
+    }
+
+    /// <summary>
+    /// Overwrite the WebSite Graph which will change the navigation.
+    /// </summary>
+    /// <param name="webSiteGraph">The Mermaid formatted graph (only indicate the nodes and edge):<br/>
+    /// PageA->>PageB<br/>
+    /// PageA->>PageC<br/>
+    /// PageA->>PageD<br/>
+    /// PageA->>PageE<br/></param>
+    /// <param name="cancellationToken"> <see cref="IJourney.JourneyCancellationToken"/>.</param>
+    /// <returns>The WebSite is opened with expected graph</returns>
+    public async Task OpenWebSiteAsync(string webSiteGraph, CancellationToken cancellationToken)
+    {
+        SetGraph(webSiteGraph);
+        await Page.GotoAsync(Uri.AbsoluteUri).WaitAsync(cancellationToken);
+    }
 
     public async ValueTask DisposeAsync()
     {
@@ -24,6 +71,18 @@ public sealed class App : IAsyncDisposable
         {
             await Page.Context.DisposeAsync();
         }
+    }
+
+    private void SetGraph(string mermaidGraph)
+    {
+        ArgumentNullException.ThrowIfNull(mermaidGraph, nameof(mermaidGraph));
+        var urlEncodeNewLine = "%0A";
+        var segment = mermaidGraph
+            .Trim()
+            .Replace("\r", "", StringComparison.OrdinalIgnoreCase)
+            .Replace("\n", urlEncodeNewLine, StringComparison.OrdinalIgnoreCase);
+        var graphAddress = Uri.AbsoluteUri + "?graph=" + segment;
+        Uri = new Uri(graphAddress, UriKind.Absolute);
     }
 
     private static Uri GetUri(string webSitePath)

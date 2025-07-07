@@ -16,6 +16,7 @@ public sealed class Navigations : TestBase
     public async Task Test1()
     {
         await WebSiteJourney.App.OpenWebSiteAsync(JourneyCTSource.Token);
+
         await WebSiteJourney.GotoAsync<PageB>();
 
         // Route validation
@@ -30,7 +31,7 @@ public sealed class Navigations : TestBase
         );
 
         var journeyCancellationToken = JourneyCTSource.Token;
-        await WebSiteJourney.App.OpenWebSiteAsync(journeyCancellationToken);
+        await WebSiteJourney.App.OpenWebSiteAsync(JourneyCTSource.Token);
         // csharpier-ignore
         await WebSiteJourney
             .GotoAsync<PageB>()

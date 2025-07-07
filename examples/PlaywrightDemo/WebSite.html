@@ -2,7 +2,8 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8" />
-    <title>Simple Static Page Switcher</title>
+    <title>Dynamic Graph Page Switcher</title>
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
     <style>
         body {
             font-family: sans-serif;
@@ -27,52 +28,171 @@
         h1 {
             color: #333;
         }
+
+        #mermaid-graph {
+            margin: 2em auto;
+            border: 1px solid #ccc;
+            padding: 1em;
+            max-width: 600px;
+            background: #f9f9f9;
+        }
+
+        #breadcrumbs {
+            font-size: 0.9em;
+            color: #555;
+            margin: 1em 0;
+        }
     </style>
 </head>
 <body>
 
-    <!-- Shared Title -->
     <h1 id="txt-title" data-testid="txt-title">This is Page A</h1>
 
-    <!-- Navigation Buttons -->
-    <div id="navigation">
-        <button data-testid="btn-PageA" onclick="showPage('PageA')">Go to Page A</button>
-        <button data-testid="btn-PageB" onclick="showPage('PageB')">Go to Page B</button>
-        <button data-testid="btn-PageC" onclick="showPage('PageC')">Go to Page C</button>
-        <button data-testid="btn-PageD" onclick="showPage('PageD')">Go to Page D</button>
-        <button data-testid="btn-PageE" onclick="showPage('PageE')">Go to Page E</button>
-    </div>
+    <div id="breadcrumbs">Navigation history: <span id="breadcrumb-path">PageA</span></div>
 
-    <!-- Page content containers -->
-    <div id="PageA" class="page active"></div>
-    <div id="PageB" class="page"></div>
-    <div id="PageC" class="page"></div>
-    <div id="PageD" class="page"></div>
-    <div id="PageE" class="page"></div>
+    <div id="navigation"></div>
+
+    <div id="mermaid-graph" class="mermaid"></div>
+
+    <div id="pages-container"></div>
 
     <script>
-        const pageIds = ["PageA", "PageB", "PageC", "PageD", "PageE"];
+        function getMermaidGraphFromUrl() {
+            const params = new URLSearchParams(window.location.search);
+            const raw = params.get('graph');
+            if (raw) return decodeURIComponent(raw);
+            return `        
+                PageA->>PageB
+                PageA->>PageC
+                PageA->>PageD
+                PageA->>PageE
 
-        function showPage(id) {
-            // Update visible page (show the div)
-            pageIds.forEach(page => {
-                document.getElementById(page).classList.toggle("active", page === id);
-            });
+                PageB->>PageA
+                PageB->>PageC
+                PageB->>PageD
+                PageB->>PageE
 
-            // ✅ Update the correct title element
-            const title = document.getElementById("txt-title");
-            title.textContent = `This is ${id}`;
+                PageC->>PageA
+                PageC->>PageB
+                PageC->>PageD
+                PageC->>PageE
 
-            // ✅ Enable/disable buttons
-            pageIds.forEach(page => {
-                const btn = document.querySelector(`[data-testid="btn-${page}"]`);
-                btn.disabled = (page === id);
-            });
+                PageD->>PageA
+                PageD->>PageB
+                PageD->>PageC
+                PageD->>PageE
+
+                PageE->>PageA
+                PageE->>PageB
+                PageE->>PageC
+                PageE->>PageD
+              `.trim();
         }
 
-        // ✅ Initialize based on the page that has .active
-        const initial = pageIds.find(p => document.getElementById(p).classList.contains("active")) || "PageA";
-        showPage(initial);
+        function normalizeMermaidFlowchart(graph) {
+            // Replace any `->>` with `-->` for flowchart compatibility
+            return graph.replace(/->>/g, '-->');
+        }
+
+        function parseMermaidEdges(mermaid) {
+            const edges = [];
+            const lines = mermaid.split('\n');
+            for (const line of lines) {
+                const match = line.trim().match(/^(\w+)\s*-->\s*(\w+)/);
+                if (match) {
+                    const [, from, to] = match;
+                    edges.push({ from, to });
+                }
+            }
+            return edges;
+        }
+
+        function buildGraph(edges) {
+            const graph = {};
+            for (const { from, to } of edges) {
+                if (!graph[from]) graph[from] = [];
+                graph[from].push(to);
+                if (!graph[to]) graph[to] = [];
+            }
+            return graph;
+        }
+
+        function renderMermaid(graphText) {
+            const mermaidDiv = document.getElementById("mermaid-graph");
+            mermaidDiv.textContent = `graph TD\n${graphText}`;
+            mermaid.run();
+        }
+
+        function initPages(graph, startNode = "PageA") {
+            const container = document.getElementById("pages-container");
+            const nav = document.getElementById("navigation");
+            const breadcrumbs = document.getElementById("breadcrumb-path");
+            const title = document.getElementById("txt-title");
+
+            const visited = [];
+
+            Object.keys(graph).forEach(pageId => {
+                const div = document.createElement("div");
+                div.id = pageId;
+                div.className = "page";
+                div.textContent = `Content for ${pageId}`;
+                container.appendChild(div);
+            });
+
+            function updateBreadcrumbs() {
+                breadcrumbs.textContent = visited.join(" → ");
+            }
+
+            function updateHistory(page) {
+                history.pushState({ page }, "", `#${page}`);
+            }
+
+            function showPage(id, skipPush = false) {
+                if (!graph[id]) return;
+
+                Object.keys(graph).forEach(pageId => {
+                    document.getElementById(pageId).classList.toggle("active", pageId === id);
+                });
+
+                title.textContent = `This is ${id}`;
+
+                if (!visited.length || visited[visited.length - 1] !== id) {
+                    visited.push(id);
+                    updateBreadcrumbs();
+                }
+
+                nav.innerHTML = "";
+                (graph[id] || []).forEach(target => {
+                    const btn = document.createElement("button");
+                    btn.textContent = `Go to ${target}`;
+                    btn.dataset.testid = `btn-${target}`;
+                    btn.disabled = target === id;
+                    btn.onclick = () => {
+                        showPage(target);
+                        updateHistory(target);
+                    };
+                    nav.appendChild(btn);
+                });
+
+                if (!skipPush) updateHistory(id);
+            }
+
+            window.onpopstate = (e) => {
+                const page = (e.state && e.state.page) || startNode;
+                showPage(page, true);
+            };
+
+            const hash = window.location.hash?.substring(1);
+            showPage(graph[hash] ? hash : startNode);
+        }
+
+        const rawGraph = getMermaidGraphFromUrl();
+        const flowchart = normalizeMermaidFlowchart(rawGraph);
+        const edges = parseMermaidEdges(flowchart);
+        const graph = buildGraph(edges);
+
+        renderMermaid(flowchart);
+        initPages(graph);
     </script>
 
 </body>

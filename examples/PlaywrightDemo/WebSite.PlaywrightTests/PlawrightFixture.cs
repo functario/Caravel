@@ -22,7 +22,7 @@ public sealed class PlaywrightFixture : IAsyncLifetime
     private static BrowserTypeLaunchOptions BrowserTypeLaunchOptions =>
         new()
         {
-            Headless = true,
+            Headless = false,
             /*SlowMo = 500*/
         };
 
