@@ -26,7 +26,7 @@ public sealed class PageA : BasePage, IStartingPOM
             this.CreateEdge<PageB>(OpenNextPageAsync<PageB>),
             this.CreateEdge<PageC>(OpenNextPageAsync<PageC>),
             this.CreateEdge<PageD>(OpenNextPageAsync<PageD>),
-            this.CreateEdge<PageE>(OpenNextPageAsync<PageE>),
+            this.CreateEdge<PageE>(OpenNextPageAsync<PageE>, weight: 99),
         ];
     }
 }

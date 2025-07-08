@@ -52,16 +52,17 @@ public sealed class App : IAsyncDisposable
     /// <summary>
     /// Overwrite the WebSite Graph which will change the navigation.
     /// </summary>
-    /// <param name="webSiteGraph">The Mermaid formatted graph (only indicate the nodes and edge):<br/>
+    /// <param name="webSiteTopology">The topology of the website as
+    /// Mermaid formatted graph:<br/>
     /// PageA->>PageB<br/>
     /// PageA->>PageC<br/>
     /// PageA->>PageD<br/>
     /// PageA->>PageE<br/></param>
     /// <param name="cancellationToken"> <see cref="IJourney.JourneyCancellationToken"/>.</param>
     /// <returns>The WebSite is opened with expected graph</returns>
-    public async Task OpenWebSiteAsync(string webSiteGraph, CancellationToken cancellationToken)
+    public async Task OpenWebSiteAsync(string webSiteTopology, CancellationToken cancellationToken)
     {
-        SetGraph(webSiteGraph);
+        SetGraph(webSiteTopology);
         await Page.GotoAsync(Uri.AbsoluteUri).WaitAsync(cancellationToken);
     }
 
@@ -78,6 +79,9 @@ public sealed class App : IAsyncDisposable
         ArgumentNullException.ThrowIfNull(mermaidGraph, nameof(mermaidGraph));
         var urlEncodeNewLine = "%0A";
         var segment = mermaidGraph
+            .Replace("graph", "", StringComparison.OrdinalIgnoreCase)
+            .Replace("TD", "", StringComparison.OrdinalIgnoreCase)
+            .Replace("LR", "", StringComparison.OrdinalIgnoreCase)
             .Trim()
             .Replace("\r", "", StringComparison.OrdinalIgnoreCase)
             .Replace("\n", urlEncodeNewLine, StringComparison.OrdinalIgnoreCase);
