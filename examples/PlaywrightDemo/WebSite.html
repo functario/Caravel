@@ -2,12 +2,14 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8" />
-    <title>Simple Static Page Switcher</title>
+    <title>Dynamic Graph Page Switcher</title>
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
     <style>
         body {
             font-family: sans-serif;
             text-align: center;
             margin: 2em;
+            transition: background-color 0.5s ease;
         }
 
         button {
@@ -27,52 +29,233 @@
         h1 {
             color: #333;
         }
+
+        #mermaid-graph {
+            margin: 2em auto;
+            border: 1px solid #ccc;
+            padding: 1em;
+            max-width: 600px;
+            background: #f9f9f9;
+        }
+
+        #breadcrumbs {
+            font-size: 1.25em;
+            font-weight: bold;
+            color: #333; 
+            margin: 1em 0;
+        }
+
+        #expected-path {
+            font-size: 1.25em;
+            font-weight: bold;
+            color: #333;
+            margin-top: 0.5em;
+        }
     </style>
 </head>
 <body>
 
-    <!-- Shared Title -->
     <h1 id="txt-title" data-testid="txt-title">This is Page A</h1>
 
-    <!-- Navigation Buttons -->
-    <div id="navigation">
-        <button data-testid="btn-PageA" onclick="showPage('PageA')">Go to Page A</button>
-        <button data-testid="btn-PageB" onclick="showPage('PageB')">Go to Page B</button>
-        <button data-testid="btn-PageC" onclick="showPage('PageC')">Go to Page C</button>
-        <button data-testid="btn-PageD" onclick="showPage('PageD')">Go to Page D</button>
-        <button data-testid="btn-PageE" onclick="showPage('PageE')">Go to Page E</button>
+    <div id="nav-summary-box" style="border: 2px solid #ccc; padding: 1em; margin: 1em auto; display: inline-block;">
+        <div id="breadcrumbs">Navigation history: <span id="breadcrumb-path">PageA</span></div>
+        <div id="expected-path"></div>
     </div>
 
-    <!-- Page content containers -->
-    <div id="PageA" class="page active"></div>
-    <div id="PageB" class="page"></div>
-    <div id="PageC" class="page"></div>
-    <div id="PageD" class="page"></div>
-    <div id="PageE" class="page"></div>
+    <div id="navigation"></div>
+
+    <div id="mermaid-graph" class="mermaid"></div>
+
+    <div id="pages-container"></div>
 
     <script>
-        const pageIds = ["PageA", "PageB", "PageC", "PageD", "PageE"];
+        mermaid.initialize({ startOnLoad: false });
+        const pageColors = {
+            PageA: '#FF6F61',  // Coral Red
+            PageB: '#6B5B95',  // Royal Purple
+            PageC: '#88B04B',  // Olive Green
+            PageD: '#F7CAC9',  // Light Pink
+            PageE: '#92A8D1',  // Light Blue
+            PageF: '#955251',  // Brick Red
+            PageG: '#B565A7',  // Orchid
+            PageH: '#009B77',  // Teal Green
+            PageI: '#DD4124',  // Chili Pepper Red
+            PageJ: '#45B8AC',  // Turquoise
+            PageK: '#EFC050',  // Mustard Yellow
+            PageL: '#5B5EA6',  // Deep Blue
+            PageM: '#9B2335',  // Dark Crimson
+            PageN: '#DFCFBE',  // Taupe
+            PageO: '#BC243C',  // Maroon Red
+            PageP: '#98B4D4',  // Dusty Blue
+            PageQ: '#E15D44',  // Burnt Orange
+            PageR: '#7FCDCD',  // Aquamarine
+            PageS: '#FFA07A',  // Light Salmon
+            PageT: '#CD5C5C',  // Indian Red
+            PageU: '#40E0D0',  // Turquoise
+            PageV: '#3CB371',  // Medium Sea Green
+            PageW: '#9370DB',  // Medium Purple
+            PageX: '#FFD700',  // Gold
+            PageY: '#00CED1',  // Dark Turquoise
+            PageZ: '#DC143C'   // Crimson
+        };
 
-        function showPage(id) {
-            // Update visible page (show the div)
-            pageIds.forEach(page => {
-                document.getElementById(page).classList.toggle("active", page === id);
-            });
 
-            // ✅ Update the correct title element
-            const title = document.getElementById("txt-title");
-            title.textContent = `This is ${id}`;
+        function getMermaidGraphFromUrl() {
+            const params = new URLSearchParams(window.location.search);
+            const raw = params.get('graph');
+            if (raw) return decodeURIComponent(raw);
+            return `        
+                PageA-->PageB
+                PageA-->PageC
+                PageA-->PageD
+                PageA-->PageE
+                      
+                PageB-->PageA
+                PageB-->PageC
+                PageB-->PageD
+                PageB-->PageE
+                      
+                PageC-->PageA
+                PageC-->PageB
+                PageC-->PageD
+                PageC-->PageE
+                      
+                PageD-->PageA
+                PageD-->PageB
+                PageD-->PageC
+                PageD-->PageE
+                      
+                PageE-->PageA
+                PageE-->PageB
+                PageE-->PageC
+                PageE-->PageD
+              `.trim();
+        }
 
-            // ✅ Enable/disable buttons
-            pageIds.forEach(page => {
-                const btn = document.querySelector(`[data-testid="btn-${page}"]`);
-                btn.disabled = (page === id);
+        function normalizeMermaidFlowchart(graph) {
+            // Replace any `->>` with `-->` for flowchart compatibility
+            return graph.replace(/->>/g, '-->');
+        }
+
+        function parseMermaidEdges(mermaid) {
+            const edges = [];
+            const lines = mermaid.split('\n');
+            for (const line of lines) {
+                const match = line.trim().match(/^(\w+)\s*-->\s*(\w+)/);
+                if (match) {
+                    const [, from, to] = match;
+                    edges.push({ from, to });
+                }
+            }
+            return edges;
+        }
+
+        function buildGraph(edges) {
+            const graph = {};
+            for (const { from, to } of edges) {
+                if (!graph[from]) graph[from] = [];
+                graph[from].push(to);
+                if (!graph[to]) graph[to] = [];
+            }
+            return graph;
+        }
+
+        function renderMermaidWithHighlight(graphText, currentPage) {
+            const highlightColor = "#FFCC00";
+            const styledGraph = `graph TD\n${graphText}\nstyle ${currentPage} fill:${highlightColor},stroke:#333,stroke-width:2px`;
+
+            const mermaidDiv = document.getElementById("mermaid-graph");
+
+            // Generate new ID each time to avoid cache conflicts
+            const uniqueId = "mermaid-graph-id-" + Math.random().toString(36).substr(2, 9);
+
+            mermaid.render(uniqueId, styledGraph).then(({ svg }) => {
+                mermaidDiv.innerHTML = svg;
+            }).catch(err => {
+                mermaidDiv.innerHTML = `<pre style="color:red;">Mermaid Error:\n${err.message}</pre>`;
+                console.error("Mermaid render error:", err);
             });
         }
 
-        // ✅ Initialize based on the page that has .active
-        const initial = pageIds.find(p => document.getElementById(p).classList.contains("active")) || "PageA";
-        showPage(initial);
+        function initPages(graph, startNode = "PageA") {
+            const container = document.getElementById("pages-container");
+            const nav = document.getElementById("navigation");
+            const breadcrumbs = document.getElementById("breadcrumb-path");
+            const expected = new URLSearchParams(window.location.search).get("expected");
+            const expectedDiv = document.getElementById("expected-path");
+            if (expected) {
+                expectedDiv.textContent = "Expected navigation: " + expected.replace(/-->/g, " → ");
+            }
+
+            const title = document.getElementById("txt-title");
+
+            const visited = [];
+
+            Object.keys(graph).forEach(pageId => {
+                const div = document.createElement("div");
+                div.id = pageId;
+                div.className = "page";
+                div.textContent = `Content for ${pageId}`;
+                container.appendChild(div);
+            });
+
+            function updateBreadcrumbs() {
+                breadcrumbs.textContent = visited.join(" → ");
+            }
+
+            function updateHistory(page) {
+                history.pushState({ page }, "", `#${page}`);
+            }
+
+            function showPage(id, skipPush = false) {
+                if (!graph[id]) return;
+
+                Object.keys(graph).forEach(pageId => {
+                    document.getElementById(pageId).classList.toggle("active", pageId === id);
+                });
+
+                title.textContent = `This is ${id}`;
+
+                document.body.style.backgroundColor = pageColors[id] || "#FFFFFF";
+
+                if (!visited.length || visited[visited.length - 1] !== id) {
+                    visited.push(id);
+                    updateBreadcrumbs();
+                }
+
+                nav.innerHTML = "";
+                (graph[id] || []).forEach(target => {
+                    const btn = document.createElement("button");
+                    btn.textContent = `Go to ${target}`;
+                    btn.dataset.testid = `btn-${target}`;
+                    btn.disabled = target === id;
+                    btn.onclick = () => {
+                        showPage(target);
+                        updateHistory(target);
+                    };
+                    nav.appendChild(btn);
+                });
+
+                if (!skipPush) updateHistory(id);
+                renderMermaidWithHighlight(flowchart, id);
+            }
+
+            window.onpopstate = (e) => {
+                const page = (e.state && e.state.page) || startNode;
+                showPage(page, true);
+            };
+
+            const hash = window.location.hash?.substring(1);
+            showPage(graph[hash] ? hash : startNode);
+        }
+
+        const rawGraph = getMermaidGraphFromUrl();
+        const flowchart = normalizeMermaidFlowchart(rawGraph);
+        const edges = parseMermaidEdges(flowchart);
+        const graph = buildGraph(edges);
+
+        renderMermaidWithHighlight(flowchart, "PageA");
+        initPages(graph);
     </script>
 
 </body>

@@ -19,12 +19,11 @@ public sealed class PlaywrightFixture : IAsyncLifetime
         Browser = await Playwright.Chromium.LaunchAsync(BrowserTypeLaunchOptions);
     }
 
+    // csharpier-ignore-start
     private static BrowserTypeLaunchOptions BrowserTypeLaunchOptions =>
-        new()
-        {
-            Headless = true,
-            /*SlowMo = 500*/
-        };
+    new() { Headless = true };
+    //new () { Headless = false, SlowMo = 1000 };
+    // csharpier-ignore-end
 
     [System.Diagnostics.CodeAnalysis.SuppressMessage(
         "Performance",
