@@ -9,6 +9,7 @@
             font-family: sans-serif;
             text-align: center;
             margin: 2em;
+            transition: background-color 0.5s ease;
         }
 
         button {
@@ -38,8 +39,9 @@
         }
 
         #breadcrumbs {
-            font-size: 0.9em;
-            color: #555;
+            font-size: 1.25em;
+            font-weight: bold;
+            color: #333; 
             margin: 1em 0;
         }
     </style>
@@ -57,6 +59,37 @@
     <div id="pages-container"></div>
 
     <script>
+        mermaid.initialize({ startOnLoad: false });
+        const pageColors = {
+            PageA: '#FF6F61',  // Coral Red
+            PageB: '#6B5B95',  // Royal Purple
+            PageC: '#88B04B',  // Olive Green
+            PageD: '#F7CAC9',  // Light Pink
+            PageE: '#92A8D1',  // Light Blue
+            PageF: '#955251',  // Brick Red
+            PageG: '#B565A7',  // Orchid
+            PageH: '#009B77',  // Teal Green
+            PageI: '#DD4124',  // Chili Pepper Red
+            PageJ: '#45B8AC',  // Turquoise
+            PageK: '#EFC050',  // Mustard Yellow
+            PageL: '#5B5EA6',  // Deep Blue
+            PageM: '#9B2335',  // Dark Crimson
+            PageN: '#DFCFBE',  // Taupe
+            PageO: '#BC243C',  // Maroon Red
+            PageP: '#98B4D4',  // Dusty Blue
+            PageQ: '#E15D44',  // Burnt Orange
+            PageR: '#7FCDCD',  // Aquamarine
+            PageS: '#FFA07A',  // Light Salmon
+            PageT: '#CD5C5C',  // Indian Red
+            PageU: '#40E0D0',  // Turquoise
+            PageV: '#3CB371',  // Medium Sea Green
+            PageW: '#9370DB',  // Medium Purple
+            PageX: '#FFD700',  // Gold
+            PageY: '#00CED1',  // Dark Turquoise
+            PageZ: '#DC143C'   // Crimson
+        };
+
+
         function getMermaidGraphFromUrl() {
             const params = new URLSearchParams(window.location.search);
             const raw = params.get('graph');
@@ -117,10 +150,21 @@
             return graph;
         }
 
-        function renderMermaid(graphText) {
+        function renderMermaidWithHighlight(graphText, currentPage) {
+            const highlightColor = "#FFCC00";
+            const styledGraph = `graph TD\n${graphText}\nstyle ${currentPage} fill:${highlightColor},stroke:#333,stroke-width:2px`;
+
             const mermaidDiv = document.getElementById("mermaid-graph");
-            mermaidDiv.textContent = `graph TD\n${graphText}`;
-            mermaid.run();
+
+            // Generate new ID each time to avoid cache conflicts
+            const uniqueId = "mermaid-graph-id-" + Math.random().toString(36).substr(2, 9);
+
+            mermaid.render(uniqueId, styledGraph).then(({ svg }) => {
+                mermaidDiv.innerHTML = svg;
+            }).catch(err => {
+                mermaidDiv.innerHTML = `<pre style="color:red;">Mermaid Error:\n${err.message}</pre>`;
+                console.error("Mermaid render error:", err);
+            });
         }
 
         function initPages(graph, startNode = "PageA") {
@@ -156,6 +200,8 @@
 
                 title.textContent = `This is ${id}`;
 
+                document.body.style.backgroundColor = pageColors[id] || "#FFFFFF";
+
                 if (!visited.length || visited[visited.length - 1] !== id) {
                     visited.push(id);
                     updateBreadcrumbs();
@@ -175,6 +221,7 @@
                 });
 
                 if (!skipPush) updateHistory(id);
+                renderMermaidWithHighlight(flowchart, id);
             }
 
             window.onpopstate = (e) => {
@@ -191,7 +238,7 @@
         const edges = parseMermaidEdges(flowchart);
         const graph = buildGraph(edges);
 
-        renderMermaid(flowchart);
+        renderMermaidWithHighlight(flowchart, "PageA");
         initPages(graph);
     </script>
 
