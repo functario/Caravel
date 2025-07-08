@@ -14,7 +14,8 @@ public sealed class WaypointsAndExcludedNodes : TestBase
     [Fact(DisplayName = "From PageA Goto PageE with PageC and PageD as waypoints")]
     public async Task Test1()
     {
-        await WebSiteJourney.App.OpenWebSiteAsync(JourneyCTSource.Token);
+        var expectedRoute = "PageA-->PageC-->PageD-->PageE";
+        await WebSiteJourney.App.OpenWebSiteAsync(expectedRoute, JourneyCTSource.Token);
 
         // Force to pass by PageC then PageD, in order of declaration in Waypoints.
         Waypoints waypoints = [typeof(PageC), typeof(PageD)];
@@ -27,7 +28,8 @@ public sealed class WaypointsAndExcludedNodes : TestBase
     [Fact(DisplayName = "From PageA Goto PageE with PageB as excluded node")]
     public async Task Test2()
     {
-        await WebSiteJourney.App.OpenWebSiteAsync(JourneyCTSource.Token);
+        var expectedRoute = "PageA-->PageC-->PageE";
+        await WebSiteJourney.App.OpenWebSiteAsync(expectedRoute, JourneyCTSource.Token);
 
         // Given PageA-->PageE has a weight of 99,
         // the shortest route should be A, B, E.
@@ -44,7 +46,8 @@ public sealed class WaypointsAndExcludedNodes : TestBase
     )]
     public async Task Test3()
     {
-        await WebSiteJourney.App.OpenWebSiteAsync(JourneyCTSource.Token);
+        var expectedRoute = "PageA-->PageC-->PageD-->PageE";
+        await WebSiteJourney.App.OpenWebSiteAsync(expectedRoute, JourneyCTSource.Token);
 
         // Given PageA-->PageE has a weight of 99,
         // the shortest route should be A, B, E.

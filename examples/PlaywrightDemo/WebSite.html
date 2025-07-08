@@ -44,13 +44,23 @@
             color: #333; 
             margin: 1em 0;
         }
+
+        #expected-path {
+            font-size: 1.25em;
+            font-weight: bold;
+            color: #333;
+            margin-top: 0.5em;
+        }
     </style>
 </head>
 <body>
 
     <h1 id="txt-title" data-testid="txt-title">This is Page A</h1>
 
-    <div id="breadcrumbs">Navigation history: <span id="breadcrumb-path">PageA</span></div>
+    <div id="nav-summary-box" style="border: 2px solid #ccc; padding: 1em; margin: 1em auto; display: inline-block;">
+        <div id="breadcrumbs">Navigation history: <span id="breadcrumb-path">PageA</span></div>
+        <div id="expected-path"></div>
+    </div>
 
     <div id="navigation"></div>
 
@@ -95,30 +105,30 @@
             const raw = params.get('graph');
             if (raw) return decodeURIComponent(raw);
             return `        
-                PageA->>PageB
-                PageA->>PageC
-                PageA->>PageD
-                PageA->>PageE
-
-                PageB->>PageA
-                PageB->>PageC
-                PageB->>PageD
-                PageB->>PageE
-
-                PageC->>PageA
-                PageC->>PageB
-                PageC->>PageD
-                PageC->>PageE
-
-                PageD->>PageA
-                PageD->>PageB
-                PageD->>PageC
-                PageD->>PageE
-
-                PageE->>PageA
-                PageE->>PageB
-                PageE->>PageC
-                PageE->>PageD
+                PageA-->PageB
+                PageA-->PageC
+                PageA-->PageD
+                PageA-->PageE
+                      
+                PageB-->PageA
+                PageB-->PageC
+                PageB-->PageD
+                PageB-->PageE
+                      
+                PageC-->PageA
+                PageC-->PageB
+                PageC-->PageD
+                PageC-->PageE
+                      
+                PageD-->PageA
+                PageD-->PageB
+                PageD-->PageC
+                PageD-->PageE
+                      
+                PageE-->PageA
+                PageE-->PageB
+                PageE-->PageC
+                PageE-->PageD
               `.trim();
         }
 
@@ -171,6 +181,12 @@
             const container = document.getElementById("pages-container");
             const nav = document.getElementById("navigation");
             const breadcrumbs = document.getElementById("breadcrumb-path");
+            const expected = new URLSearchParams(window.location.search).get("expected");
+            const expectedDiv = document.getElementById("expected-path");
+            if (expected) {
+                expectedDiv.textContent = "Expected navigation: " + expected.replace(/-->/g, " → ");
+            }
+
             const title = document.getElementById("txt-title");
 
             const visited = [];

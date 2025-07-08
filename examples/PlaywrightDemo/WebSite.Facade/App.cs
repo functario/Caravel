@@ -43,9 +43,9 @@ public sealed class App : IAsyncDisposable
     public IPage Page { get; }
     public Uri Uri { get; private set; }
 
-    public async Task OpenWebSiteAsync(CancellationToken cancellationToken)
+    public async Task OpenWebSiteAsync(string expectedRoute, CancellationToken cancellationToken)
     {
-        SetGraph(DefaultWebSiteGraph);
+        SetUri(DefaultWebSiteGraph, expectedRoute);
         await Page.GotoAsync(Uri.AbsoluteUri).WaitAsync(cancellationToken);
     }
 
@@ -58,11 +58,16 @@ public sealed class App : IAsyncDisposable
     /// PageA->>PageC<br/>
     /// PageA->>PageD<br/>
     /// PageA->>PageE<br/></param>
+    /// <param name="expectedRoute">The expected route.</param>
     /// <param name="cancellationToken"> <see cref="IJourney.JourneyCancellationToken"/>.</param>
     /// <returns>The WebSite is opened with expected graph</returns>
-    public async Task OpenWebSiteAsync(string webSiteTopology, CancellationToken cancellationToken)
+    public async Task OpenWebSiteAsync(
+        string webSiteTopology,
+        string expectedRoute,
+        CancellationToken cancellationToken
+    )
     {
-        SetGraph(webSiteTopology);
+        SetUri(webSiteTopology, expectedRoute);
         await Page.GotoAsync(Uri.AbsoluteUri).WaitAsync(cancellationToken);
     }
 
@@ -74,7 +79,7 @@ public sealed class App : IAsyncDisposable
         }
     }
 
-    private void SetGraph(string mermaidGraph)
+    private void SetUri(string mermaidGraph, string expectedRoute)
     {
         ArgumentNullException.ThrowIfNull(mermaidGraph, nameof(mermaidGraph));
         var urlEncodeNewLine = "%0A";
@@ -85,7 +90,7 @@ public sealed class App : IAsyncDisposable
             .Trim()
             .Replace("\r", "", StringComparison.OrdinalIgnoreCase)
             .Replace("\n", urlEncodeNewLine, StringComparison.OrdinalIgnoreCase);
-        var graphAddress = Uri.AbsoluteUri + "?graph=" + segment;
+        var graphAddress = Uri.AbsoluteUri + "?graph=" + segment + "&expected=" + expectedRoute;
         Uri = new Uri(graphAddress, UriKind.Absolute);
     }
 

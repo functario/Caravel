@@ -15,7 +15,8 @@ public sealed class Navigations : TestBase
     [Fact(DisplayName = "From PageA Goto PageB")]
     public async Task Test1()
     {
-        await WebSiteJourney.App.OpenWebSiteAsync(JourneyCTSource.Token);
+        var expectedRoute = "PageA-->PageB";
+        await WebSiteJourney.App.OpenWebSiteAsync(expectedRoute, JourneyCTSource.Token);
 
         await WebSiteJourney.GotoAsync<PageB>();
 
@@ -30,8 +31,9 @@ public sealed class Navigations : TestBase
             TimeSpan.FromSeconds(60)
         );
 
+        var expectedRoute = "PageA-->PageB-->PageE-->PageC";
         var journeyCancellationToken = JourneyCTSource.Token;
-        await WebSiteJourney.App.OpenWebSiteAsync(JourneyCTSource.Token);
+        await WebSiteJourney.App.OpenWebSiteAsync(expectedRoute, JourneyCTSource.Token);
         // csharpier-ignore
         await WebSiteJourney
             .GotoAsync<PageB>()
@@ -53,7 +55,8 @@ public sealed class Navigations : TestBase
             TimeSpan.FromSeconds(60)
         );
 
-        await WebSiteJourney.App.OpenWebSiteAsync(JourneyCTSource.Token);
+        var expectedRoute = "PageA-->PageB-->PageE-->PageA";
+        await WebSiteJourney.App.OpenWebSiteAsync(expectedRoute, JourneyCTSource.Token);
         // csharpier-ignore
         await WebSiteJourney
             .GotoAsync<PageE>()
@@ -80,7 +83,8 @@ public sealed class Navigations : TestBase
     )]
     public async Task Test4()
     {
-        await WebSiteJourney.App.OpenWebSiteAsync(JourneyCTSource.Token);
+        var expectedRoute = "PageA-->PageB-->PageE-->PageD-->PageC";
+        await WebSiteJourney.App.OpenWebSiteAsync(expectedRoute, JourneyCTSource.Token);
         // csharpier-ignore
         await WebSiteJourney
             .GotoAsync<PageE>()
