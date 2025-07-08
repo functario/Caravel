@@ -199,17 +199,32 @@ public abstract class Journey : IJourney, IJourneyLegPublisher
         throw new UnexpectedNodeException(CurrentNode.GetType(), typeof(TCurrentNode));
     }
 
-    public abstract Task PublishOnJourneyLegCompletedAsync(
+    Task IJourneyLegPublisher.PublishOnJourneyLegCompletedAsync(
+        IJourneyLegCompletedEvent journeyLegCompletedEvent,
+        CancellationToken cancellationToken
+    ) => PublishOnJourneyLegCompletedAsync(journeyLegCompletedEvent, cancellationToken);
+
+    Task IJourneyLegPublisher.PublishOnJourneyLegStartedAsync(
+        IJourneyLegStartedEvent journeyLegStartedEvent,
+        CancellationToken cancellationToken
+    ) => PublishOnJourneyLegStartedAsync(journeyLegStartedEvent, cancellationToken);
+
+    Task IJourneyLegPublisher.PublishOnJourneyLegUpdatedAsync(
+        IJourneyLegUpdatedEvent journeyLegUpdatedEvent,
+        CancellationToken cancellationToken
+    ) => PublishOnJourneyLegUpdatedAsync(journeyLegUpdatedEvent, cancellationToken);
+
+    protected abstract Task PublishOnJourneyLegCompletedAsync(
         IJourneyLegCompletedEvent journeyLegCompletedEvent,
         CancellationToken cancellationToken
     );
 
-    public abstract Task PublishOnJourneyLegStartedAsync(
+    protected abstract Task PublishOnJourneyLegStartedAsync(
         IJourneyLegStartedEvent journeyLegStartedEvent,
         CancellationToken cancellationToken
     );
 
-    public abstract Task PublishOnJourneyLegUpdatedAsync(
+    protected abstract Task PublishOnJourneyLegUpdatedAsync(
         IJourneyLegUpdatedEvent journeyLegUpdatedEvent,
         CancellationToken cancellationToken
     );
