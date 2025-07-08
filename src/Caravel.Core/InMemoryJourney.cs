@@ -29,7 +29,7 @@ public class InMemoryJourney : Journey
         return Task.FromResult<IEnumerable<IJourneyLeg>>(legArray);
     }
 
-    public sealed override Task PublishOnJourneyLegCompletedAsync(
+    protected override Task PublishOnJourneyLegCompletedAsync(
         IJourneyLegCompletedEvent journeyLegCompletedEvent,
         CancellationToken cancellationToken
     )
@@ -41,12 +41,12 @@ public class InMemoryJourney : Journey
         return Task.CompletedTask;
     }
 
-    public sealed override Task PublishOnJourneyLegStartedAsync(
+    protected override Task PublishOnJourneyLegStartedAsync(
         IJourneyLegStartedEvent journeyLegStartedEvent,
         CancellationToken cancellationToken
     ) => PublishJourneyLegEventAsync(journeyLegStartedEvent, cancellationToken);
 
-    public sealed override Task PublishOnJourneyLegUpdatedAsync(
+    protected override Task PublishOnJourneyLegUpdatedAsync(
         IJourneyLegUpdatedEvent journeyLegUpdatedEvent,
         CancellationToken cancellationToken
     ) => PublishJourneyLegEventAsync(journeyLegUpdatedEvent, cancellationToken);
