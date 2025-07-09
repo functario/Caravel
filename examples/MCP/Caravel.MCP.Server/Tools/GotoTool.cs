@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel;
 using System.Reflection;
+using Caravel.Abstractions;
 using Caravel.Core;
 using Caravel.Mermaid;
 using ModelContextProtocol.Server;
@@ -28,11 +29,16 @@ internal static class GotoTool
             var webSiteAssembly = Assembly.GetAssembly(typeof(WebSiteJourney))!;
             var type = webSiteAssembly
                 .GetTypes()
-                ?.Where(x => x.Name == destinationPage)
+                ?.Where(x =>
+                    x.Name.Equals(
+                        destinationPage.Trim([' ', '.']),
+                        StringComparison.OrdinalIgnoreCase
+                    )
+                )
                 .FirstOrDefault()!;
 
             var method = typeof(WebSiteJourney)
-                .GetMethod("GotoAsync", BindingFlags.Instance | BindingFlags.Public)!
+                .GetMethod(nameof(IJourney.GotoAsync), BindingFlags.Instance | BindingFlags.Public)!
                 .MakeGenericMethod(type);
 
             // Invoke it and await the Task
