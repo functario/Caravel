@@ -17,7 +17,7 @@ public class TestBase : IClassFixture<PlaywrightFixture>, IAsyncLifetime
     public WebSiteJourney WebSiteJourney { get; private set; } = null!;
     public IBrowserContext Context { get; set; } = null!;
     public IPage Page { get; set; } = null!;
-    public IHost TestHost { get; set; } = null!;
+    private IHost TestHost { get; set; } = null!;
 
     public TestBase(PlaywrightFixture playwrightFixture)
     {

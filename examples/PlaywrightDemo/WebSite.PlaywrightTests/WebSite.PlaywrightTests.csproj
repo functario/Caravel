@@ -26,7 +26,7 @@
         <PackageReference Include="AwesomeAssertions" />
     </ItemGroup>
     <ItemGroup>
-        <Content Include="..\WebSite.html">
+        <Content Include="..\..\WebSite.html">
             <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
         </Content>
     </ItemGroup>
@@ -36,8 +36,8 @@
         <ProjectReference Include="..\WebSite.Facade\WebSite.Facade.csproj" />
     </ItemGroup>
     <ItemGroup>
-      <None Update="appsettings.json">
-        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      </None>
+        <None Update="appsettings.json">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
     </ItemGroup>
 </Project>

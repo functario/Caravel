@@ -30,6 +30,7 @@ public sealed class PlaywrightFixture : IAsyncLifetime
         "CA1822:Mark members as static",
         Justification = "Prefered implementation."
     )]
+    // The testHost is exposed to be disposed in test cleanup.
     public WebSiteJourneyBuilder CreateWebSiteJourneyBuilder(IPage page, out IHost testHost)
     {
         testHost = CreateHost(page);
