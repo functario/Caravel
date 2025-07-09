@@ -1,7 +1,7 @@
 {
     "inputs": [],
     "servers": {
-        "MyFirstMCP": {
+        "CaravelMCP": {
             "type": "stdio",
             "command": "dotnet",
             "args": [

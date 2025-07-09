@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+﻿using Caravel.Core;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Playwright;
 using WebSite.Facade;
@@ -20,9 +21,11 @@ builder.ConfigureServices(
             .ValidateOnStart();
 
         services.ConfigureOptions<AppOptions>();
+        services.AddSingleton<IPlaywright>(playwright);
+        services.AddSingleton<IBrowser>(browser);
         services.AddSingleton<IPage>(page);
         services.AddWebSiteFacade(context);
-        services.AddScoped<WebSiteJourney>(x =>
+        services.AddSingleton<WebSiteJourney>(x =>
         {
             var journeyBuilder = x.GetRequiredService<WebSiteJourneyBuilder>();
             return journeyBuilder.Create(CancellationToken.None);
@@ -30,4 +33,28 @@ builder.ConfigureServices(
     }
 );
 
-await builder.Build().RunAsync();
+var host = builder.Build();
+
+// Add cleanup for Playwright resources
+var lifetime = host.Services.GetRequiredService<IHostApplicationLifetime>();
+lifetime.ApplicationStopping.Register(async () =>
+{
+    try
+    {
+        await page.CloseAsync();
+        await context.CloseAsync();
+        await browser.CloseAsync();
+        playwright.Dispose();
+    }
+    finally
+    {
+        // Ignore cleanup errors
+    }
+});
+
+
+var journey = host.Services.GetRequiredService<WebSiteJourney>();
+await journey.App.OpenWebSiteAsync("", CancellationToken.None);
+
+
+await host.RunAsync();

@@ -25,8 +25,6 @@ internal static class GotoTool
 #pragma warning disable CA1031 // Do not catch general exception types
         try
         {
-            await journey.App.OpenWebSiteAsync("", CancellationToken.None);
-
             var webSiteAssembly = Assembly.GetAssembly(typeof(WebSiteJourney))!;
             var type = webSiteAssembly
                 .GetTypes()
