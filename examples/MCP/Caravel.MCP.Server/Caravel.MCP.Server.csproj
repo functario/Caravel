@@ -15,6 +15,7 @@
         <PackageReference Include="ModelContextProtocol" />
     </ItemGroup>
     <ItemGroup>
+        <ProjectReference Include="..\..\..\src\Caravel.Mermaid\Caravel.Mermaid.csproj" />
         <ProjectReference Include="..\..\PlaywrightDemo\WebSite.Facade\WebSite.Facade.csproj" />
     </ItemGroup>
     <ItemGroup>

@@ -1,6 +1,7 @@
 ﻿using System.ComponentModel;
-using System.Diagnostics;
 using System.Reflection;
+using Caravel.Core;
+using Caravel.Mermaid;
 using ModelContextProtocol.Server;
 using WebSite.Facade;
 
@@ -10,7 +11,7 @@ namespace Caravel.MCP.Server.Tools;
 internal static class GotoTool
 {
     [McpServerTool, Description("Echoes the message back to the client.")]
-    public static string Echo(string message) => $"Hello from C#: {message}";
+    public static string Echo(string message) => $"Hello from Echo: {message}";
 
     [
         McpServerTool,
@@ -21,21 +22,36 @@ internal static class GotoTool
     ]
     public static async Task<string> GotoAsync(WebSiteJourney journey, string destinationPage)
     {
-        var webSiteAssembly = Assembly.GetAssembly(typeof(WebSiteJourney))!;
-        var type = webSiteAssembly.GetType(destinationPage)!;
-        Debug.WriteLine(type);
+#pragma warning disable CA1031 // Do not catch general exception types
+        try
+        {
+            await journey.App.OpenWebSiteAsync("", CancellationToken.None);
 
-        var method = typeof(WebSiteJourney)
-            .GetMethod("GotoAsync", BindingFlags.Instance | BindingFlags.Public)!
-            .MakeGenericMethod(type);
+            var webSiteAssembly = Assembly.GetAssembly(typeof(WebSiteJourney))!;
+            var type = webSiteAssembly
+                .GetTypes()
+                ?.Where(x => x.Name == destinationPage)
+                .FirstOrDefault()!;
 
-        Debug.WriteLine(method);
+            var method = typeof(WebSiteJourney)
+                .GetMethod("GotoAsync", BindingFlags.Instance | BindingFlags.Public)!
+                .MakeGenericMethod(type);
 
-        // Invoke it and await the Task
-        var task = (Task)method.Invoke(journey, null)!;
-        await task;
+            // Invoke it and await the Task
+            Waypoints waypoints = [];
+            ExcludedNodes excludedNodes = [];
+            var task = (Task)
+                method.Invoke(journey, [waypoints, excludedNodes, CancellationToken.None])!;
+            await task;
 
-        // You can return something if needed; here we return the type name for illustration
-        return $"Navigated to {destinationPage}";
+            // You can return something if needed; here we return the type name for illustration
+            var sequence = await journey.ToMermaidSequenceDiagramMarkdownAsync();
+            return $"The navigation sequence: '{sequence}'";
+        }
+        catch (Exception e)
+        {
+            return $"An exception occurs '{e}'";
+        }
+#pragma warning restore CA1031 // Do not catch general exception types
     }
 }
