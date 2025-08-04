@@ -1,5 +1,4 @@
-﻿using Caravel.Core;
-using Microsoft.Extensions.DependencyInjection;
+﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Playwright;
 using WebSite.Facade;
@@ -14,7 +13,12 @@ var page = await context.NewPageAsync();
 builder.ConfigureServices(
     (context, services) =>
     {
-        services.AddMcpServer().WithStdioServerTransport().WithToolsFromAssembly();
+        services
+            .AddMcpServer()
+            .WithStdioServerTransport()
+            .WithToolsFromAssembly()
+            .WithPromptsFromAssembly();
+            
         services
             .AddOptions<AppOptions>()
             .Bind(context.Configuration.GetSection(AppOptions.Name))
@@ -52,9 +56,7 @@ lifetime.ApplicationStopping.Register(async () =>
     }
 });
 
-
 var journey = host.Services.GetRequiredService<WebSiteJourney>();
 await journey.App.OpenWebSiteAsync("", CancellationToken.None);
-
 
 await host.RunAsync();
