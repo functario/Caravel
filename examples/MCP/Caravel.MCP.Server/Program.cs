@@ -1,9 +1,11 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+﻿using dotenv.net;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Playwright;
 using WebSite.Facade;
 
 var builder = Host.CreateDefaultBuilder(args);
+DotEnv.Fluent().WithTrimValues().WithOverwriteExistingVars().Load();
 
 var playwright = await Playwright.CreateAsync();
 var browser = await playwright.Chromium.LaunchAsync(new() { Headless = false, SlowMo = 1000 });
@@ -18,13 +20,7 @@ builder.ConfigureServices(
             .WithStdioServerTransport()
             .WithToolsFromAssembly()
             .WithPromptsFromAssembly();
-            
-        services
-            .AddOptions<AppOptions>()
-            .Bind(context.Configuration.GetSection(AppOptions.Name))
-            .ValidateOnStart();
 
-        services.ConfigureOptions<AppOptions>();
         services.AddSingleton<IPlaywright>(playwright);
         services.AddSingleton<IBrowser>(browser);
         services.AddSingleton<IPage>(page);

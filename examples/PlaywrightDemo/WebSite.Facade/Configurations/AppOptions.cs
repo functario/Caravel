@@ -1,6 +1,6 @@
 ﻿using Microsoft.Extensions.Options;
 
-namespace WebSite.Facade;
+namespace WebSite.Facade.Configurations;
 
 public sealed class AppOptions : IValidateOptions<AppOptions>
 {

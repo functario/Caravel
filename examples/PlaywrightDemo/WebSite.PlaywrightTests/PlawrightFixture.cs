@@ -2,6 +2,7 @@
 using Microsoft.Extensions.Hosting;
 using Microsoft.Playwright;
 using WebSite.Facade;
+using WebSite.Facade.Configurations;
 
 namespace WebSite.PlaywrightTests;
 
