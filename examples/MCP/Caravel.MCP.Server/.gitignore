@@ -1,0 +1,5 @@
+# Env files
+!.env
+
+# Visual Studio Code
+!.vscode/

@@ -2,6 +2,8 @@
 using Caravel.Graph.Dijkstra;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using WebSite.Facade.Configurations;
+using WebSite.Facade.Extensions;
 using WebSite.Facade.POMs.Abstractions;
 using WebSite.Facade.POMs.Components;
 using WebSite.Facade.POMs.Pages;
@@ -15,6 +17,7 @@ public static class ServiceCollectionExtensions
         HostBuilderContext _
     )
     {
+        services.ConfigureAppOptions();
         services.AddScoped<NavigationButtons>();
         services.AddScoped<PageTitle>();
         services.AddScoped<IStartingPOM, PageA>();
@@ -39,6 +42,16 @@ public static class ServiceCollectionExtensions
         services.AddScoped<IGraph, DijkstraGraph>();
         services.AddSingleton(TimeProvider.System);
         services.AddScoped<WebSiteJourneyBuilder>();
+        return services;
+    }
+
+    private static IServiceCollection ConfigureAppOptions(this IServiceCollection services)
+    {
+        services.Configure<AppOptions>(options =>
+        {
+            options.SetFromEnvironmentVars();
+        });
+
         return services;
     }
 }

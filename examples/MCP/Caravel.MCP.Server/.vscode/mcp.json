@@ -1,0 +1,14 @@
+{
+    "inputs": [],
+    "servers": {
+        "CaravelMCP": {
+            "type": "stdio",
+            "command": "dotnet",
+            "args": [
+                "run",
+                "--project",
+                "${workspaceFolder}/Caravel.MCP.Server.csproj"
+            ]
+        }
+    }
+}

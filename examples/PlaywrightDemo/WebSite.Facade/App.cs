@@ -1,6 +1,7 @@
 ﻿using Caravel.Abstractions;
 using Microsoft.Extensions.Options;
 using Microsoft.Playwright;
+using WebSite.Facade.Configurations;
 
 namespace WebSite.Facade;
 
@@ -37,7 +38,13 @@ public sealed class App : IAsyncDisposable
     {
         ArgumentNullException.ThrowIfNull(options, nameof(options));
         Page = page;
-        Uri = GetUri(options.CurrentValue.WebSitePath);
+
+        var fullWebSitePath = Path.Combine(
+            AppContext.BaseDirectory,
+            options.CurrentValue.WebSitePath
+        );
+
+        Uri = GetUri(fullWebSitePath);
     }
 
     public IPage Page { get; }

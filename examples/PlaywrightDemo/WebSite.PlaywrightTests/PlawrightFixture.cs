@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+﻿using dotenv.net;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Playwright;
 using WebSite.Facade;
@@ -30,6 +31,7 @@ public sealed class PlaywrightFixture : IAsyncLifetime
         "CA1822:Mark members as static",
         Justification = "Prefered implementation."
     )]
+    // The testHost is exposed to be disposed in test cleanup.
     public WebSiteJourneyBuilder CreateWebSiteJourneyBuilder(IPage page, out IHost testHost)
     {
         testHost = CreateHost(page);
@@ -38,19 +40,13 @@ public sealed class PlaywrightFixture : IAsyncLifetime
 
     private static IHost CreateHost(IPage page)
     {
+        DotEnv.Fluent().WithTrimValues().WithOverwriteExistingVars().Load();
         var hostBuilder = Host.CreateDefaultBuilder()
             .ConfigureServices(
                 (context, services) =>
                 {
-                    services
-                        .AddOptions<AppOptions>()
-                        .Bind(context.Configuration.GetSection(AppOptions.Name))
-                        .ValidateOnStart();
-
-                    services.ConfigureOptions<AppOptions>();
                     services.AddScoped<IPage>(x => page);
                     services.AddWebSiteFacade(context);
-
                     services.AddScoped<IServiceProvider>(x => x);
                 }
             );

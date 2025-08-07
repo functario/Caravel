@@ -1,0 +1,10 @@
+{
+  "profiles": {
+    "Caravel.MCP.Server": {
+      "commandName": "Project"
+    },
+    "Container (Dockerfile)": {
+      "commandName": "Docker"
+    }
+  }
+}
