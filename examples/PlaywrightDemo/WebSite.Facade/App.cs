@@ -11,7 +11,7 @@ public sealed class App : IAsyncDisposable
         PageA->>PageB
         PageA->>PageC
         PageA->>PageD
-        PageA->>PageE
+        PageA->>|99|PageE
 
         PageB->>PageA
         PageB->>PageC
