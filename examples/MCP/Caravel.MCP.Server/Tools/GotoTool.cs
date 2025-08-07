@@ -1,6 +1,5 @@
 ﻿using System.ComponentModel;
 using System.Reflection;
-using Caravel.Abstractions;
 using Caravel.Core;
 using Caravel.Mermaid;
 using ModelContextProtocol.Server;
@@ -16,37 +15,21 @@ internal static class GotoTool
 
     [
         McpServerTool,
-        Description(
-            "Goto from the current opened page to another destination page"
-                + " using the name of type of the Page in WebSite."
-        )
+        Description("Goto from the current opened WebSite page to another destination page.")
     ]
     public static async Task<string> GotoAsync(WebSiteJourney journey, string destinationPage)
     {
 #pragma warning disable CA1031 // Do not catch general exception types
         try
         {
-            var webSiteAssembly = Assembly.GetAssembly(typeof(WebSiteJourney))!;
-            var type = webSiteAssembly
-                .GetTypes()
-                ?.Where(x =>
-                    x.Name.Equals(
-                        destinationPage.Trim([' ', '.']),
-                        StringComparison.OrdinalIgnoreCase
-                    )
-                )
-                .FirstOrDefault()!;
+            var destinationType = GetDestinationType(destinationPage);
 
-            var method = typeof(WebSiteJourney)
-                .GetMethod(nameof(IJourney.GotoAsync), BindingFlags.Instance | BindingFlags.Public)!
-                .MakeGenericMethod(type);
-
-            // Invoke it and await the Task
             Waypoints waypoints = [];
             ExcludedNodes excludedNodes = [];
-            var task = (Task)
-                method.Invoke(journey, [waypoints, excludedNodes, CancellationToken.None])!;
-            await task;
+
+            await journey
+                .GotoAsync(destinationType, waypoints, excludedNodes, CancellationToken.None)
+                .ConfigureAwait(false);
 
             // You can return something if needed; here we return the type name for illustration
             var sequence = await journey.ToMermaidSequenceDiagramMarkdownAsync();
@@ -57,5 +40,16 @@ internal static class GotoTool
             return $"An exception occurs '{e}'";
         }
 #pragma warning restore CA1031 // Do not catch general exception types
+    }
+
+    private static Type GetDestinationType(string destinationPage)
+    {
+        var webSiteAssembly = Assembly.GetAssembly(typeof(WebSiteJourney))!;
+        return webSiteAssembly
+            .GetTypes()
+            ?.Where(x =>
+                x.Name.Equals(destinationPage.Trim([' ', '.']), StringComparison.OrdinalIgnoreCase)
+            )
+            .FirstOrDefault()!;
     }
 }

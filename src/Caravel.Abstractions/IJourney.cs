@@ -7,11 +7,18 @@ public interface IJourney
     INode CurrentNode { get; }
 
     public Task<IEnumerable<IJourneyLeg>> GetCompletedJourneyLegsAsync(
-        CancellationToken cancellationToken
+        CancellationToken cancellationToken = default
     );
 
     public TJourney OfType<TJourney>()
         where TJourney : IJourney;
+
+    public Task<IJourney> GotoAsync(
+        Type destinationType,
+        IWaypoints waypoints,
+        IExcludedNodes excludedNodes,
+        CancellationToken localCancellationToken = default
+    );
 
     public Task<IJourney> GotoAsync<TDestination>(
         IWaypoints waypoints,

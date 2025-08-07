@@ -53,6 +53,21 @@ public abstract class Journey : IJourney, IJourneyLegPublisher
     {
         ArgumentNullException.ThrowIfNull(waypoints, nameof(waypoints));
 
+        await GotoAsync(typeof(TDestination), waypoints, excludedNodes, localCancellationToken)
+            .ConfigureAwait(false);
+
+        return this;
+    }
+
+    public async Task<IJourney> GotoAsync(
+        Type destinationType,
+        IWaypoints waypoints,
+        IExcludedNodes excludedNodes,
+        CancellationToken localCancellationToken
+    )
+    {
+        ArgumentNullException.ThrowIfNull(waypoints, nameof(waypoints));
+
         using var linkedCancellationTokenSource = this.LinkJourneyAndLocalCancellationTokens(
             localCancellationToken
         );
@@ -64,7 +79,6 @@ public abstract class Journey : IJourney, IJourneyLegPublisher
             .ConfigureAwait(false);
 
         var originType = CurrentNode.GetType();
-        var destinationType = typeof(TDestination);
         var route = GetRoute(originType, destinationType, waypoints, excludedNodes);
         var legEdges = new Queue<IEdge>();
         var journeyLeg = new JourneyLeg(Id, legEdges, route);
@@ -93,7 +107,8 @@ public abstract class Journey : IJourney, IJourneyLegPublisher
                 .ConfigureAwait(false);
         }
 
-        await CompleteJourneyLegAsync<TDestination>(
+        await CompleteJourneyLegAsync(
+                destinationType,
                 journeyLeg,
                 journeyLeg.Edges.Last(),
                 linkedCancellationTokenSource.Token
@@ -254,7 +269,8 @@ public abstract class Journey : IJourney, IJourneyLegPublisher
             )
             .ConfigureAwait(false);
 
-        await CompleteJourneyLegAsync<TNodeOut>(
+        await CompleteJourneyLegAsync(
+                typeof(TNodeOut),
                 journeyLeg,
                 journeyLeg.Edges.Last(),
                 linkedCancellationToken
@@ -262,12 +278,12 @@ public abstract class Journey : IJourney, IJourneyLegPublisher
             .ConfigureAwait(false);
     }
 
-    private async Task CompleteJourneyLegAsync<TDestination>(
+    private async Task CompleteJourneyLegAsync(
+        Type destinationType,
         IJourneyLeg completedJourneyLeg,
         IEdge finishingEdge,
         CancellationToken cancellationToken
     )
-        where TDestination : INode
     {
         await PublishOnJourneyLegCompletedAsync(
                 new JourneyLegCompletedEvent(
@@ -279,9 +295,9 @@ public abstract class Journey : IJourney, IJourneyLegPublisher
             )
             .ConfigureAwait(false);
 
-        if (CurrentNode is not TDestination)
+        if (CurrentNode.GetType() != destinationType)
         {
-            throw new UnexpectedNodeException(typeof(TDestination), CurrentNode.GetType());
+            throw new UnexpectedNodeException(destinationType, CurrentNode.GetType());
         }
 
         await CurrentNode.OnNodeOpenedAsync(this, cancellationToken).ConfigureAwait(false);
