@@ -3,7 +3,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Playwright;
 using WebSite.Facade;
-using WebSite.Facade.Configurations;
 
 namespace WebSite.PlaywrightTests;
 
@@ -46,10 +45,8 @@ public sealed class PlaywrightFixture : IAsyncLifetime
             .ConfigureServices(
                 (context, services) =>
                 {
-                    services.ConfigureOptions<AppOptions>();
                     services.AddScoped<IPage>(x => page);
                     services.AddWebSiteFacade(context);
-
                     services.AddScoped<IServiceProvider>(x => x);
                 }
             );
