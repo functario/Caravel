@@ -107,4 +107,17 @@ public sealed class Navigations : TestBase
         // Route validation
         await WebSiteJourney.VerifyRouteAsync();
     }
+
+    [Fact(DisplayName = "From PageA Goto PageE with weight of 99")]
+    public async Task Test5()
+    {
+        // Weight of the edge: PageA-->|99|PageE
+        var expectedRoute = "PageA-->PageB-->PageE";
+        await WebSiteJourney.App.OpenWebSiteAsync(expectedRoute, JourneyCTSource.Token);
+
+        await WebSiteJourney.GotoAsync<PageE>();
+
+        // Route validation
+        await WebSiteJourney.VerifyRouteAsync();
+    }
 }
