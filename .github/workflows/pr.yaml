@@ -63,7 +63,7 @@ jobs:
             --with-deps \
             chromium
 
-      - name: Run unit tests
+      - name: Run Playwright tests
         run: |
           dotnet test ./examples/PlaywrightDemo/WebSite.PlaywrightTests/WebSite.PlaywrightTests.csproj \
             --configuration Release \
