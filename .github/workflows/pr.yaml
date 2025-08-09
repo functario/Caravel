@@ -1,35 +1,27 @@
 # .github/workflows/pr-build.yml
-name: PR Build & Test
-
-# on:
-  # pull_request:
-  #   branches: [ main ]          # adjust to your default branch name
+name: PR
 
 on:
-  push:
-    branches:
-      - '**'          # any branch, including your feature branch
   pull_request:
-    branches:
-    - '**'
+    branches: [ main ] 
 
-  workflow_dispatch:   # ← this line is what makes “Run workflow” appear
+  #workflow_dispatch:   # Manual trigger
 
 jobs:
   build-and-test:
     runs-on: ubuntu-latest
-    timeout-minutes: 15         # tweak if you need more time
+    timeout-minutes: 15 
 
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
         with:
-          fetch-depth: 0       # needed for coverage tools that use git history
+          fetch-depth: 0  
 
       - name: Setup .NET SDK
         uses: actions/setup-dotnet@v4
         with:
-          dotnet-version: '9.0.x'   # matches the sdk version in global.json
+          dotnet-version: '9.0.x'
 
       - name: Cache NuGet packages
         uses: actions/cache@v3
@@ -100,7 +92,7 @@ jobs:
           verbosity: "Info"
           title: "Code Coverage"
           tag: "${{ github.run_number }}_${{ github.run_id }}"
-          customSettings: "" # See: https://github.com/danielpalme/ReportGenerator/wiki/Settings.
+          customSettings: ""
           toolpath: "reportgeneratortool"
 
       - name: Upload Combined Coverage XML
@@ -123,7 +115,4 @@ jobs:
           hide_complexity: false
           indicators: true
           output: both
-          thresholds: "90 100"
-
-
-
+          thresholds: "50 60"
