@@ -49,3 +49,6 @@ msbuild.wrn
 TestResults/
 StrykerOutput/
 *.received.*
+
+# Packages
+Packages/**
