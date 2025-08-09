@@ -16,7 +16,7 @@ on:
   workflow_dispatch:   # ← this line is what makes “Run workflow” appear
 
 jobs:
-  build-caravel:
+  build-and-test:
     runs-on: ubuntu-latest
     timeout-minutes: 15         # tweak if you need more time
 
@@ -57,7 +57,11 @@ jobs:
         continue-on-error: false
 
       - name: Ensure browsers are installed
-        run: pwsh bin/Debug/net8.0/playwright.ps1 install --with-deps
+        run: |
+          pwsh ./examples/PlaywrightDemo/WebSite.PlaywrightTests/bin/Release/net9.0/playwright.ps1 \
+            install \
+            --with-deps \
+            chromium
 
       - name: Run unit tests
         run: |
