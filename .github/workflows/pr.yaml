@@ -1,0 +1,86 @@
+# .github/workflows/pr-build.yml
+name: PR Build & Test
+
+on:
+  pull_request:
+    branches: [ main ]          # adjust to your default branch name
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15         # tweak if you need more time
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0       # needed for coverage tools that use git history
+
+      - name: Setup .NET SDK
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '9.0.x'   # matches the sdk version in global.json
+
+      - name: Cache NuGet packages
+        uses: actions/cache@v3
+        id: nuget-cache
+        with:
+          path: ~/.nuget/packages
+          key: ${{ runner.os }}-dotnet-${{ hashFiles('**/*.csproj', '**/Directory.Packages.props') }}
+          restore-keys: |
+            ${{ runner.os }}-dotnet-
+
+      - name: Restore NuGet packages
+        run: dotnet restore Caravel.sln
+
+      - name: Build solution (Release)
+        run: | 
+          dotnet build Caravel.sln \
+           --configuration Release \
+           --no-restore
+
+      # - name: Run unit tests
+      #   run: |
+      #     dotnet test ./test/UnitTests/Caravel.Core.UnitTests/Caravel.Core.UnitTests.csproj \
+      #      --configuration Release \
+      #      --no-build 
+      #   continue-on-error: false
+
+      # - name: Ensure browsers are installed
+      #   run: pwsh bin/Debug/net8.0/playwright.ps1 install --with-deps
+
+      # - name: Run playwright tests
+      #   run: |
+      #     dotnet test ./examples/PlaywrightDemo/WebSite.PlaywrightTests/WebSite.PlaywrightTests.csproj \
+      #      --configuration Release \
+      #      --no-build 
+      #   continue-on-error: false
+          # ---- Matrix of test jobs ---------------------------------------------
+  tests:
+    needs: build
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        include:
+          - name: Unit Tests
+            project: ./test/UnitTests/Caravel.Core.UnitTests/Caravel.Core.UnitTests.csproj
+          - name: Playwright Tests
+            project: ./test/UnitTests/Caravel.Core.UnitTests/Caravel.Core.UnitTests.csproj #./examples/PlaywrightDemo/WebSite.PlaywrightTests/WebSite.PlaywrightTests.csproj
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup .NET SDK
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '9.0.x'
+
+      - name: Run ${{ matrix.name }}
+        run: |
+          dotnet test "${{ matrix.project }}" \
+            --configuration Release \
+            --no-build
+
