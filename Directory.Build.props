@@ -16,4 +16,9 @@
     <NoWarn>IDE0055, CS1591</NoWarn>
     <!-- IDE2006, IDE0058, IDE0290, IDE0072, IDE0110, IDE0100 -->
   </PropertyGroup>
+  <!--Nugets configuration and metadata-->
+  <PropertyGroup>
+    <NugetTags>functario caravel graph navigation</NugetTags>
+    <FunctarioName>Functario</FunctarioName>
+  </PropertyGroup>
 </Project>
