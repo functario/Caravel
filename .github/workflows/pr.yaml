@@ -6,7 +6,7 @@ on:
     branches: [ main ]          # adjust to your default branch name
 
 jobs:
-  build:
+  build-caravel:
     runs-on: ubuntu-latest
     timeout-minutes: 15         # tweak if you need more time
 
@@ -39,48 +39,20 @@ jobs:
            --configuration Release \
            --no-restore
 
-      # - name: Run unit tests
-      #   run: |
-      #     dotnet test ./test/UnitTests/Caravel.Core.UnitTests/Caravel.Core.UnitTests.csproj \
-      #      --configuration Release \
-      #      --no-build 
-      #   continue-on-error: false
-
-      # - name: Ensure browsers are installed
-      #   run: pwsh bin/Debug/net8.0/playwright.ps1 install --with-deps
-
-      # - name: Run playwright tests
-      #   run: |
-      #     dotnet test ./examples/PlaywrightDemo/WebSite.PlaywrightTests/WebSite.PlaywrightTests.csproj \
-      #      --configuration Release \
-      #      --no-build 
-      #   continue-on-error: false
-          # ---- Matrix of test jobs ---------------------------------------------
-  tests:
-    needs: build
-    runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        include:
-          - name: Unit Tests
-            project: ./test/UnitTests/Caravel.Core.UnitTests/Caravel.Core.UnitTests.csproj
-          - name: Playwright Tests
-            project: ./test/UnitTests/Caravel.Core.UnitTests/Caravel.Core.UnitTests.csproj #./examples/PlaywrightDemo/WebSite.PlaywrightTests/WebSite.PlaywrightTests.csproj
-
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-
-      - name: Setup .NET SDK
-        uses: actions/setup-dotnet@v4
-        with:
-          dotnet-version: '9.0.x'
-
-      - name: Run ${{ matrix.name }}
+      - name: Run unit tests
         run: |
-          dotnet test "${{ matrix.project }}" \
+          dotnet test ./test/UnitTests/Caravel.Core.UnitTests/Caravel.Core.UnitTests.csproj \
             --configuration Release \
-            --no-build
+            --no-build 
+        continue-on-error: false
+
+      - name: Ensure browsers are installed
+        run: pwsh bin/Debug/net8.0/playwright.ps1 install --with-deps
+
+      - name: Run unit tests
+        run: |
+          dotnet test ./examples/PlaywrightDemo/WebSite.PlaywrightTests/WebSite.PlaywrightTests.csproj \
+            --configuration Release \
+            --no-build 
+        continue-on-error: false
 
