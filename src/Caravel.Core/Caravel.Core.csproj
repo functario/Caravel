@@ -10,7 +10,7 @@
         <PackageId>$(FunctarioName).$(MSBuildProjectName)</PackageId>
         <Title>$(FunctarioName).$(MSBuildProjectName)</Title>
         <Description>
-            *********************************
+            Caravel – A lightweight graph‑processing framework.
         </Description>
         <Version>0.1.0-alpha.1</Version>
         <PackageReleaseNotes>

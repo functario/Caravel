@@ -11,7 +11,7 @@
         <PackageId>$(FunctarioName).$(MSBuildProjectName)</PackageId>
         <Title>$(FunctarioName).$(MSBuildProjectName)</Title>
         <Description>
-            *********************************
+            Functario.Caravel's Dijkstra graph builder.
         </Description>
         <Version>0.1.0-alpha.1</Version>
         <PackageReleaseNotes>

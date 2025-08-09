@@ -10,7 +10,7 @@
         <PackageId>$(FunctarioName).$(MSBuildProjectName)</PackageId>
         <Title>$(FunctarioName).$(MSBuildProjectName)</Title>
         <Description>
-            *********************************
+            Functario.Caravel's support library that translates a Caravel graph and Journey into Mermaid syntax.
         </Description>
         <Version>0.1.0-alpha.1</Version>
         <PackageReleaseNotes>
