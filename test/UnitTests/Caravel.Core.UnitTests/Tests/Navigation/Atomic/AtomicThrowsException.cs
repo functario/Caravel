@@ -13,12 +13,6 @@ namespace Caravel.Core.UnitTests.Tests.Navigation.Atomic;
 )]
 public class AtomicThrowsException
 {
-    [Fact]
-    public void FailOnPurpose()
-    {
-        true.Should().BeFalse();
-    }
-
     [Fact(DisplayName = $"When duplicated edges")]
     public async Task Test1()
     {
