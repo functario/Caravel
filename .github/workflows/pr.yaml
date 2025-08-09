@@ -1,9 +1,19 @@
 # .github/workflows/pr-build.yml
 name: PR Build & Test
 
+# on:
+  # pull_request:
+  #   branches: [ main ]          # adjust to your default branch name
+
 on:
+  push:
+    branches:
+      - '**'          # any branch, including your feature branch
   pull_request:
-    branches: [ main ]          # adjust to your default branch name
+    branches:
+    - '**'
+
+  workflow_dispatch:   # ← this line is what makes “Run workflow” appear
 
 jobs:
   build-caravel:
