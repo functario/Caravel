@@ -6,6 +6,8 @@ public interface IJourney
     IGraph Graph { get; }
     INode CurrentNode { get; }
 
+    public IJourney SetStartingNode(INode node);
+
     public Task<IEnumerable<IJourneyLeg>> GetCompletedJourneyLegsAsync(
         CancellationToken cancellationToken = default
     );

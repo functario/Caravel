@@ -29,7 +29,7 @@ public sealed class JourneyBuilder
     public Type Node => _firstNodeType!;
     public Map Map => _map!;
 
-    public IJourney Build(TimeProvider? timeProvider = default, CancellationToken ct = default)
+    public SmartJourney Build(TimeProvider? timeProvider = default, CancellationToken ct = default)
     {
         var nodesByType = new Dictionary<Type, INodeSpy>();
 
