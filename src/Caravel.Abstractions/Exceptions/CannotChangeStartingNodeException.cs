@@ -6,36 +6,24 @@
 public class CannotChangeStartingNodeException : CaravelException
 {
     private static string MessageWithOriginAndDestination(
-        CannotChangeStartingNodeReasons reason,
-        string? originalStartingNode,
-        Type? expectedStartingNode
+        string? originalStartingNodeTypeFullName,
+        string? requestedStartingNodeTypeFullName
     )
     {
-        var isOriginalStartingNodeNull = originalStartingNode is null;
-        var isExpectedStartingNodeNull = expectedStartingNode is null;
-        var sub = (isOriginalStartingNodeNull, isExpectedStartingNodeNull) switch
-        {
-            (true, true) => "",
-            (false, true) => $" (original: {originalStartingNode})",
-            (true, false) => $" (expected: {expectedStartingNode})",
-            (false, false) =>
-                $" (original: '{originalStartingNode}', expected: '{expectedStartingNode?.FullName}')",
-        };
-
-        return $"Invalid {nameof(IRoute)} detected with reason '{Enum.GetName(reason)}'{sub}.";
+        return $"Cannot change starting {nameof(INode)} once the {nameof(IJourney)} "
+            + $"is started (current starting node '{originalStartingNodeTypeFullName}', "
+            + $"requested starting node '{requestedStartingNodeTypeFullName}')";
     }
 
     public CannotChangeStartingNodeException(
-        CannotChangeStartingNodeReasons reason,
-        string? originalStartingNode,
-        Type? expectedStartingNode
+        string? originalStartingNodeTypeFullName,
+        string? requestedStartingNodeTypeFullName
     )
-        : base(MessageWithOriginAndDestination(reason, originalStartingNode, expectedStartingNode))
+        : base(
+            MessageWithOriginAndDestination(
+                originalStartingNodeTypeFullName,
+                requestedStartingNodeTypeFullName
+            )
+        )
     { }
-}
-
-public enum CannotChangeStartingNodeReasons
-{
-    CanBeChangedOnlyOnce = 0,
-    CannotBeChangedAfterJourneyStarted,
 }

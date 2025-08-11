@@ -8,8 +8,8 @@ namespace Caravel.Core;
 
 public abstract class Journey : IJourney, IJourneyLegPublisher
 {
-    private readonly StartingNodeInitState _staringJobInitState;
     private readonly TimeProvider _timeProvider;
+    private bool _isJourneyStarted;
 
     protected Journey(
         INode startingNode,
@@ -21,11 +21,11 @@ public abstract class Journey : IJourney, IJourneyLegPublisher
         ArgumentNullException.ThrowIfNull(startingNode, nameof(startingNode));
         journeyCancellationToken.ThrowIfCancellationRequested();
 
+        _isJourneyStarted = false;
         Graph = graph;
         _timeProvider = timeProvider;
         JourneyCancellationToken = journeyCancellationToken;
         CurrentNode = startingNode;
-        _staringJobInitState = new StartingNodeInitState(startingNode);
     }
 
     public INode CurrentNode { get; private set; }
@@ -33,30 +33,19 @@ public abstract class Journey : IJourney, IJourneyLegPublisher
     public CancellationToken JourneyCancellationToken { get; }
     public Guid Id { get; init; } = Guid.CreateVersion7();
 
-    public IJourney OverrideStartingNode(INode node)
+    public IJourney SetStartingNode(INode node)
     {
         ArgumentNullException.ThrowIfNull(node, nameof(node));
 
-        if (_staringJobInitState.IsSet)
+        if (_isJourneyStarted)
         {
             throw new CannotChangeStartingNodeException(
-                CannotChangeStartingNodeReasons.CanBeChangedOnlyOnce,
-                _staringJobInitState.OriginalStartingNodeTypeFullName,
-                node.GetType()
-            );
-        }
-
-        if (!_staringJobInitState.IsJourneyAlreadyStarted(CurrentNode))
-        {
-            throw new CannotChangeStartingNodeException(
-                CannotChangeStartingNodeReasons.CannotBeChangedAfterJourneyStarted,
-                _staringJobInitState.OriginalStartingNodeTypeFullName,
-                node.GetType()
+                CurrentNode.GetType().FullName,
+                node.GetType().FullName
             );
         }
 
         CurrentNode = node;
-        _staringJobInitState.Value = true;
         return this;
     }
 
@@ -95,6 +84,8 @@ public abstract class Journey : IJourney, IJourneyLegPublisher
         CancellationToken localCancellationToken
     )
     {
+        // Prevent setting starting node once the journey is started
+        _isJourneyStarted = true;
         ArgumentNullException.ThrowIfNull(waypoints, nameof(waypoints));
 
         using var linkedCancellationTokenSource = this.LinkJourneyAndLocalCancellationTokens(
@@ -147,6 +138,53 @@ public abstract class Journey : IJourney, IJourneyLegPublisher
         return this;
     }
 
+    public async Task<IJourney> DoAsync<TCurrentNode, TNodeOut>(
+        Func<IJourney, TCurrentNode, CancellationToken, Task<TNodeOut>> func,
+        CancellationToken localCancellationToken = default
+    )
+        where TCurrentNode : INode
+        where TNodeOut : INode
+    {
+        // Prevent setting starting node once the journey is started
+        _isJourneyStarted = true;
+        ArgumentNullException.ThrowIfNull(func, nameof(func));
+
+        using var linkedCancellationTokenSource = this.LinkJourneyAndLocalCancellationTokens(
+            localCancellationToken
+        );
+
+        linkedCancellationTokenSource.Token.ThrowIfCancellationRequested();
+
+        await CurrentNode
+            .OnNodeOpenedAsync(this, linkedCancellationTokenSource.Token)
+            .ConfigureAwait(false);
+
+        // Validate the CurrentNode at each steps.
+        if (CurrentNode is TCurrentNode current)
+        {
+            var funcNode = await func(this, current, linkedCancellationTokenSource.Token)
+                .ConfigureAwait(false);
+
+            // Ensure the navigation from DoAsync is registered.
+            await SetNavigationFromDoAsync<TCurrentNode, TNodeOut>(
+                    current,
+                    funcNode,
+                    Id,
+                    linkedCancellationTokenSource.Token
+                )
+                .ConfigureAwait(false);
+
+            linkedCancellationTokenSource.Token.ThrowIfCancellationRequested();
+            await funcNode
+                .OnNodeOpenedAsync(this, linkedCancellationTokenSource.Token)
+                .ConfigureAwait(false);
+
+            return this;
+        }
+
+        throw new UnexpectedNodeException(CurrentNode.GetType(), typeof(TCurrentNode));
+    }
+
     private IRoute GetRoute(
         Type originType,
         Type destinationType,
@@ -197,51 +235,6 @@ public abstract class Journey : IJourney, IJourneyLegPublisher
 
     private static bool DestinationIsAlsoAWaypoint(Type destinationType, IWaypoints waypoints) =>
         waypoints.Any(x => x == destinationType);
-
-    public async Task<IJourney> DoAsync<TCurrentNode, TNodeOut>(
-        Func<IJourney, TCurrentNode, CancellationToken, Task<TNodeOut>> func,
-        CancellationToken localCancellationToken = default
-    )
-        where TCurrentNode : INode
-        where TNodeOut : INode
-    {
-        ArgumentNullException.ThrowIfNull(func, nameof(func));
-
-        using var linkedCancellationTokenSource = this.LinkJourneyAndLocalCancellationTokens(
-            localCancellationToken
-        );
-
-        linkedCancellationTokenSource.Token.ThrowIfCancellationRequested();
-
-        await CurrentNode
-            .OnNodeOpenedAsync(this, linkedCancellationTokenSource.Token)
-            .ConfigureAwait(false);
-
-        // Validate the CurrentNode at each steps.
-        if (CurrentNode is TCurrentNode current)
-        {
-            var funcNode = await func(this, current, linkedCancellationTokenSource.Token)
-                .ConfigureAwait(false);
-
-            // Ensure the navigation from DoAsync is registered.
-            await SetNavigationFromDoAsync<TCurrentNode, TNodeOut>(
-                    current,
-                    funcNode,
-                    Id,
-                    linkedCancellationTokenSource.Token
-                )
-                .ConfigureAwait(false);
-
-            linkedCancellationTokenSource.Token.ThrowIfCancellationRequested();
-            await funcNode
-                .OnNodeOpenedAsync(this, linkedCancellationTokenSource.Token)
-                .ConfigureAwait(false);
-
-            return this;
-        }
-
-        throw new UnexpectedNodeException(CurrentNode.GetType(), typeof(TCurrentNode));
-    }
 
     Task IJourneyLegPublisher.PublishOnJourneyLegCompletedAsync(
         IJourneyLegCompletedEvent journeyLegCompletedEvent,
