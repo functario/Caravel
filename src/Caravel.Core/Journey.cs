@@ -8,28 +8,57 @@ namespace Caravel.Core;
 
 public abstract class Journey : IJourney, IJourneyLegPublisher
 {
+    private readonly StartingNodeInitState _staringJobInitState;
     private readonly TimeProvider _timeProvider;
 
     protected Journey(
-        INode current,
+        INode startingNode,
         IGraph graph,
         TimeProvider timeProvider,
         CancellationToken journeyCancellationToken
     )
     {
-        ArgumentNullException.ThrowIfNull(current, nameof(current));
+        ArgumentNullException.ThrowIfNull(startingNode, nameof(startingNode));
         journeyCancellationToken.ThrowIfCancellationRequested();
 
         Graph = graph;
         _timeProvider = timeProvider;
         JourneyCancellationToken = journeyCancellationToken;
-        CurrentNode = current;
+        CurrentNode = startingNode;
+        _staringJobInitState = new StartingNodeInitState(startingNode);
     }
 
     public INode CurrentNode { get; private set; }
     public IGraph Graph { get; init; }
     public CancellationToken JourneyCancellationToken { get; }
     public Guid Id { get; init; } = Guid.CreateVersion7();
+
+    public IJourney OverrideStartingNode(INode node)
+    {
+        ArgumentNullException.ThrowIfNull(node, nameof(node));
+
+        if (_staringJobInitState.IsSet)
+        {
+            throw new CannotChangeStartingNodeException(
+                CannotChangeStartingNodeReasons.CanBeChangedOnlyOnce,
+                _staringJobInitState.OriginalStartingNodeTypeFullName,
+                node.GetType()
+            );
+        }
+
+        if (!_staringJobInitState.IsJourneyAlreadyStarted(CurrentNode))
+        {
+            throw new CannotChangeStartingNodeException(
+                CannotChangeStartingNodeReasons.CannotBeChangedAfterJourneyStarted,
+                _staringJobInitState.OriginalStartingNodeTypeFullName,
+                node.GetType()
+            );
+        }
+
+        CurrentNode = node;
+        _staringJobInitState.Value = true;
+        return this;
+    }
 
     public TJourney OfType<TJourney>()
         where TJourney : IJourney

@@ -7,12 +7,12 @@ namespace Caravel.Core;
 public class InMemoryJourney : Journey
 {
     public InMemoryJourney(
-        INode current,
+        INode startingNode,
         IGraph graph,
         TimeProvider timeProvider,
         CancellationToken journeyCancellationToken
     )
-        : base(current, graph, timeProvider, journeyCancellationToken) { }
+        : base(startingNode, graph, timeProvider, journeyCancellationToken) { }
 
     public ConcurrentQueue<IJourneyLegEvent> LegEvents { get; init; } = [];
 
