@@ -4,6 +4,6 @@ namespace Caravel.Core;
 
 public record NeighborNavigator(
     Func<IJourney, CancellationToken, Task<INode>> MoveNext,
-    IEdgeMetaData? MetaData = null
+    IActionMetaData? MetaData = null
 ) : INeighborNavigator
 { }

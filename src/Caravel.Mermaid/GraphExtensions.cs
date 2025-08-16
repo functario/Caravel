@@ -217,7 +217,7 @@ public static partial class GraphExtensions
 
         if (
             options.DisplayDescription
-            && edge.NeighborNavigator.MetaData is IEdgeMetaData edgeMetaData
+            && edge.NeighborNavigator.MetaData is IActionMetaData edgeMetaData
             && !string.IsNullOrWhiteSpace(edgeMetaData.Description)
         )
         {

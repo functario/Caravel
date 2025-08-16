@@ -2,6 +2,6 @@
 
 public interface INeighborNavigator
 {
-    public IEdgeMetaData? MetaData { get; }
+    public IActionMetaData? MetaData { get; }
     public Func<IJourney, CancellationToken, Task<INode>> MoveNext { get; }
 }

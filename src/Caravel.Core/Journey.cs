@@ -337,13 +337,14 @@ public abstract class Journey : IJourney, IJourneyLegPublisher
 
         var neighborNavigator = new NeighborNavigator(
             MoveNext(currentNode),
-            new EdgeMetaData($"{nameof(Journey)}.{nameof(DoAsync)}")
+            new ActionMetaData($"{nameof(Journey)}.{nameof(DoAsync)}")
         );
 
         var legEdges = new Queue<IEdge>(
             [new Edge(typeof(TCurrentNode), typeof(TNodeOut), neighborNavigator)]
         );
 
+        // TODO: The graph should expose a RouteFactory to allow custom implementation.
         var doRoute = new DoRoute([.. legEdges]);
         return new JourneyLeg(journeyId, legEdges, doRoute);
     }

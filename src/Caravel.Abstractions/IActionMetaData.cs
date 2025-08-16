@@ -1,6 +1,6 @@
 ﻿namespace Caravel.Abstractions;
 
-public interface IEdgeMetaData
+public interface IActionMetaData
 {
     public string Description { get; }
 }
