@@ -337,7 +337,7 @@ public abstract class Journey : IJourney, IJourneyLegPublisher
 
         var neighborNavigator = new NeighborNavigator(
             MoveNext(currentNode),
-            $"{nameof(Journey)}.{nameof(DoAsync)}"
+            new EdgeMetaData($"{nameof(Journey)}.{nameof(DoAsync)}")
         );
 
         var legEdges = new Queue<IEdge>(

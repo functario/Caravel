@@ -11,7 +11,7 @@ namespace Caravel.Mermaid;
 public static partial class GraphExtensions
 {
     private static string NewLine => "<br>";
-    private const string SafeCharPattern = @"^[a-zA-Z0-9 _.\-:]+$";
+    private const string SafeCharPattern = @"^[a-zA-Z0-9\s_.\-:]*$";
 
     public static string ToMermaidMarkdown(this IGraph graph, MermaidOptions? options = null)
     {
@@ -193,6 +193,7 @@ public static partial class GraphExtensions
         var history = await journey
             .GetCompletedJourneyLegsAsync(cancellationToken)
             .ConfigureAwait(false);
+
         return [.. history];
     }
 
@@ -214,10 +215,14 @@ public static partial class GraphExtensions
         var weight = edge.Weight.ToString(CultureInfo.InvariantCulture);
         var builder = new StringBuilder(weight);
 
-        if (options.DisplayDescription && edge.NeighborNavigator.MetaData is string description)
+        if (
+            options.DisplayDescription
+            && edge.NeighborNavigator.MetaData is IEdgeMetaData edgeMetaData
+            && !string.IsNullOrWhiteSpace(edgeMetaData.Description)
+        )
         {
-            description.ThrowIfNotMermaidSafe();
-            builder.Append(CultureInfo.InvariantCulture, $"{NewLine}{description}");
+            edgeMetaData.Description.ThrowIfNotMermaidSafe();
+            builder.Append(CultureInfo.InvariantCulture, $"{NewLine}{edgeMetaData.Description}");
         }
 
         if (gridPosition is not null && options.DisplayGridPosition)

@@ -17,7 +17,7 @@ public static class NodeExtensions
         this INode origin,
         Func<IJourney, CancellationToken, Task<TNeighbor>> moveNext,
         int weight = 0,
-        object? metaData = null
+        IEdgeMetaData? metaData = null
     )
         where TNeighbor : INode
     {
