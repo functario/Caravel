@@ -223,7 +223,6 @@ public static partial class GraphExtensions
         if (gridPosition is not null && options.DisplayGridPosition)
         {
             var gridPositionStr = $"{NewLine}{gridPosition.Row},{gridPosition.Column}";
-            gridPositionStr.ThrowIfNotMermaidSafe();
             builder.Append(CultureInfo.InvariantCulture, $"{gridPositionStr}");
         }
 
