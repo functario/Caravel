@@ -6,7 +6,7 @@ public static partial class JourneyExtensions
 {
     public static async Task<IJourney> GotoAsync<TDestination>(
         this IJourney journey,
-        CancellationToken localCancellationToken = default
+        CancellationToken scopedCancellationToken = default
     )
         where TDestination : INode
     {
@@ -16,7 +16,7 @@ public static partial class JourneyExtensions
             .GotoAsync<TDestination>(
                 Waypoints.Empty(),
                 ExcludedNodes.Empty(),
-                localCancellationToken
+                scopedCancellationToken
             )
             .ConfigureAwait(false);
     }
@@ -24,26 +24,26 @@ public static partial class JourneyExtensions
     public static async Task<IJourney> GotoAsync<TDestination>(
         this IJourney journey,
         ExcludedNodes excludedNodes,
-        CancellationToken localCancellationToken = default
+        CancellationToken scopedCancellationToken = default
     )
         where TDestination : INode
     {
         ArgumentNullException.ThrowIfNull(journey, nameof(journey));
         return await journey
-            .GotoAsync<TDestination>(Waypoints.Empty(), excludedNodes, localCancellationToken)
+            .GotoAsync<TDestination>(Waypoints.Empty(), excludedNodes, scopedCancellationToken)
             .ConfigureAwait(false);
     }
 
     public static async Task<IJourney> GotoAsync<TDestination>(
         this IJourney journey,
         Waypoints waypoints,
-        CancellationToken localCancellationToken = default
+        CancellationToken scopedCancellationToken = default
     )
         where TDestination : INode
     {
         ArgumentNullException.ThrowIfNull(journey, nameof(journey));
         return await journey
-            .GotoAsync<TDestination>(waypoints, ExcludedNodes.Empty(), localCancellationToken)
+            .GotoAsync<TDestination>(waypoints, ExcludedNodes.Empty(), scopedCancellationToken)
             .ConfigureAwait(false);
     }
 
@@ -51,20 +51,20 @@ public static partial class JourneyExtensions
         this IJourney journey,
         Waypoints waypoints,
         ExcludedNodes excludeNodes,
-        CancellationToken localCancellationToken = default
+        CancellationToken scopedCancellationToken = default
     )
         where TDestination : INode
     {
         ArgumentNullException.ThrowIfNull(journey, nameof(journey));
         return await journey
-            .GotoAsync<TDestination>(waypoints, excludeNodes, localCancellationToken)
+            .GotoAsync<TDestination>(waypoints, excludeNodes, scopedCancellationToken)
             .ConfigureAwait(false);
     }
 
     public static async Task<IJourney> DoAsync<TCurrentNode>(
         this IJourney journey,
         Func<TCurrentNode, CancellationToken, Task<TCurrentNode>> func,
-        CancellationToken localCancellationToken = default
+        CancellationToken scopedCancellationToken = default
     )
         where TCurrentNode : INode
     {
@@ -72,7 +72,7 @@ public static partial class JourneyExtensions
         return await journey
             .DoAsync<TCurrentNode, TCurrentNode>(
                 (_, node, token) => func(node, token),
-                localCancellationToken
+                scopedCancellationToken
             )
             .ConfigureAwait(false);
     }
@@ -80,7 +80,7 @@ public static partial class JourneyExtensions
     public static async Task<IJourney> DoAsync<TCurrentNode, TNodeOut>(
         this IJourney journey,
         Func<TCurrentNode, CancellationToken, Task<TNodeOut>> func,
-        CancellationToken localCancellationToken = default
+        CancellationToken scopedCancellationToken = default
     )
         where TCurrentNode : INode
         where TNodeOut : INode
@@ -89,7 +89,7 @@ public static partial class JourneyExtensions
         return await journey
             .DoAsync<TCurrentNode, TNodeOut>(
                 (_, node, token) => func(node, token),
-                localCancellationToken
+                scopedCancellationToken
             )
             .ConfigureAwait(false);
     }
@@ -97,23 +97,23 @@ public static partial class JourneyExtensions
     public static async Task<IJourney> DoAsync<TCurrentNode>(
         this IJourney journey,
         Func<IJourney, TCurrentNode, CancellationToken, Task<TCurrentNode>> func,
-        CancellationToken localCancellationToken = default
+        CancellationToken scopedCancellationToken = default
     )
         where TCurrentNode : INode
     {
         ArgumentNullException.ThrowIfNull(journey, nameof(journey));
-        return await journey.DoAsync(func, localCancellationToken).ConfigureAwait(false);
+        return await journey.DoAsync(func, scopedCancellationToken).ConfigureAwait(false);
     }
 
     public static async Task<IJourney> DoAsync<TCurrentNode, TNodeOut>(
         this IJourney journey,
         Func<IJourney, TCurrentNode, CancellationToken, Task<TNodeOut>> func,
-        CancellationToken localCancellationToken = default
+        CancellationToken scopedCancellationToken = default
     )
         where TCurrentNode : INode
         where TNodeOut : INode
     {
         ArgumentNullException.ThrowIfNull(journey, nameof(journey));
-        return await journey.DoAsync(func, localCancellationToken).ConfigureAwait(false);
+        return await journey.DoAsync(func, scopedCancellationToken).ConfigureAwait(false);
     }
 }
