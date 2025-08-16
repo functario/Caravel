@@ -39,7 +39,7 @@ public class ChainedGoThroughWaypoints
             .GotoAsync<Node5>(waypoints);
 
         // Assert
-        var result = await sut.ToMermaidSequenceDiagramMarkdownAsync(WithQuadrant);
+        var result = await sut.ToMermaidSequenceDiagramMarkdownAsync(WithGridPosition);
         await result.VerifyMermaidMarkdownAsync().UseParameters(waypoint.Name);
     }
 
@@ -56,7 +56,7 @@ public class ChainedGoThroughWaypoints
             .GotoAsync<Node14>(waypoints);
 
         // Assert
-        var result = await sut.ToMermaidSequenceDiagramMarkdownAsync(WithQuadrant);
+        var result = await sut.ToMermaidSequenceDiagramMarkdownAsync(WithGridPosition);
         await result.VerifyMermaidMarkdownAsync();
     }
 }

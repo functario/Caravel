@@ -42,7 +42,7 @@ public class ChainedIgnoresExcludedNodes
         var sut = await journey.GotoAsync<Node2>().GotoAsync<Node6>(excludedNodes);
 
         // Assert
-        var result = await sut.ToMermaidSequenceDiagramMarkdownAsync(WithQuadrant);
+        var result = await sut.ToMermaidSequenceDiagramMarkdownAsync(WithGridPosition);
         await result.VerifyMermaidMarkdownAsync().UseParameters(excludedNode.Name);
     }
 
@@ -57,7 +57,7 @@ public class ChainedIgnoresExcludedNodes
         var sut = await journey.GotoAsync<Node2>().GotoAsync<Node10>(excludedNodes);
 
         // Assert
-        var result = await sut.ToMermaidSequenceDiagramMarkdownAsync(WithQuadrant);
+        var result = await sut.ToMermaidSequenceDiagramMarkdownAsync(WithGridPosition);
         await result.VerifyMermaidMarkdownAsync();
     }
 
@@ -94,7 +94,7 @@ public class ChainedIgnoresExcludedNodes
         var sut = await journey.GotoAsync<Node2>().GotoAsync<Node6>(excludedNodes);
 
         // Assert
-        var result = await sut.ToMermaidSequenceDiagramMarkdownAsync(WithQuadrant);
+        var result = await sut.ToMermaidSequenceDiagramMarkdownAsync(WithGridPosition);
         await result.VerifyMermaidMarkdownAsync();
     }
 
@@ -131,7 +131,7 @@ public class ChainedIgnoresExcludedNodes
         var sut = await journey.GotoAsync<Node1>().GotoAsync<Node6>(excludedNodes);
 
         // Assert
-        var result = await sut.ToMermaidSequenceDiagramMarkdownAsync(WithQuadrant);
+        var result = await sut.ToMermaidSequenceDiagramMarkdownAsync(WithGridPosition);
         await result.VerifyMermaidMarkdownAsync();
     }
 }

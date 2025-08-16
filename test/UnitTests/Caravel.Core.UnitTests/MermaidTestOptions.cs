@@ -5,10 +5,10 @@ namespace Caravel.Core.UnitTests;
 internal static class MermaidTestOptions
 {
     public static MermaidOptions WithDescription = new() { DisplayDescription = true };
-    public static MermaidOptions WithDescriptionAndQuadrant = new()
+    public static MermaidOptions WithDescriptionAndGridPosition = new()
     {
         DisplayDescription = true,
-        DisplayQuadrant = true,
+        DisplayGridPosition = true,
     };
-    public static MermaidOptions WithQuadrant = new() { DisplayQuadrant = true };
+    public static MermaidOptions WithGridPosition = new() { DisplayGridPosition = true };
 }

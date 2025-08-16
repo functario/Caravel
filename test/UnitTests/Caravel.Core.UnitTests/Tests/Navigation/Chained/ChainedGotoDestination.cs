@@ -33,7 +33,7 @@ public class ChainedGotoDestination
             .GotoAsync<Node3>();
 
         // Assert
-        var result = await sut.ToMermaidSequenceDiagramMarkdownAsync(WithQuadrant);
+        var result = await sut.ToMermaidSequenceDiagramMarkdownAsync(WithGridPosition);
         await result.VerifyMermaidMarkdownAsync();
     }
 
@@ -62,7 +62,7 @@ public class ChainedGotoDestination
             .GotoAsync<Node2>(waypoints); // self reference
 
         // Assert
-        var result = await sut.ToMermaidSequenceDiagramMarkdownAsync(WithQuadrant);
+        var result = await sut.ToMermaidSequenceDiagramMarkdownAsync(WithGridPosition);
         await result.VerifyMermaidMarkdownAsync();
         // csharpier-ignore-stop
     }
@@ -80,7 +80,7 @@ public class ChainedGotoDestination
         var sut = await journey.GotoAsync<Node1>().GotoAsync<Node15>(waypoints, excludedNodes);
 
         // Assert
-        var result = await sut.ToMermaidSequenceDiagramMarkdownAsync(WithQuadrant);
+        var result = await sut.ToMermaidSequenceDiagramMarkdownAsync(WithGridPosition);
         await result.VerifyMermaidMarkdownAsync();
     }
 }
