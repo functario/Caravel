@@ -1,0 +1,33 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+    <PropertyGroup>
+        <TargetFramework>$(SdkTargetFramework)</TargetFramework>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+        <IsPackable>false</IsPackable>
+    </PropertyGroup>
+    <ItemGroup>
+        <PackageReference Include="AutoFixture.Xunit2" />
+        <PackageReference Include="coverlet.collector">
+            <PrivateAssets>all</PrivateAssets>
+            <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+        </PackageReference>
+        <PackageReference Include="Microsoft.NET.Test.Sdk" />
+        <PackageReference Include="System.Net.Http" />
+        <PackageReference Include="Verify.Xunit" />
+        <PackageReference Include="xunit" />
+        <PackageReference Include="xunit.runner.visualstudio">
+            <PrivateAssets>all</PrivateAssets>
+            <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+        </PackageReference>
+        <PackageReference Include="AwesomeAssertions" />
+    </ItemGroup>
+    <ItemGroup>
+        <ProjectReference Include="..\src\Caravel.Abstractions\Caravel.Abstractions.csproj" />
+        <ProjectReference Include="..\src\Caravel.Core\Caravel.Core.csproj" />
+        <ProjectReference Include="..\src\Caravel.Graph.Dijkstra\Caravel.Graph.Dijkstra.csproj" />
+        <ProjectReference Include="..\src\Caravel.Mermaid\Caravel.Mermaid.csproj" />
+    </ItemGroup>
+    <ItemGroup>
+        <Using Include="Xunit" />
+    </ItemGroup>
+</Project>
