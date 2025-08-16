@@ -51,4 +51,4 @@ StrykerOutput/
 *.received.*
 
 # Packages
-Packages/**
+packages/**

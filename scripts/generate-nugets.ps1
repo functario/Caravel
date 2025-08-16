@@ -18,7 +18,7 @@ if ($ProjectFiles.Count -eq 0) {
     exit 1
 }
 
-$PackageOutput = Join-Path -Path $SolutionRoot -ChildPath 'Packages'
+$PackageOutput = Join-Path -Path $SolutionRoot -ChildPath 'packages'
 if (-Not (Test-Path $PackageOutput)) {
     New-Item -ItemType Directory -Path $PackageOutput | Out-Null
 }

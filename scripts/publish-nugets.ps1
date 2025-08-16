@@ -2,7 +2,7 @@
 param(
     # Optional: override the feed URL or name.
     [string]$FeedName   = "LocalNugets",
-    [string]$PackagesDir = (Join-Path -Path $PSScriptRoot -ChildPath "..\Packages")
+    [string]$PackagesDir = (Join-Path -Path $PSScriptRoot -ChildPath "..\packages")
 )
 # ------------------------------------------------------------------
 # Helper – write a header to make output easier to read
