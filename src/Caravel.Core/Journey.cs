@@ -191,25 +191,26 @@ public abstract class Journey : IJourney, IJourneyLegPublisher
     private static (INode outNode, IActionMetaData? actionMetaData) GetNodeIfWrapped<TNodeOut>(
         TNodeOut funcNode
     )
+        where TNodeOut : INode
     {
         ArgumentNullException.ThrowIfNull(funcNode, nameof(funcNode));
-        var funcNodeType = funcNode.GetType();
-        if (
-            funcNodeType.IsGenericType
-            && funcNodeType.GetGenericTypeDefinition() == typeof(EnrichedNode<>)
-        )
-        {
-            var nodeProperty = funcNodeType.GetProperty(nameof(EnrichedNode<INode>.Node))!;
-            var actionMetaDataProperty = funcNodeType.GetProperty(
-                nameof(EnrichedNode<INode>.ActionMetaData)
-            )!;
 
-            var node = nodeProperty.GetValue(funcNode);
-            var actionMetaData = (IActionMetaData)actionMetaDataProperty.GetValue(funcNode)!;
-            return ((INode)node!, actionMetaData);
+        if (!funcNode.IsEnrichedNode())
+        {
+            return (funcNode, null);
         }
 
-        return ((INode)funcNode, null);
+        // Need to unwrapp the values from EnrichedNode.
+        var enrichedNode = funcNode;
+        var unwrappedNode =
+            enrichedNode.GetPropertyValue<INode>(x => x.NodeToEnrich)
+            ?? throw new InvalidOperationException(
+                $"{nameof(IEnrichedNode<INode>)} property returned null"
+            );
+
+        var actionMetaData = enrichedNode.GetPropertyValue<IActionMetaData>(x => x.ActionMetaData);
+
+        return (unwrappedNode, actionMetaData);
     }
 
     private IRoute GetRoute(

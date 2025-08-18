@@ -3,11 +3,15 @@ using Caravel.Abstractions;
 
 namespace Caravel.Core;
 
-public sealed record EnrichedNode<TNode>(TNode Node, IActionMetaData ActionMetaData) : INode
+/// <inheritdoc cref="IEnrichedNode{TNode}" />
+public sealed record EnrichedNode<TNode>(TNode NodeToEnrich, IActionMetaData ActionMetaData)
+    : IEnrichedNode<TNode>
     where TNode : INode
 {
-    public ImmutableHashSet<IEdge> GetEdges() => Node.GetEdges();
+    /// <inheritdoc cref="INode" />
+    public ImmutableHashSet<IEdge> GetEdges() => NodeToEnrich.GetEdges();
 
+    /// <inheritdoc cref="INode" />
     public Task OnNodeOpenedAsync(IJourney journey, CancellationToken cancellationToken) =>
-        Node.OnNodeOpenedAsync(journey, cancellationToken);
+        NodeToEnrich.OnNodeOpenedAsync(journey, cancellationToken);
 }
