@@ -2,7 +2,7 @@
 
 namespace Caravel.Core.Extensions;
 
-public static class NodeExtensions
+public static class INodeExtensions
 {
     /// <summary>
     /// Create an <see cref="IEdge"/>.

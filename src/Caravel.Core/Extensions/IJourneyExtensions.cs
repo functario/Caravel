@@ -2,7 +2,7 @@
 
 namespace Caravel.Core.Extensions;
 
-public static partial class JourneyExtensions
+public static partial class IJourneyExtensions
 {
     internal static CancellationTokenSource LinkJourneyAndLocalCancellationTokens(
         this IJourney journey,

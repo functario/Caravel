@@ -195,20 +195,24 @@ public abstract class Journey : IJourney, IJourneyLegPublisher
     {
         ArgumentNullException.ThrowIfNull(funcNode, nameof(funcNode));
 
-        if (!funcNode.IsEnrichedNode())
+        if (!funcNode.IsAssignableToIEnrichedNode())
         {
             return (funcNode, null);
         }
 
         // Need to unwrapp the values from EnrichedNode.
-        var enrichedNode = funcNode;
+        funcNode.TryGetPropertyValue<INode>(x => x.NodeToEnrich, out var nodeToEnrich);
+
         var unwrappedNode =
-            enrichedNode.GetPropertyValue<INode>(x => x.NodeToEnrich)
+            nodeToEnrich
             ?? throw new InvalidOperationException(
                 $"{nameof(IEnrichedNode<INode>)} property returned null"
             );
 
-        var actionMetaData = enrichedNode.GetPropertyValue<IActionMetaData>(x => x.ActionMetaData);
+        funcNode.TryGetPropertyValue<IActionMetaData>(
+            x => x.ActionMetaData,
+            out var actionMetaData
+        );
 
         return (unwrappedNode, actionMetaData);
     }
