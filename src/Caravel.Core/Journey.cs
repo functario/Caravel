@@ -165,17 +165,43 @@ public abstract class Journey : IJourney, IJourneyLegPublisher
             var funcNode = await func(this, current, linkedCancellationTokenSource.Token)
                 .ConfigureAwait(false);
 
+            INode outNode = funcNode;
+
+            IActionMetaData? actionMetaData = null;
+            var funcNodeType = funcNode.GetType();
+
+            if (
+                funcNodeType.IsGenericType
+                && funcNodeType.GetGenericTypeDefinition() == typeof(NodeExtended<>)
+            )
+            {
+                // Use reflection to get the Node and ActionMetaData properties
+                var nodeProperty = funcNodeType.GetProperty(nameof(NodeExtended<INode>.Node))!;
+                var actionMetaDataProperty = funcNodeType.GetProperty(
+                    nameof(NodeExtended<INode>.ActionMetaData)
+                )!;
+
+                var node = nodeProperty.GetValue(funcNode);
+                actionMetaData = (IActionMetaData)actionMetaDataProperty.GetValue(funcNode)!;
+
+                if (node is INode n)
+                {
+                    outNode = n;
+                }
+            }
+
             // Ensure the navigation from DoAsync is registered.
-            await SetNavigationFromDoAsync<TCurrentNode, TNodeOut>(
+            await SetNavigationFromDoAsync(
                     current,
-                    funcNode,
+                    outNode,
                     Id,
+                    actionMetaData,
                     linkedCancellationTokenSource.Token
                 )
                 .ConfigureAwait(false);
 
             linkedCancellationTokenSource.Token.ThrowIfCancellationRequested();
-            await funcNode
+            await outNode
                 .OnNodeOpenedAsync(this, linkedCancellationTokenSource.Token)
                 .ConfigureAwait(false);
 
@@ -270,20 +296,24 @@ public abstract class Journey : IJourney, IJourneyLegPublisher
         CancellationToken cancellationToken
     );
 
-    private async Task SetNavigationFromDoAsync<TCurrentNode, TNodeOut>(
-        TCurrentNode currentNode,
-        TNodeOut nodeOut,
+    private async Task SetNavigationFromDoAsync(
+        INode currentNode,
+        INode nodeOut,
         Guid journeyId,
+        IActionMetaData? actionMetaData,
         CancellationToken linkedCancellationToken
     )
-        where TCurrentNode : INode
-        where TNodeOut : INode
     {
         // Change the current node.
         CurrentNode = nodeOut;
 
         // Publish start and end of navigation.
-        var journeyLeg = DynamicJourneyLeg<TCurrentNode, TNodeOut>(currentNode, journeyId);
+        var journeyLeg = DynamicJourneyLeg(
+            currentNode,
+            nodeOut.GetType(),
+            journeyId,
+            actionMetaData
+        );
 
         await PublishOnJourneyLegStartedAsync(
                 new JourneyLegStartedEvent(_timeProvider.GetUtcNow(), journeyLeg),
@@ -292,7 +322,7 @@ public abstract class Journey : IJourney, IJourneyLegPublisher
             .ConfigureAwait(false);
 
         await CompleteJourneyLegAsync(
-                typeof(TNodeOut),
+                nodeOut.GetType(),
                 journeyLeg,
                 journeyLeg.Edges.Last(),
                 linkedCancellationToken
@@ -325,23 +355,22 @@ public abstract class Journey : IJourney, IJourneyLegPublisher
         await CurrentNode.OnNodeOpenedAsync(this, cancellationToken).ConfigureAwait(false);
     }
 
-    private static JourneyLeg DynamicJourneyLeg<TCurrentNode, TNodeOut>(
-        TCurrentNode currentNode,
-        Guid journeyId
+    private static JourneyLeg DynamicJourneyLeg(
+        INode currentNode,
+        Type nodeOutType,
+        Guid journeyId,
+        IActionMetaData? actionMetaData = null
     )
-        where TCurrentNode : INode
-        where TNodeOut : INode
     {
         if (journeyId.Version != 7)
             throw new InvalidOperationException("Id must be Guid.V7.");
 
-        var neighborNavigator = new NeighborNavigator(
-            MoveNext(currentNode),
-            new ActionMetaData($"{nameof(Journey)}.{nameof(DoAsync)}")
-        );
+        actionMetaData ??= new ActionMetaData($"{nameof(Journey)}.{nameof(DoAsync)}");
+
+        var neighborNavigator = new NeighborNavigator(MoveNext(currentNode), actionMetaData);
 
         var legEdges = new Queue<IEdge>(
-            [new Edge(typeof(TCurrentNode), typeof(TNodeOut), neighborNavigator)]
+            [new Edge(currentNode.GetType(), nodeOutType, neighborNavigator)]
         );
 
         // TODO: The graph should expose a RouteFactory to allow custom implementation.
