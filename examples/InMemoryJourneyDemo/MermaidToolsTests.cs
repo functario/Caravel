@@ -14,6 +14,7 @@ namespace InMemoryJourneyDemo;
 public class MermaidToolsTests
 {
     private readonly Node3 _node3;
+    private readonly WeightedNode2 _weightedNode2;
     private readonly IGraph _graph;
     private readonly InMemoryJourney _unweightedJourney;
     private readonly InMemoryJourney _weightedJourney;
@@ -27,9 +28,7 @@ public class MermaidToolsTests
         _unweightedJourney = unweightedSeed.CreateInMemoryJourney();
 
         var weightedSeed = new WeightedJourneySeed();
-        _node3 = unweightedSeed.Node3;
-        _graph = unweightedSeed.Graph;
-
+        _weightedNode2 = weightedSeed.WeightedNode2;
         _weightedJourney = weightedSeed.CreateInMemoryJourney();
 
     }
@@ -248,30 +247,62 @@ public class MermaidToolsTests
     {
         // You need "using Caravel.Core.Extensions;"
 
+        var defaultAction = "Journey.DoAsync";
+        var customAction1 = "My custom action description 1";
+        var customAction2 = "My custom action description 2";
+
+        // This description is declared from the Edges of Node2.
+        var customActionFromWeightedNode2Edge = "Open the Node3 from Node2";
+
         await _weightedJourney
             .DoAsync<WeightedNode1>((node1, cancellationToken) =>
             {
+                // The default action description is "Journey.DoAsync"
                 return Task.FromResult(node1);
             })
-            .GotoAsync<WeightedNode2>();
+            .DoAsync<WeightedNode1, EnrichedNode<WeightedNode1>>((node1, cancellationToken) =>
+            {
+                // Add a specific description for this action return WeightedNode1.
+                // The output node will still be WeightedNode1
+                var enrichedWeightNode1 = new EnrichedNode<WeightedNode1>(
+                    node1,
+                    new ActionMetaData(customAction1));
+
+                return Task.FromResult(enrichedWeightNode1);
+            })
+            .DoAsync<WeightedNode1, EnrichedNode<WeightedNode2>>((node1, cancellationToken) =>
+            {
+                // Add a specific description for this action returning WeightedNode2.
+                // The output node will be WeightedNode2
+                var enrichedWeightNode2 = new EnrichedNode<WeightedNode2>(
+                    _weightedNode2,
+                    new ActionMetaData(customAction2));
+
+                return Task.FromResult(enrichedWeightNode2);
+            })
+            .GotoAsync<WeightedNode3>(); // This will log the custom description configured in WeightedNode2.
 
         // Validate the navigation sequence with a Mermaid sequence diagram
-        // with default EdgeMetadata description "Journey.DoAsync"
-        // and custom EdgeMetadata from WeightedNode1 declaration.
         var mermaidOptions = new MermaidOptions()
         { DisplayDescription = true, DisplayGridPosition = false, GraphDirection = MermaidGraphDirections.TD };
 
         var mermaidNavigationSequence = await _weightedJourney.ToMermaidSequenceDiagramMarkdownAsync(mermaidOptions);
         var expectedNavigation =
-            """
+            $"""
             sequenceDiagram
-            WeightedNode1->>WeightedNode1:0<br>Journey.DoAsync
-            WeightedNode1->>WeightedNode2:10<br>Open the Node2 from Node1
+            WeightedNode1->>WeightedNode1:0<br>{defaultAction}
+            WeightedNode1->>WeightedNode1:0<br>{customAction1}
+            WeightedNode1->>WeightedNode2:0<br>{customAction2}
+            WeightedNode2->>WeightedNode3:1<br>{customActionFromWeightedNode2Edge}
             """.ReplaceLineEndings();
 
         mermaidNavigationSequence.ReplaceLineEndings().Should().Be(expectedNavigation);
-    }
 
-    private delegate TResult MyFunc<in T, out TResult>(T arg);
+        /*NOTE:
+         * This is not allowed since EnrichedNode<WeightedNode1> is not part of the graph:
+         *
+         *      _weightedJourney.DoAsync<EnrichedNode<WeightedNode1>>();
+        */
+    }
 }
 // csharpier-ignore-end
