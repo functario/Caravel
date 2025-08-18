@@ -1,13 +1,13 @@
-﻿namespace Caravel.Core.UnitTests.Tests.NodeAction.Atomic;
+﻿namespace Caravel.Core.UnitTests.Tests.NodeAction.Chained;
 
 [Trait(TestType, Unit)]
 [Trait(Feature, FeatureNodeAction)]
 [Trait(Domain, NodeDomain)]
-public sealed class AtomicAllowsToAddMetadata : IDisposable
+public sealed class ChainedAllowsToAddMetadata : IDisposable
 {
     private readonly CancellationTokenSource _localTokenSource30mins;
 
-    public AtomicAllowsToAddMetadata()
+    public ChainedAllowsToAddMetadata()
     {
         _localTokenSource30mins = new CancellationTokenSource(TimeSpan.FromMinutes(30));
     }
@@ -26,22 +26,26 @@ public sealed class AtomicAllowsToAddMetadata : IDisposable
             .WithEdge<Node2>()
             .Done()
             .AddNode<Node2>()
+            .WithEdge<Node3>()
+            .Done()
+            .AddNode<Node3>()
             .Done();
 
         var journey = builder.Build(ct: CancellationToken.None);
 
         // Act
         var sut = await journey
-            .DoAsync<Node1, EnrichedNode<Node1>>(
-                (journey, node1, ct) =>
+            .GotoAsync<Node2>()
+            .DoAsync<Node2, EnrichedNode<Node2>>(
+                (journey, node2, ct) =>
                 {
                     var actionMetadata = new ActionMetaData("My custom metadata");
-                    var enrichedNode = new EnrichedNode<Node1>(node1, actionMetadata);
+                    var enrichedNode = new EnrichedNode<Node2>(node2, actionMetadata);
                     return Task.FromResult(enrichedNode);
                 },
                 CancellationToken.None
             )
-            .GotoAsync<Node2>();
+            .GotoAsync<Node3>();
 
         // Assert
         var result = await sut.ToMermaidSequenceDiagramMarkdownAsync(WithDescription);
@@ -67,16 +71,16 @@ public sealed class AtomicAllowsToAddMetadata : IDisposable
 
         // Act
         var sut = await journey
-            .DoAsync<Node1, EnrichedNode<Node2>>(
+            .GotoAsync<Node1>()
+            .DoAsync<Node1, EnrichedNode<Node3>>(
                 (journey, node1, ct) =>
                 {
                     var actionMetadata = new ActionMetaData("My custom metadata");
-                    var enrichedNode = new EnrichedNode<Node2>(map.NodeSpy2, actionMetadata);
+                    var enrichedNode = new EnrichedNode<Node3>(map.NodeSpy3, actionMetadata);
                     return Task.FromResult(enrichedNode);
                 },
                 CancellationToken.None
-            )
-            .GotoAsync<Node3>();
+            );
 
         // Assert
         var result = await sut.ToMermaidSequenceDiagramMarkdownAsync(WithDescription);

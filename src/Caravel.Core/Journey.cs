@@ -165,30 +165,7 @@ public abstract class Journey : IJourney, IJourneyLegPublisher
             var funcNode = await func(this, current, linkedCancellationTokenSource.Token)
                 .ConfigureAwait(false);
 
-            INode outNode = funcNode;
-
-            IActionMetaData? actionMetaData = null;
-            var funcNodeType = funcNode.GetType();
-
-            if (
-                funcNodeType.IsGenericType
-                && funcNodeType.GetGenericTypeDefinition() == typeof(NodeExtended<>)
-            )
-            {
-                // Use reflection to get the Node and ActionMetaData properties
-                var nodeProperty = funcNodeType.GetProperty(nameof(NodeExtended<INode>.Node))!;
-                var actionMetaDataProperty = funcNodeType.GetProperty(
-                    nameof(NodeExtended<INode>.ActionMetaData)
-                )!;
-
-                var node = nodeProperty.GetValue(funcNode);
-                actionMetaData = (IActionMetaData)actionMetaDataProperty.GetValue(funcNode)!;
-
-                if (node is INode n)
-                {
-                    outNode = n;
-                }
-            }
+            (var outNode, var actionMetaData) = GetNodeIfWrapped(funcNode);
 
             // Ensure the navigation from DoAsync is registered.
             await SetNavigationFromDoAsync(
@@ -209,6 +186,30 @@ public abstract class Journey : IJourney, IJourneyLegPublisher
         }
 
         throw new UnexpectedNodeException(CurrentNode.GetType(), typeof(TCurrentNode));
+    }
+
+    private static (INode outNode, IActionMetaData? actionMetaData) GetNodeIfWrapped<TNodeOut>(
+        TNodeOut funcNode
+    )
+    {
+        ArgumentNullException.ThrowIfNull(funcNode, nameof(funcNode));
+        var funcNodeType = funcNode.GetType();
+        if (
+            funcNodeType.IsGenericType
+            && funcNodeType.GetGenericTypeDefinition() == typeof(EnrichedNode<>)
+        )
+        {
+            var nodeProperty = funcNodeType.GetProperty(nameof(EnrichedNode<INode>.Node))!;
+            var actionMetaDataProperty = funcNodeType.GetProperty(
+                nameof(EnrichedNode<INode>.ActionMetaData)
+            )!;
+
+            var node = nodeProperty.GetValue(funcNode);
+            var actionMetaData = (IActionMetaData)actionMetaDataProperty.GetValue(funcNode)!;
+            return ((INode)node!, actionMetaData);
+        }
+
+        return ((INode)funcNode, null);
     }
 
     private IRoute GetRoute(
