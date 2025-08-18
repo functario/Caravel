@@ -298,7 +298,5 @@ public class MermaidToolsTests
 
         mermaidNavigationSequence.ReplaceLineEndings().Should().Be(expectedNavigation);
     }
-
-    private delegate TResult MyFunc<in T, out TResult>(T arg);
 }
 // csharpier-ignore-end
