@@ -297,6 +297,12 @@ public class MermaidToolsTests
             """.ReplaceLineEndings();
 
         mermaidNavigationSequence.ReplaceLineEndings().Should().Be(expectedNavigation);
+
+        /*NOTE:
+         * This is not allowed since EnrichedNode<WeightedNode1> is not part of the graph:
+         *
+         *      _weightedJourney.DoAsync<EnrichedNode<WeightedNode1>>();
+        */
     }
 }
 // csharpier-ignore-end
