@@ -1,15 +1,16 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
     <PropertyGroup>
         <TargetFramework>$(SdkTargetFramework)</TargetFramework>
-        <ImplicitUsings>enable</ImplicitUsings>
-        <Nullable>enable</Nullable>
     </PropertyGroup>
+    <ItemGroup>
+        <ProjectReference Include="..\Caravel.Abstractions\Caravel.Abstractions.csproj" />
+    </ItemGroup>
     <!--Nuget configuration-->
     <PropertyGroup Condition="'$(Configuration)'=='Release'">
         <PackageId>$(FunctarioName).$(MSBuildProjectName)</PackageId>
         <Title>$(FunctarioName).$(MSBuildProjectName)</Title>
         <Description>
-            Functario.Caravel's abstractions.
+            Functario.Caravel.Core's extensions.
         </Description>
         <Version>0.1.0-alpha.1</Version>
         <PackageReleaseNotes>
@@ -22,7 +23,7 @@
         <RepositoryType>git</RepositoryType>
         <IncludeContentInPack>true</IncludeContentInPack>
         <PackageLicenseExpression>MIT</PackageLicenseExpression>
-        <PackageReadmeFile>.\README.md</PackageReadmeFile>
+        <PackageReadmeFile>README.md</PackageReadmeFile>
         <PackageTags>$(NugetTags)</PackageTags>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Configuration)'=='Release'">

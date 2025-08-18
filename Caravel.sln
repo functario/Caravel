@@ -52,6 +52,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "InMemoryJourneyDemo", "InMe
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "InMemoryJourneyDemo", "examples\InMemoryJourneyDemo\InMemoryJourneyDemo.csproj", "{E901D83E-BCA8-E433-3E5D-ADBE3125F600}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Caravel.Core.Extensions", "src\Caravel.Core.Extensions\Caravel.Core.Extensions.csproj", "{F9A5339B-C29E-4AA9-AC8B-1E5442FFB819}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -102,6 +104,10 @@ Global
 		{E901D83E-BCA8-E433-3E5D-ADBE3125F600}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{E901D83E-BCA8-E433-3E5D-ADBE3125F600}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{E901D83E-BCA8-E433-3E5D-ADBE3125F600}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F9A5339B-C29E-4AA9-AC8B-1E5442FFB819}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F9A5339B-C29E-4AA9-AC8B-1E5442FFB819}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F9A5339B-C29E-4AA9-AC8B-1E5442FFB819}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F9A5339B-C29E-4AA9-AC8B-1E5442FFB819}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -122,6 +128,7 @@ Global
 		{D01BF0F7-19F2-4EBA-A69C-693AED199F6C} = {D03275D1-C0E3-49D6-ACB7-F6DCF65061C5}
 		{0B772908-B5E4-48A3-B255-5B358CD7DD44} = {E8BDA924-8BAB-4B48-A206-47666EF395FC}
 		{E901D83E-BCA8-E433-3E5D-ADBE3125F600} = {0B772908-B5E4-48A3-B255-5B358CD7DD44}
+		{F9A5339B-C29E-4AA9-AC8B-1E5442FFB819} = {827E0CD3-B72D-47B6-A68D-7590B98EB39B}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {C117A897-A1ED-4783-8937-F9378E58B728}

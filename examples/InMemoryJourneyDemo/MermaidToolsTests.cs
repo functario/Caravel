@@ -269,8 +269,6 @@ public class MermaidToolsTests
             WeightedNode1->>WeightedNode2:10<br>Open the Node2 from Node1
             """.ReplaceLineEndings();
 
-
-
         mermaidNavigationSequence.ReplaceLineEndings().Should().Be(expectedNavigation);
     }
 
