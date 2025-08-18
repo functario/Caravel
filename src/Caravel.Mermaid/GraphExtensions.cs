@@ -11,7 +11,7 @@ namespace Caravel.Mermaid;
 public static partial class GraphExtensions
 {
     private static string NewLine => "<br>";
-    private const string SafeCharPattern = @"^[a-zA-Z0-9 _.\-:]+$";
+    private const string SafeCharPattern = @"^[a-zA-Z0-9\s_.\-:]*$";
 
     public static string ToMermaidMarkdown(this IGraph graph, MermaidOptions? options = null)
     {
@@ -27,18 +27,18 @@ public static partial class GraphExtensions
         List<(Type node, ImmutableHashSet<IEdge> edges)> nodeEdges =
         [
             .. graph
-                .Nodes.OrderBy(n => n.Key.GetQuadrantRow())
-                .ThenBy(n => n.Key.GetQuadrantColumn())
+                .Nodes.OrderBy(n => n.Key.GetGridPositionRow())
+                .ThenBy(n => n.Key.GetGridPositionColumn())
                 .Select(n => (node: n.Key, edges: n.Value.GetEdges())),
         ];
 
         for (var i = 0; i < nodeEdges.Count; i++)
         {
             var (node, edges) = nodeEdges[i];
-            var quadrant = node.GetQuadrant();
+            var gridPosition = node.GetGridPosition();
             foreach (var edge in edges.OrderBy(x => x.Neighbor.Name))
             {
-                var edgeStr = edge.ToMermaidSection(options, quadrant);
+                var edgeStr = edge.ToMermaidSection(options, gridPosition);
                 stringBuilder.AppendLine(edgeStr);
             }
         }
@@ -193,6 +193,7 @@ public static partial class GraphExtensions
         var history = await journey
             .GetCompletedJourneyLegsAsync(cancellationToken)
             .ConfigureAwait(false);
+
         return [.. history];
     }
 
@@ -208,23 +209,26 @@ public static partial class GraphExtensions
     private static string GetEdgeNoteAsMermaid(
         this IEdge edge,
         MermaidOptions options,
-        QuadrantAttribute? quadrant = null
+        GridPositionAttribute? gridPosition = null
     )
     {
         var weight = edge.Weight.ToString(CultureInfo.InvariantCulture);
         var builder = new StringBuilder(weight);
 
-        if (options.DisplayDescription && edge.NeighborNavigator.MetaData is string description)
+        if (
+            options.DisplayDescription
+            && edge.NeighborNavigator.MetaData is IActionMetaData edgeMetaData
+            && !string.IsNullOrWhiteSpace(edgeMetaData.Description)
+        )
         {
-            description.ThrowIfNotMermaidSafe();
-            builder.Append(CultureInfo.InvariantCulture, $"{NewLine}{description}");
+            edgeMetaData.Description.ThrowIfNotMermaidSafe();
+            builder.Append(CultureInfo.InvariantCulture, $"{NewLine}{edgeMetaData.Description}");
         }
 
-        if (quadrant is not null && options.DisplayQuadrant)
+        if (gridPosition is not null && options.DisplayGridPosition)
         {
-            var quadrantStr = $"{NewLine}{quadrant.Row},{quadrant.Column}";
-            quadrantStr.ThrowIfNotMermaidSafe();
-            builder.Append(CultureInfo.InvariantCulture, $"{quadrantStr}");
+            var gridPositionStr = $"{NewLine}{gridPosition.Row},{gridPosition.Column}";
+            builder.Append(CultureInfo.InvariantCulture, $"{gridPositionStr}");
         }
 
         return builder.ToString();
@@ -233,23 +237,23 @@ public static partial class GraphExtensions
     private static string ToMermaidSection(
         this IEdge edge,
         MermaidOptions options,
-        QuadrantAttribute? quadrant = null
+        GridPositionAttribute? gridPosition = null
     )
     {
-        var text = GetEdgeNoteAsMermaid(edge, options, quadrant);
+        var text = GetEdgeNoteAsMermaid(edge, options, gridPosition);
         return $"{edge.Origin.Name} -->|{text}| {edge.Neighbor.Name}";
     }
 
     private static IEnumerable<string> ToSequenceDiagramItem(
         this IEdge[] edges,
         MermaidOptions options,
-        QuadrantAttribute? quadrant = null
+        GridPositionAttribute? gridPosition = null
     )
     {
         for (var i = 0; i < edges.Length; i++)
         {
             var edge = edges[i];
-            var text = GetEdgeNoteAsMermaid(edge, options, quadrant);
+            var text = GetEdgeNoteAsMermaid(edge, options, gridPosition);
             yield return $"{edge.Origin.Name}->>{edge.Neighbor.Name}:{text}";
         }
     }
@@ -276,19 +280,20 @@ public static partial class GraphExtensions
             """;
     }
 
-    private static QuadrantAttribute GetQuadrant(this Type nodeType)
+    private static GridPositionAttribute GetGridPosition(this Type nodeType)
     {
-        return nodeType.GetCustomAttribute<QuadrantAttribute>() ?? new QuadrantAttribute(0, 0);
+        return nodeType.GetCustomAttribute<GridPositionAttribute>()
+            ?? new GridPositionAttribute(0, 0);
     }
 
-    private static int GetQuadrantRow(this Type nodeType)
+    private static int GetGridPositionRow(this Type nodeType)
     {
-        return nodeType.GetCustomAttribute<QuadrantAttribute>()?.Row ?? int.MaxValue;
+        return nodeType.GetCustomAttribute<GridPositionAttribute>()?.Row ?? int.MaxValue;
     }
 
-    private static int GetQuadrantColumn(this Type nodeType)
+    private static int GetGridPositionColumn(this Type nodeType)
     {
-        return nodeType.GetCustomAttribute<QuadrantAttribute>()?.Column ?? int.MaxValue;
+        return nodeType.GetCustomAttribute<GridPositionAttribute>()?.Column ?? int.MaxValue;
     }
 
     // Note: Mermaid config is space sensitive.

@@ -34,7 +34,7 @@ public class AtomicIgnoresExcludedNodes
         var sut = await journey.GotoAsync<Node4>(excludedNodes);
 
         // Assert
-        var result = await sut.ToMermaidSequenceDiagramMarkdownAsync(WithQuadrant);
+        var result = await sut.ToMermaidSequenceDiagramMarkdownAsync(WithGridPosition);
         await result.VerifyMermaidMarkdownAsync().UseParameters(excludedNode.Name);
     }
 
@@ -49,7 +49,7 @@ public class AtomicIgnoresExcludedNodes
         var sut = await journey.GotoAsync<Node14>(excludedNodes);
 
         // Assert
-        var result = await sut.ToMermaidSequenceDiagramMarkdownAsync(WithQuadrant);
+        var result = await sut.ToMermaidSequenceDiagramMarkdownAsync(WithGridPosition);
         await result.VerifyMermaidMarkdownAsync();
     }
 
@@ -86,7 +86,7 @@ public class AtomicIgnoresExcludedNodes
         var sut = await journey.GotoAsync<Node6>(excludedNodes);
 
         // Assert
-        var result = await sut.ToMermaidSequenceDiagramMarkdownAsync(WithQuadrant);
+        var result = await sut.ToMermaidSequenceDiagramMarkdownAsync(WithGridPosition);
         await result.VerifyMermaidMarkdownAsync();
     }
 
@@ -123,7 +123,7 @@ public class AtomicIgnoresExcludedNodes
         var sut = await journey.GotoAsync<Node6>(excludedNodes);
 
         // Assert
-        var result = await sut.ToMermaidSequenceDiagramMarkdownAsync(WithQuadrant);
+        var result = await sut.ToMermaidSequenceDiagramMarkdownAsync(WithGridPosition);
         await result.VerifyMermaidMarkdownAsync();
     }
 }

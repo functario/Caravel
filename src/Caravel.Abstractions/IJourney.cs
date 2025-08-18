@@ -19,19 +19,19 @@ public interface IJourney
         Type destinationType,
         IWaypoints waypoints,
         IExcludedNodes excludedNodes,
-        CancellationToken localCancellationToken = default
+        CancellationToken scopedCancellationToken = default
     );
 
     public Task<IJourney> GotoAsync<TDestination>(
         IWaypoints waypoints,
         IExcludedNodes excludedNodes,
-        CancellationToken localCancellationToken = default
+        CancellationToken scopedCancellationToken = default
     )
         where TDestination : INode;
 
     public Task<IJourney> DoAsync<TCurrentNode, TNodeOut>(
         Func<IJourney, TCurrentNode, CancellationToken, Task<TNodeOut>> func,
-        CancellationToken localCancellationToken = default
+        CancellationToken scopedCancellationToken = default
     )
         where TCurrentNode : INode
         where TNodeOut : INode;

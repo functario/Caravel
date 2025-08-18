@@ -2,7 +2,7 @@
 
 public sealed record MermaidOptions(
     bool DisplayDescription = false,
-    bool DisplayQuadrant = false,
+    bool DisplayGridPosition = false,
     MermaidGraphDirections GraphDirection = default
 )
 {

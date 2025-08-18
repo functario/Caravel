@@ -24,7 +24,7 @@ public class AtomicSetStartingNode
         var sut = await journey.SetStartingNode(journeyBuilder.Map.NodeSpy2).GotoAsync<Node3>();
 
         // Assert
-        var result = await sut.ToMermaidSequenceDiagramMarkdownAsync(WithQuadrant);
+        var result = await sut.ToMermaidSequenceDiagramMarkdownAsync(WithGridPosition);
         await result.VerifyMermaidMarkdownAsync();
     }
 
@@ -53,7 +53,7 @@ public class AtomicSetStartingNode
             .GotoAsync<Node3>();
 
         // Assert
-        var result = await sut.ToMermaidSequenceDiagramMarkdownAsync(WithQuadrant);
+        var result = await sut.ToMermaidSequenceDiagramMarkdownAsync(WithGridPosition);
         await result.VerifyMermaidMarkdownAsync();
     }
 }

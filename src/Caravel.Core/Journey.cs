@@ -65,13 +65,13 @@ public abstract class Journey : IJourney, IJourneyLegPublisher
     public async Task<IJourney> GotoAsync<TDestination>(
         IWaypoints waypoints,
         IExcludedNodes excludedNodes,
-        CancellationToken localCancellationToken
+        CancellationToken scopedCancellationToken
     )
         where TDestination : INode
     {
         ArgumentNullException.ThrowIfNull(waypoints, nameof(waypoints));
 
-        await GotoAsync(typeof(TDestination), waypoints, excludedNodes, localCancellationToken)
+        await GotoAsync(typeof(TDestination), waypoints, excludedNodes, scopedCancellationToken)
             .ConfigureAwait(false);
 
         return this;
@@ -81,7 +81,7 @@ public abstract class Journey : IJourney, IJourneyLegPublisher
         Type destinationType,
         IWaypoints waypoints,
         IExcludedNodes excludedNodes,
-        CancellationToken localCancellationToken
+        CancellationToken scopedCancellationToken
     )
     {
         // Prevent setting starting node once the journey is started
@@ -89,7 +89,7 @@ public abstract class Journey : IJourney, IJourneyLegPublisher
         ArgumentNullException.ThrowIfNull(waypoints, nameof(waypoints));
 
         using var linkedCancellationTokenSource = this.LinkJourneyAndLocalCancellationTokens(
-            localCancellationToken
+            scopedCancellationToken
         );
 
         linkedCancellationTokenSource.Token.ThrowIfCancellationRequested();
@@ -140,7 +140,7 @@ public abstract class Journey : IJourney, IJourneyLegPublisher
 
     public async Task<IJourney> DoAsync<TCurrentNode, TNodeOut>(
         Func<IJourney, TCurrentNode, CancellationToken, Task<TNodeOut>> func,
-        CancellationToken localCancellationToken = default
+        CancellationToken scopedCancellationToken = default
     )
         where TCurrentNode : INode
         where TNodeOut : INode
@@ -150,7 +150,7 @@ public abstract class Journey : IJourney, IJourneyLegPublisher
         ArgumentNullException.ThrowIfNull(func, nameof(func));
 
         using var linkedCancellationTokenSource = this.LinkJourneyAndLocalCancellationTokens(
-            localCancellationToken
+            scopedCancellationToken
         );
 
         linkedCancellationTokenSource.Token.ThrowIfCancellationRequested();
@@ -337,13 +337,14 @@ public abstract class Journey : IJourney, IJourneyLegPublisher
 
         var neighborNavigator = new NeighborNavigator(
             MoveNext(currentNode),
-            $"{nameof(Journey)}.{nameof(DoAsync)}"
+            new ActionMetaData($"{nameof(Journey)}.{nameof(DoAsync)}")
         );
 
         var legEdges = new Queue<IEdge>(
             [new Edge(typeof(TCurrentNode), typeof(TNodeOut), neighborNavigator)]
         );
 
+        // TODO: The graph should expose a RouteFactory to allow custom implementation.
         var doRoute = new DoRoute([.. legEdges]);
         return new JourneyLeg(journeyId, legEdges, doRoute);
     }

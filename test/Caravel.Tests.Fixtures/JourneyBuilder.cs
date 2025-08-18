@@ -64,7 +64,7 @@ public sealed class NodeBuilder
 {
     private readonly JourneyBuilder _parent;
     private readonly Type _type;
-    private readonly List<(Type neighbor, int weight, string? description)> _edges = [];
+    private readonly List<(Type neighbor, int weight, ActionMetaData? description)> _edges = [];
     private bool _auditValue = true;
     private INodeSpy? _instance;
 
@@ -80,7 +80,7 @@ public sealed class NodeBuilder
     public NodeBuilder WithEdge(Type neighborType, int weight = 0, string description = "")
     {
         var edgeInfo = string.IsNullOrWhiteSpace(description) ? null : description;
-        _edges.Add((neighborType, weight, edgeInfo));
+        _edges.Add((neighborType, weight, new ActionMetaData(edgeInfo ?? "")));
         return this;
     }
 

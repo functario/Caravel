@@ -41,12 +41,22 @@ jobs:
            --configuration Release \
            --no-restore
 
-      - name: Run unit tests
+      - name: Run Caravel.Core unit tests
         run: |
           dotnet test ./test/UnitTests/Caravel.Core.UnitTests/Caravel.Core.UnitTests.csproj \
             --configuration Release \
             --no-build \
             --logger "trx;LogFileName=unit-test-results.trx" \
+            --results-directory ${{ github.workspace }}/test-results \
+            --collect:"XPlat Code Coverage"
+        continue-on-error: false
+
+      - name: Run InMemoryJourneyDemo tests
+        run: |
+          dotnet test ./examples/InMemoryJourneyDemo/InMemoryJourneyDemo.csproj \
+            --configuration Release \
+            --no-build \
+            --logger "trx;LogFileName=inmemoryjourneydemo-test-results.trx" \
             --results-directory ${{ github.workspace }}/test-results \
             --collect:"XPlat Code Coverage"
         continue-on-error: false

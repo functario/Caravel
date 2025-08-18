@@ -24,7 +24,7 @@ public class AtomicGotoDestination
         var sut = await journey.GotoAsync<Node1>();
 
         // Assert
-        var result = await sut.ToMermaidSequenceDiagramMarkdownAsync(WithQuadrant);
+        var result = await sut.ToMermaidSequenceDiagramMarkdownAsync(WithGridPosition);
         await result.VerifyMermaidMarkdownAsync();
     }
 
@@ -51,7 +51,7 @@ public class AtomicGotoDestination
         var sut = await journey.GotoAsync<Node1>(waypoints);
 
         // Assert
-        var result = await sut.ToMermaidSequenceDiagramMarkdownAsync(WithQuadrant);
+        var result = await sut.ToMermaidSequenceDiagramMarkdownAsync(WithGridPosition);
         await result.VerifyMermaidMarkdownAsync();
     }
 
@@ -68,7 +68,7 @@ public class AtomicGotoDestination
         var sut = await journey.GotoAsync<Node15>(waypoints, excludedNodes);
 
         // Assert
-        var result = await sut.ToMermaidSequenceDiagramMarkdownAsync(WithQuadrant);
+        var result = await sut.ToMermaidSequenceDiagramMarkdownAsync(WithGridPosition);
         await result.VerifyMermaidMarkdownAsync();
     }
 }
