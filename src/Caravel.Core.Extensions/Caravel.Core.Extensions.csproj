@@ -1,0 +1,41 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+    <PropertyGroup>
+        <TargetFramework>$(SdkTargetFramework)</TargetFramework>
+    </PropertyGroup>
+    <ItemGroup>
+        <ProjectReference Include="..\Caravel.Abstractions\Caravel.Abstractions.csproj" />
+    </ItemGroup>
+    <!--Nuget configuration-->
+    <PropertyGroup Condition="'$(Configuration)'=='Release'">
+        <PackageId>$(FunctarioName).$(MSBuildProjectName)</PackageId>
+        <Title>$(FunctarioName).$(MSBuildProjectName)</Title>
+        <Description>
+            Functario.Caravel.Core's extensions.
+        </Description>
+        <Version>0.1.0-alpha.1</Version>
+        <PackageReleaseNotes>
+            ** Not ready for production **
+            Initial alpha release.
+        </PackageReleaseNotes>
+        <Authors>Functario</Authors>
+        <PackageProjectUrl>https://github.com/functario/Caravel</PackageProjectUrl>
+        <RepositoryUrl>https://github.com/functario/Caravel</RepositoryUrl>
+        <RepositoryType>git</RepositoryType>
+        <IncludeContentInPack>true</IncludeContentInPack>
+        <PackageLicenseExpression>MIT</PackageLicenseExpression>
+        <PackageReadmeFile>README.md</PackageReadmeFile>
+        <PackageTags>$(NugetTags)</PackageTags>
+    </PropertyGroup>
+    <PropertyGroup Condition="'$(Configuration)'=='Release'">
+        <IncludeSymbols>true</IncludeSymbols>
+        <SymbolPackageFormat>snupkg</SymbolPackageFormat>
+        <PackAsTool>false</PackAsTool>
+    </PropertyGroup>
+    <ItemGroup>
+        <None Include="..\..\README.md">
+            <Pack>true</Pack>
+            <PackagePath></PackagePath>
+            <Visible>True</Visible>
+        </None>
+    </ItemGroup>
+</Project>
