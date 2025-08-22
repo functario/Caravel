@@ -15,6 +15,6 @@ public sealed class CoreFactories : ICoreFactories
 
     public IJourneyFactories JourneyFactories => new JourneyFactories();
 
-    public IJourneyLegPublisherFactory JourneyLegPublisherFactory =>
-        new JourneyLegPublisherFactory(_timeProvider);
+    public IJourneyLegEventFactory JourneyLegEventFactory =>
+        new JourneyLegEventFactory(_timeProvider);
 }

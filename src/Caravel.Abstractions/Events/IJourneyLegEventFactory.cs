@@ -1,6 +1,6 @@
 ﻿namespace Caravel.Abstractions.Events;
 
-public interface IJourneyLegPublisherFactory
+public interface IJourneyLegEventFactory
 {
     public IJourneyLegStartedEvent CreateJourneyLegStartedEvent(IJourneyLeg journeyLeg);
 

@@ -9,7 +9,7 @@ public abstract class Journey : IJourney, IJourneyLegPublisher
 {
     private readonly IActionMetaDataFactory _actionMetaDataFactory;
     private readonly IJourneyLegFactory _journeyLegFactory;
-    private readonly IJourneyLegPublisherFactory _journeyLegPublisherFactory;
+    private readonly IJourneyLegEventFactory _journeyLegEventFactory;
     private bool _isJourneyStarted;
 
     protected Journey(
@@ -25,7 +25,7 @@ public abstract class Journey : IJourney, IJourneyLegPublisher
 
         _isJourneyStarted = false;
         Graph = graph;
-        _journeyLegPublisherFactory = factories.JourneyLegPublisherFactory;
+        _journeyLegEventFactory = factories.JourneyLegEventFactory;
         _actionMetaDataFactory = factories.JourneyFactories.ActionMetaDataFactory;
         _journeyLegFactory = factories.JourneyFactories.JourneyLegFactory;
         JourneyCancellationToken = journeyCancellationToken;
@@ -108,7 +108,7 @@ public abstract class Journey : IJourney, IJourneyLegPublisher
         var journeyLeg = _journeyLegFactory.CreateJourneyLeg(Id, legEdges, route);
 
         await PublishOnJourneyLegStartedAsync(
-                _journeyLegPublisherFactory.CreateJourneyLegStartedEvent(journeyLeg),
+                _journeyLegEventFactory.CreateJourneyLegStartedEvent(journeyLeg),
                 linkedCancellationTokenSource.Token
             )
             .ConfigureAwait(false);
@@ -312,7 +312,7 @@ public abstract class Journey : IJourney, IJourneyLegPublisher
 
             journeyLeg.Edges.Enqueue(edge);
             await PublishOnJourneyLegUpdatedAsync(
-                    _journeyLegPublisherFactory.CreateJourneyLegUpdatedEvent(edge, journeyLeg),
+                    _journeyLegEventFactory.CreateJourneyLegUpdatedEvent(edge, journeyLeg),
                     cancellationToken
                 )
                 .ConfigureAwait(false);
@@ -342,7 +342,7 @@ public abstract class Journey : IJourney, IJourneyLegPublisher
         );
 
         await PublishOnJourneyLegStartedAsync(
-                _journeyLegPublisherFactory.CreateJourneyLegStartedEvent(journeyLeg),
+                _journeyLegEventFactory.CreateJourneyLegStartedEvent(journeyLeg),
                 linkedCancellationToken
             )
             .ConfigureAwait(false);
@@ -366,7 +366,7 @@ public abstract class Journey : IJourney, IJourneyLegPublisher
     )
     {
         await PublishOnJourneyLegCompletedAsync(
-                _journeyLegPublisherFactory.CreateJourneyLegCompletedEvent(
+                _journeyLegEventFactory.CreateJourneyLegCompletedEvent(
                     completedJourneyLeg,
                     finishingEdge
                 ),

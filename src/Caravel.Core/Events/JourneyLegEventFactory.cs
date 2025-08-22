@@ -3,11 +3,11 @@ using Caravel.Abstractions.Events;
 
 namespace Caravel.Core.Events;
 
-public sealed class JourneyLegPublisherFactory : IJourneyLegPublisherFactory
+public sealed class JourneyLegEventFactory : IJourneyLegEventFactory
 {
     private readonly TimeProvider _timeProvider;
 
-    public JourneyLegPublisherFactory(TimeProvider timeProvider)
+    public JourneyLegEventFactory(TimeProvider timeProvider)
     {
         _timeProvider = timeProvider;
     }
