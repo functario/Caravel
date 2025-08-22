@@ -2,8 +2,10 @@
 
 namespace Caravel.Abstractions;
 
-public interface ICoreFactories
+public interface IJourneyCoreOptions
 {
     public IJourneyFactories JourneyFactories { get; }
     public IJourneyLegEventFactory JourneyLegEventFactory { get; }
+    public IJourneyLegPublisher? JourneyLegPublisher { get; }
+    public IJourneyLegReader? JourneyLegReader { get; }
 }

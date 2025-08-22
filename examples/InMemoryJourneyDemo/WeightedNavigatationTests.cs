@@ -1,6 +1,5 @@
 ﻿using AwesomeAssertions;
 using Caravel.Abstractions;
-using Caravel.Core;
 using Caravel.Core.Extensions;
 using Caravel.Mermaid;
 using InMemoryJourneyDemo.Nodes.WeightedNodes;
@@ -10,13 +9,11 @@ namespace InMemoryJourneyDemo;
 // csharpier-ignore-start
 public class WeightedNavigatationTests
 {
-    private readonly InMemoryJourneyLegPublisher _inMemoryJourneyLegPublisher;
     private readonly IJourney _journey;
 
     public WeightedNavigatationTests()
     {
-        _inMemoryJourneyLegPublisher = new InMemoryJourneyLegPublisher();
-        _journey = WeightedJourneySeed.CreateInMemoryJourney(_inMemoryJourneyLegPublisher);
+        _journey = WeightedJourneySeed.CreateJourney();
     }
 
     [Fact(DisplayName = "Navigate a weighted graph using GotoAsync")]

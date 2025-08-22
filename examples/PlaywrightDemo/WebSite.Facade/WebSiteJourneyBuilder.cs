@@ -1,5 +1,4 @@
 ﻿using Caravel.Abstractions;
-using Caravel.Core;
 using WebSite.Facade.POMs.Abstractions;
 
 namespace WebSite.Facade;
@@ -8,24 +7,21 @@ public sealed class WebSiteJourneyBuilder
 {
     private readonly IStartingPOM _current;
     private readonly IGraph _graph;
-    private readonly ICoreFactories _coreFactories;
-    private readonly InMemoryJourneyLegPublisher _journeyLegPublisher;
+    private readonly IJourneyCoreOptions _journeyCoreOptions;
     private readonly App _app;
     private readonly Map _map;
 
     public WebSiteJourneyBuilder(
         IStartingPOM current,
         IGraph graph,
-        ICoreFactories coreFactories,
-        InMemoryJourneyLegPublisher journeyLegPublisher,
+        IJourneyCoreOptions journeyCoreOptions,
         App app,
         Map map
     )
     {
         _current = current;
         _graph = graph;
-        _coreFactories = coreFactories;
-        _journeyLegPublisher = journeyLegPublisher;
+        _journeyCoreOptions = journeyCoreOptions;
         _app = app;
         _map = map;
     }
@@ -35,8 +31,7 @@ public sealed class WebSiteJourneyBuilder
         return new WebSiteJourney(
             _current,
             _graph,
-            _coreFactories,
-            _journeyLegPublisher,
+            _journeyCoreOptions,
             _app,
             _map,
             cancellationToken

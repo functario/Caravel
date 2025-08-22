@@ -20,7 +20,7 @@ public class ActionsInNodesTests
     private readonly IJourney _journey;
     private readonly RouteFactory _routeFactory;
     private readonly EdgeFactory _edgeFactory;
-    private readonly CoreFactories _coreFactories;
+    private readonly JourneyCoreOptions _coreFactories;
 
     public ActionsInNodesTests()
     {
@@ -31,15 +31,12 @@ public class ActionsInNodesTests
         _routeFactory = new RouteFactory();
         _edgeFactory = new EdgeFactory();
         _graph = new DijkstraGraph(_nodes, _routeFactory, _edgeFactory);
-        _coreFactories = new CoreFactories(TimeProvider.System);
-        var inMemoryJourneyLegPublisher = new InMemoryJourneyLegPublisher();
+        _coreFactories = new JourneyCoreOptions(TimeProvider.System);
 
         _journey = new Journey(
             _node1,
             _graph,
             _coreFactories,
-            inMemoryJourneyLegPublisher,
-            inMemoryJourneyLegPublisher,
             CancellationToken.None
         );
 

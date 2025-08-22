@@ -8,12 +8,11 @@ public sealed class SmartJourney : Journey
     public SmartJourney(
         INode current,
         IGraph graph,
-        ICoreFactories factories,
-        InMemoryJourneyLegPublisher publisher,
+        IJourneyCoreOptions journeyCoreOptions,
         Map map,
         CancellationToken journeyCancellationToken
     )
-        : base(current, graph, factories, publisher, publisher, journeyCancellationToken)
+        : base(current, graph, journeyCoreOptions, journeyCancellationToken)
     {
         Map = map;
     }

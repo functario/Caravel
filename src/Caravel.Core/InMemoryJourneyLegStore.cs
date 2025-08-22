@@ -4,7 +4,7 @@ using Caravel.Abstractions.Events;
 
 namespace Caravel.Core;
 
-public class InMemoryJourneyLegPublisher : IJourneyLegPublisher, IJourneyLegReader
+public class InMemoryJourneyLegStore : IJourneyLegPublisher, IJourneyLegReader
 {
     public ConcurrentQueue<IJourneyLegEvent> LegEvents { get; init; } = [];
 

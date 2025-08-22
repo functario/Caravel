@@ -1,6 +1,5 @@
 ﻿using AwesomeAssertions;
 using Caravel.Abstractions;
-using Caravel.Core;
 using Caravel.Core.Extensions;
 using Caravel.Mermaid;
 using InMemoryJourneyDemo.Nodes.UnweightedNodes;
@@ -10,13 +9,11 @@ namespace InMemoryJourneyDemo;
 // csharpier-ignore-start
 public class NavigatationTests
 {
-    private readonly InMemoryJourneyLegPublisher _inMemoryJourneyLegPublisher;
     private readonly IJourney _journey;
 
     public NavigatationTests()
     {
-        _inMemoryJourneyLegPublisher = new InMemoryJourneyLegPublisher();
-        _journey = UnweightedJourneySeed.CreateInMemoryJourney(_inMemoryJourneyLegPublisher);
+        _journey = UnweightedJourneySeed.CreateJourney();
     }
 
     [Fact(DisplayName = "Navigate using GotoAsync")]

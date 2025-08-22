@@ -18,21 +18,18 @@ public class MermaidToolsTests
     private readonly IGraph _graph;
     private readonly IJourney _unweightedJourney;
     private readonly IJourney _weightedJourney;
-    private readonly InMemoryJourneyLegPublisher _inMemoryJourneyLegPublisher;
 
     public MermaidToolsTests()
     {
-        _inMemoryJourneyLegPublisher = new InMemoryJourneyLegPublisher();
-
         var unweightedSeed = new UnweightedJourneySeed();
         _node3 = unweightedSeed.Node3;
         _graph = unweightedSeed.Graph;
 
-        _unweightedJourney = unweightedSeed.CreateInMemoryJourney(_inMemoryJourneyLegPublisher);
+        _unweightedJourney = unweightedSeed.CreateJourney();
 
         var weightedSeed = new WeightedJourneySeed();
         _weightedNode2 = weightedSeed.WeightedNode2;
-        _weightedJourney = weightedSeed.CreateInMemoryJourney(_inMemoryJourneyLegPublisher);
+        _weightedJourney = weightedSeed.CreateJourney();
 
     }
 
