@@ -9,12 +9,14 @@ namespace Caravel.Core;
 public abstract class Journey : IJourney, IJourneyLegPublisher
 {
     private readonly TimeProvider _timeProvider;
+    private readonly IJourneyLegFactory _journeyLegFactory;
     private bool _isJourneyStarted;
 
     protected Journey(
         INode startingNode,
         IGraph graph,
         TimeProvider timeProvider,
+        IJourneyLegFactory journeyLegFactory,
         CancellationToken journeyCancellationToken
     )
     {
@@ -24,6 +26,7 @@ public abstract class Journey : IJourney, IJourneyLegPublisher
         _isJourneyStarted = false;
         Graph = graph;
         _timeProvider = timeProvider;
+        _journeyLegFactory = journeyLegFactory;
         JourneyCancellationToken = journeyCancellationToken;
         CurrentNode = startingNode;
     }
@@ -168,6 +171,7 @@ public abstract class Journey : IJourney, IJourneyLegPublisher
             (var outNode, var actionMetaData) = GetNodeIfWrapped(funcNode);
 
             // Ensure the navigation from DoAsync is registered.
+            actionMetaData ??= new ActionMetaData($"{nameof(Journey)}.{nameof(DoAsync)}");
             await SetNavigationFromDoAsync(
                     current,
                     outNode,
@@ -314,10 +318,12 @@ public abstract class Journey : IJourney, IJourneyLegPublisher
         CurrentNode = nodeOut;
 
         // Publish start and end of navigation.
-        var journeyLeg = DynamicJourneyLeg(
+        var journeyLeg = _journeyLegFactory.CreateJourneyLeg(
             currentNode,
-            nodeOut.GetType(),
+            nodeOut,
             journeyId,
+            Graph.RouteFactory,
+            Graph.EdgeFactory,
             actionMetaData
         );
 
@@ -359,36 +365,5 @@ public abstract class Journey : IJourney, IJourneyLegPublisher
         }
 
         await CurrentNode.OnNodeOpenedAsync(this, cancellationToken).ConfigureAwait(false);
-    }
-
-    // TODO: TO SEE IF NEED TO BE MOVED TO A FACTORY (MAYBE INSIDE GRAPH)
-    // MAYBE RENAME IJourneyLeg for IGraphLeg then
-    private JourneyLeg DynamicJourneyLeg(
-        INode currentNode,
-        Type nodeOutType,
-        Guid journeyId,
-        IActionMetaData? actionMetaData = null
-    )
-    {
-        if (journeyId.Version != 7)
-            throw new InvalidOperationException("Id must be Guid.V7.");
-
-        actionMetaData ??= new ActionMetaData($"{nameof(Journey)}.{nameof(DoAsync)}");
-
-        var neighborNavigator = new NeighborNavigator(MoveNext(currentNode), actionMetaData);
-
-        var legEdges = new Queue<IEdge>(
-            [new Edge(currentNode.GetType(), nodeOutType, neighborNavigator)]
-        );
-
-        var doRoute = Graph.RouteFactory.CreateRoute([.. legEdges]);
-        return new JourneyLeg(journeyId, legEdges, doRoute);
-    }
-
-    private static Func<IJourney, CancellationToken, Task<INode>> MoveNext(INode node)
-    {
-        Task<INode> Func(IJourney journey, CancellationToken cancellationToken) =>
-            Task.FromResult(node);
-        return Func;
     }
 }

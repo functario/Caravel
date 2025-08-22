@@ -34,4 +34,6 @@ public interface IGraph
     FrozenDictionary<Type, INode> Nodes { get; }
 
     public IRouteFactory RouteFactory { get; }
+
+    public IEdgeFactory EdgeFactory { get; }
 }

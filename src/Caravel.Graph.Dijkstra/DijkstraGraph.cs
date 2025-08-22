@@ -25,6 +25,7 @@ public sealed class DijkstraGraph : IGraph
     /// <inheritdoc />
     public FrozenDictionary<Type, INode> Nodes => _registeredNodes;
     public IRouteFactory RouteFactory => _routeFactory;
+    public IEdgeFactory EdgeFactory => _edgeFactory;
 
     /// <inheritdoc />
     public IRoute GetSelfRoute(INode node)
@@ -36,7 +37,7 @@ public sealed class DijkstraGraph : IGraph
         //var type = node.GetType();
         //var selfEdge = new Edge(type, type, new NeighborNavigator((_, _) => Task.FromResult(node)));
 
-        var selfEdge = _edgeFactory.GetSelfEdge(node);
+        var selfEdge = _edgeFactory.CreteSelfEdge(node);
         return _routeFactory.CreateRoute([selfEdge]);
     }
 

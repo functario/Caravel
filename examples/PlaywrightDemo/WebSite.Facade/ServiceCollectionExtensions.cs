@@ -46,6 +46,7 @@ public static class ServiceCollectionExtensions
         services.AddScoped<IGraph, DijkstraGraph>();
 
         services.AddSingleton(TimeProvider.System);
+        services.AddScoped<IJourneyLegFactory, JourneyLegFactory>();
         services.AddScoped<WebSiteJourneyBuilder>();
         return services;
     }

@@ -12,6 +12,7 @@ internal static class InMemoryJourneyFactory
             seed.Node1,
             seed.Graph,
             TimeProvider.System,
+            seed.JourneyLegFactory,
             CancellationToken.None
         );
     }
@@ -22,6 +23,7 @@ internal static class InMemoryJourneyFactory
             seed.WeightedNode1,
             seed.WeightedGraph,
             TimeProvider.System,
+            seed.JourneyLegFactory,
             CancellationToken.None
         );
     }

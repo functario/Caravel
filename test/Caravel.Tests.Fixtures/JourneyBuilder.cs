@@ -60,10 +60,12 @@ public sealed class JourneyBuilder
             RouteFactory,
             EdgeFactory
         );
+
         var startNode = nodesByType[_firstNodeType!];
 
         timeProvider ??= TimeProvider.System;
-        return new SmartJourney(startNode, graph, timeProvider, _map, ct);
+        var journeyLegFactory = new JourneyLegFactory();
+        return new SmartJourney(startNode, graph, timeProvider, journeyLegFactory, _map, ct);
     }
 }
 

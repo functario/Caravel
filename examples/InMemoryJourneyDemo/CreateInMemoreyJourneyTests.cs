@@ -22,6 +22,7 @@ public class CreateInMemoreyJourneyTests
         // basic factories
         var routeFactory = new RouteFactory();
         var edgeFactory = new EdgeFactory();
+        var journeyLegFactory = new JourneyLegFactory();
 
         // Generate the graph.
         var graph = new DijkstraGraph(nodes, routeFactory, edgeFactory);
@@ -31,6 +32,7 @@ public class CreateInMemoreyJourneyTests
             node1,
             graph,
             TimeProvider.System,
+            journeyLegFactory,
             CancellationToken.None
         );
 

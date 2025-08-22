@@ -10,9 +10,10 @@ public class InMemoryJourney : Journey
         INode startingNode,
         IGraph graph,
         TimeProvider timeProvider,
+        IJourneyLegFactory journeyLegFactory,
         CancellationToken journeyCancellationToken
     )
-        : base(startingNode, graph, timeProvider, journeyCancellationToken) { }
+        : base(startingNode, graph, timeProvider, journeyLegFactory, journeyCancellationToken) { }
 
     public ConcurrentQueue<IJourneyLegEvent> LegEvents { get; init; } = [];
 
