@@ -65,7 +65,8 @@ public sealed class JourneyBuilder
 
         timeProvider ??= TimeProvider.System;
         var factories = new CoreFactories(timeProvider);
-        return new SmartJourney(startNode, graph, factories, _map, ct);
+        var inMemoryJourneyLegPublisher = new InMemoryJourneyLegPublisher();
+        return new SmartJourney(startNode, graph, factories, inMemoryJourneyLegPublisher, _map, ct);
     }
 }
 

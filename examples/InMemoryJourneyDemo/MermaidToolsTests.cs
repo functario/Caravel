@@ -16,20 +16,23 @@ public class MermaidToolsTests
     private readonly Node3 _node3;
     private readonly WeightedNode2 _weightedNode2;
     private readonly IGraph _graph;
-    private readonly InMemoryJourney _unweightedJourney;
-    private readonly InMemoryJourney _weightedJourney;
+    private readonly IJourney _unweightedJourney;
+    private readonly IJourney _weightedJourney;
+    private readonly InMemoryJourneyLegPublisher _inMemoryJourneyLegPublisher;
 
     public MermaidToolsTests()
     {
+        _inMemoryJourneyLegPublisher = new InMemoryJourneyLegPublisher();
+
         var unweightedSeed = new UnweightedJourneySeed();
         _node3 = unweightedSeed.Node3;
         _graph = unweightedSeed.Graph;
 
-        _unweightedJourney = unweightedSeed.CreateInMemoryJourney();
+        _unweightedJourney = unweightedSeed.CreateInMemoryJourney(_inMemoryJourneyLegPublisher);
 
         var weightedSeed = new WeightedJourneySeed();
         _weightedNode2 = weightedSeed.WeightedNode2;
-        _weightedJourney = weightedSeed.CreateInMemoryJourney();
+        _weightedJourney = weightedSeed.CreateInMemoryJourney(_inMemoryJourneyLegPublisher);
 
     }
 

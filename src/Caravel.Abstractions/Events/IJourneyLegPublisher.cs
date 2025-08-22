@@ -2,8 +2,6 @@
 
 public interface IJourneyLegPublisher
 {
-    public Guid Id { get; }
-
     public Task PublishOnJourneyLegStartedAsync(
         IJourneyLegStartedEvent journeyLegStartedEvent,
         CancellationToken cancellationToken

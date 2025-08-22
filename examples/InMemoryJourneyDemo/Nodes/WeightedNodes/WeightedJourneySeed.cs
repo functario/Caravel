@@ -15,6 +15,7 @@ internal sealed class WeightedJourneySeed
         RouteFactory = new RouteFactory();
         EdgeFactory = new EdgeFactory();
         WeightedGraph = new DijkstraGraph(WeightedNodes, RouteFactory, EdgeFactory);
+        CoreFactories = new CoreFactories(TimeProvider.System);
     }
 
     public WeightedNode1 WeightedNode1 { get; init; }
@@ -24,14 +25,19 @@ internal sealed class WeightedJourneySeed
     public RouteFactory RouteFactory { get; private set; }
     public EdgeFactory EdgeFactory { get; private set; }
     public IGraph WeightedGraph { get; init; }
+    public CoreFactories CoreFactories { get; init; }
 
-    public static InMemoryJourney CreateInMemoryJourney()
+    public static Journey CreateInMemoryJourney(
+        InMemoryJourneyLegPublisher memoryJourneyLegPublisher
+    )
     {
         var seed = new WeightedJourneySeed();
-        return new InMemoryJourney(
+        return new Journey(
             seed.WeightedNode1,
             seed.WeightedGraph,
-            TimeProvider.System,
+            seed.CoreFactories,
+            memoryJourneyLegPublisher,
+            memoryJourneyLegPublisher,
             CancellationToken.None
         );
     }

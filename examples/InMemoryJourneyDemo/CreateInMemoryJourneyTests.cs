@@ -22,15 +22,19 @@ public class CreateInMemoryJourneyTests
         // basic factories
         var routeFactory = new RouteFactory();
         var edgeFactory = new EdgeFactory();
+        var coreFactories = new CoreFactories(TimeProvider.System);
+        var inMemoryLegPublisher = new InMemoryJourneyLegPublisher();
 
         // Generate the graph.
         var graph = new DijkstraGraph(nodes, routeFactory, edgeFactory);
 
         // Create the InMemoryJourney
-        var inMemoryJourney = new InMemoryJourney(
+        var inMemoryJourney = new Journey(
             node1,
             graph,
-            TimeProvider.System,
+            coreFactories,
+            inMemoryLegPublisher,
+            inMemoryLegPublisher,
             CancellationToken.None
         );
 

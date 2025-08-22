@@ -17,9 +17,10 @@ public class ActionsInNodesTests
     private readonly Node3 _node3;
     private readonly INode[] _nodes;
     private readonly IGraph _graph;
-    private readonly InMemoryJourney _inMemoryJourney;
+    private readonly IJourney _journey;
     private readonly RouteFactory _routeFactory;
     private readonly EdgeFactory _edgeFactory;
+    private readonly CoreFactories _coreFactories;
 
     public ActionsInNodesTests()
     {
@@ -30,11 +31,15 @@ public class ActionsInNodesTests
         _routeFactory = new RouteFactory();
         _edgeFactory = new EdgeFactory();
         _graph = new DijkstraGraph(_nodes, _routeFactory, _edgeFactory);
+        _coreFactories = new CoreFactories(TimeProvider.System);
+        var inMemoryJourneyLegPublisher = new InMemoryJourneyLegPublisher();
 
-        _inMemoryJourney = new InMemoryJourney(
+        _journey = new Journey(
             _node1,
             _graph,
-            TimeProvider.System,
+            _coreFactories,
+            inMemoryJourneyLegPublisher,
+            inMemoryJourneyLegPublisher,
             CancellationToken.None
         );
 
@@ -45,7 +50,7 @@ public class ActionsInNodesTests
     {
         // You need "using Caravel.Core.Extensions;"
 
-        await _inMemoryJourney
+        await _journey
             .DoAsync<Node1>((node1, cancellationToken) =>
             {
                 // Do something on the current node (Node1)
@@ -59,7 +64,7 @@ public class ActionsInNodesTests
             });
 
         //Validate the navigation sequence with a Mermaid sequence diagram
-        var mermaidNavigationSequence = await _inMemoryJourney.ToMermaidSequenceDiagramMarkdownAsync();
+        var mermaidNavigationSequence = await _journey.ToMermaidSequenceDiagramMarkdownAsync();
         var expectedNavigation =
             """
             sequenceDiagram
@@ -75,7 +80,7 @@ public class ActionsInNodesTests
     {
         // You need "using Caravel.Core.Extensions;"
 
-        await _inMemoryJourney
+        await _journey
             .DoAsync<Node1, Node3>((node1, cancellationToken) =>
             {
                 // Do something that will change the current node to Node3 and return it.
@@ -89,7 +94,7 @@ public class ActionsInNodesTests
             });
 
         //Validate the navigation sequence with a Mermaid sequence diagram
-        var mermaidNavigationSequence = await _inMemoryJourney.ToMermaidSequenceDiagramMarkdownAsync();
+        var mermaidNavigationSequence = await _journey.ToMermaidSequenceDiagramMarkdownAsync();
         var expectedNavigation =
             """
             sequenceDiagram

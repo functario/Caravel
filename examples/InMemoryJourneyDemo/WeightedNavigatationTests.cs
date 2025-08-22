@@ -1,4 +1,5 @@
 ﻿using AwesomeAssertions;
+using Caravel.Abstractions;
 using Caravel.Core;
 using Caravel.Core.Extensions;
 using Caravel.Mermaid;
@@ -9,11 +10,13 @@ namespace InMemoryJourneyDemo;
 // csharpier-ignore-start
 public class WeightedNavigatationTests
 {
-    private readonly InMemoryJourney _inMemoryJourney;
+    private readonly InMemoryJourneyLegPublisher _inMemoryJourneyLegPublisher;
+    private readonly IJourney _journey;
 
     public WeightedNavigatationTests()
     {
-        _inMemoryJourney = WeightedJourneySeed.CreateInMemoryJourney();
+        _inMemoryJourneyLegPublisher = new InMemoryJourneyLegPublisher();
+        _journey = WeightedJourneySeed.CreateInMemoryJourney(_inMemoryJourneyLegPublisher);
     }
 
     [Fact(DisplayName = "Navigate a weighted graph using GotoAsync")]
@@ -37,11 +40,11 @@ public class WeightedNavigatationTests
         // Because WeightedNode1->>WeightedNode3 has a weight of 99
         // the shortest is WeightedNode1->>WeightedNode2 (weight = 10),
         // then WeightedNode2->>WeightedNode3 (weight = 1)
-        await _inMemoryJourney
+        await _journey
             .GotoAsync<WeightedNode3>();
 
         // Validate the navigation sequence with a Mermaid sequence diagram
-        var mermaidNavigationSequence = await _inMemoryJourney.ToMermaidSequenceDiagramMarkdownAsync();
+        var mermaidNavigationSequence = await _journey.ToMermaidSequenceDiagramMarkdownAsync();
         var expectedNavigation =
             """
             sequenceDiagram

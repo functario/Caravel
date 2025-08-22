@@ -5,30 +5,56 @@ using Caravel.Core.Extensions;
 
 namespace Caravel.Core;
 
-public abstract class Journey : IJourney, IJourneyLegPublisher
+public class Journey : IJourney
 {
     private readonly IActionMetaDataFactory _actionMetaDataFactory;
     private readonly IJourneyLegFactory _journeyLegFactory;
     private readonly IJourneyLegEventFactory _journeyLegEventFactory;
     private bool _isJourneyStarted;
 
-    protected Journey(
+    private readonly Func<
+        IJourneyLegCompletedEvent,
+        CancellationToken,
+        Task
+    > _publishOnJourneyLegCompletedAsync = (_, _) => Task.CompletedTask;
+
+    private readonly Func<
+        IJourneyLegStartedEvent,
+        CancellationToken,
+        Task
+    > _publishOnJourneyLegStartedAsync = (_, _) => Task.CompletedTask;
+
+    private readonly Func<
+        IJourneyLegUpdatedEvent,
+        CancellationToken,
+        Task
+    > _publishOnJourneyLegUpdatedAsync = (_, _) => Task.CompletedTask;
+
+    public Journey(
         INode startingNode,
         IGraph graph,
         ICoreFactories factories,
+        IJourneyLegPublisher journeyLegPublisher,
+        IJourneyLegReader journeyLegReader,
         CancellationToken journeyCancellationToken
     )
     {
         ArgumentNullException.ThrowIfNull(startingNode, nameof(startingNode));
         ArgumentNullException.ThrowIfNull(factories, nameof(factories));
+        ArgumentNullException.ThrowIfNull(journeyLegPublisher, nameof(journeyLegPublisher));
         journeyCancellationToken.ThrowIfCancellationRequested();
 
         _isJourneyStarted = false;
         Graph = graph;
+        JourneyLegReader = journeyLegReader;
         _journeyLegEventFactory = factories.JourneyLegEventFactory;
         _actionMetaDataFactory = factories.JourneyFactories.ActionMetaDataFactory;
         _journeyLegFactory = factories.JourneyFactories.JourneyLegFactory;
         JourneyCancellationToken = journeyCancellationToken;
+        _publishOnJourneyLegCompletedAsync = journeyLegPublisher.PublishOnJourneyLegCompletedAsync;
+        _publishOnJourneyLegStartedAsync = journeyLegPublisher.PublishOnJourneyLegStartedAsync;
+        _publishOnJourneyLegUpdatedAsync = journeyLegPublisher.PublishOnJourneyLegUpdatedAsync;
+
         CurrentNode = startingNode;
     }
 
@@ -36,6 +62,7 @@ public abstract class Journey : IJourney, IJourneyLegPublisher
     public IGraph Graph { get; init; }
     public CancellationToken JourneyCancellationToken { get; }
     public Guid Id { get; init; } = Guid.CreateVersion7();
+    public IJourneyLegReader JourneyLegReader { get; init; }
 
     public IJourney SetStartingNode(INode node)
     {
@@ -107,7 +134,7 @@ public abstract class Journey : IJourney, IJourneyLegPublisher
         var legEdges = new Queue<IEdge>();
         var journeyLeg = _journeyLegFactory.CreateJourneyLeg(Id, legEdges, route);
 
-        await PublishOnJourneyLegStartedAsync(
+        await _publishOnJourneyLegStartedAsync(
                 _journeyLegEventFactory.CreateJourneyLegStartedEvent(journeyLeg),
                 linkedCancellationTokenSource.Token
             )
@@ -261,40 +288,6 @@ public abstract class Journey : IJourney, IJourneyLegPublisher
     private static bool DestinationIsAlsoAWaypoint(Type destinationType, IWaypoints waypoints) =>
         waypoints.Any(x => x == destinationType);
 
-    Task IJourneyLegPublisher.PublishOnJourneyLegCompletedAsync(
-        IJourneyLegCompletedEvent journeyLegCompletedEvent,
-        CancellationToken cancellationToken
-    ) => PublishOnJourneyLegCompletedAsync(journeyLegCompletedEvent, cancellationToken);
-
-    Task IJourneyLegPublisher.PublishOnJourneyLegStartedAsync(
-        IJourneyLegStartedEvent journeyLegStartedEvent,
-        CancellationToken cancellationToken
-    ) => PublishOnJourneyLegStartedAsync(journeyLegStartedEvent, cancellationToken);
-
-    Task IJourneyLegPublisher.PublishOnJourneyLegUpdatedAsync(
-        IJourneyLegUpdatedEvent journeyLegUpdatedEvent,
-        CancellationToken cancellationToken
-    ) => PublishOnJourneyLegUpdatedAsync(journeyLegUpdatedEvent, cancellationToken);
-
-    protected abstract Task PublishOnJourneyLegCompletedAsync(
-        IJourneyLegCompletedEvent journeyLegCompletedEvent,
-        CancellationToken cancellationToken
-    );
-
-    protected abstract Task PublishOnJourneyLegStartedAsync(
-        IJourneyLegStartedEvent journeyLegStartedEvent,
-        CancellationToken cancellationToken
-    );
-
-    protected abstract Task PublishOnJourneyLegUpdatedAsync(
-        IJourneyLegUpdatedEvent journeyLegUpdatedEvent,
-        CancellationToken cancellationToken
-    );
-
-    public abstract Task<IEnumerable<IJourneyLeg>> GetCompletedJourneyLegsAsync(
-        CancellationToken cancellationToken
-    );
-
     private async Task NavigateAsync(
         ICollection<IEdge> edges,
         IJourneyLeg journeyLeg,
@@ -311,7 +304,7 @@ public abstract class Journey : IJourney, IJourneyLegPublisher
             await CurrentNode.OnNodeOpenedAsync(this, cancellationToken).ConfigureAwait(false);
 
             journeyLeg.Edges.Enqueue(edge);
-            await PublishOnJourneyLegUpdatedAsync(
+            await _publishOnJourneyLegUpdatedAsync(
                     _journeyLegEventFactory.CreateJourneyLegUpdatedEvent(edge, journeyLeg),
                     cancellationToken
                 )
@@ -341,7 +334,7 @@ public abstract class Journey : IJourney, IJourneyLegPublisher
             actionMetaData
         );
 
-        await PublishOnJourneyLegStartedAsync(
+        await _publishOnJourneyLegStartedAsync(
                 _journeyLegEventFactory.CreateJourneyLegStartedEvent(journeyLeg),
                 linkedCancellationToken
             )
@@ -365,7 +358,7 @@ public abstract class Journey : IJourney, IJourneyLegPublisher
         CancellationToken cancellationToken
     )
     {
-        await PublishOnJourneyLegCompletedAsync(
+        await _publishOnJourneyLegCompletedAsync(
                 _journeyLegEventFactory.CreateJourneyLegCompletedEvent(
                     completedJourneyLeg,
                     finishingEdge
