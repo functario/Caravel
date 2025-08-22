@@ -1,4 +1,5 @@
 ﻿using Caravel.Abstractions;
+using Caravel.Core;
 using Caravel.Graph.Dijkstra;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -39,7 +40,11 @@ public static class ServiceCollectionExtensions
         services.AddScoped<App>();
         services.AddScoped<Map>();
 
+        // Graph constructors
+        services.AddScoped<IEdgeFactory, EdgeFactory>();
+        services.AddScoped<IRouteFactory, RouteFactory>();
         services.AddScoped<IGraph, DijkstraGraph>();
+
         services.AddSingleton(TimeProvider.System);
         services.AddScoped<WebSiteJourneyBuilder>();
         return services;

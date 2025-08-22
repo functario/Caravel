@@ -361,7 +361,9 @@ public abstract class Journey : IJourney, IJourneyLegPublisher
         await CurrentNode.OnNodeOpenedAsync(this, cancellationToken).ConfigureAwait(false);
     }
 
-    private static JourneyLeg DynamicJourneyLeg(
+    // TODO: TO SEE IF NEED TO BE MOVED TO A FACTORY (MAYBE INSIDE GRAPH)
+    // MAYBE RENAME IJourneyLeg for IGraphLeg then
+    private JourneyLeg DynamicJourneyLeg(
         INode currentNode,
         Type nodeOutType,
         Guid journeyId,
@@ -379,8 +381,7 @@ public abstract class Journey : IJourney, IJourneyLegPublisher
             [new Edge(currentNode.GetType(), nodeOutType, neighborNavigator)]
         );
 
-        // TODO: The graph should expose a RouteFactory to allow custom implementation.
-        var doRoute = new DoRoute([.. legEdges]);
+        var doRoute = Graph.RouteFactory.CreateRoute([.. legEdges]);
         return new JourneyLeg(journeyId, legEdges, doRoute);
     }
 

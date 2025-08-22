@@ -18,6 +18,8 @@ public class ActionsInNodesTests
     private readonly INode[] _nodes;
     private readonly IGraph _graph;
     private readonly InMemoryJourney _inMemoryJourney;
+    private readonly RouteFactory _routeFactory;
+    private readonly EdgeFactory _edgeFactory;
 
     public ActionsInNodesTests()
     {
@@ -25,7 +27,9 @@ public class ActionsInNodesTests
         _node2 = new Node2();
         _node3 = new Node3();
         _nodes = [_node1, _node2, _node3];
-        _graph = new DijkstraGraph(_nodes);
+        _routeFactory = new RouteFactory();
+        _edgeFactory = new EdgeFactory();
+        _graph = new DijkstraGraph(_nodes, _routeFactory, _edgeFactory);
 
         _inMemoryJourney = new InMemoryJourney(
             _node1,

@@ -12,13 +12,17 @@ internal sealed class UnweightedJourneySeed
         Node2 = new Node2();
         Node3 = new Node3();
         Nodes = [Node1, Node2, Node3];
-        Graph = new DijkstraGraph(Nodes);
+        RouteFactory = new RouteFactory();
+        EdgeFactory = new EdgeFactory();
+        Graph = new DijkstraGraph(Nodes, RouteFactory, EdgeFactory);
     }
 
     public Node1 Node1 { get; init; }
     public Node2 Node2 { get; init; }
     public Node3 Node3 { get; init; }
     public INode[] Nodes { get; init; }
+    public RouteFactory RouteFactory { get; init; }
+    public EdgeFactory EdgeFactory { get; init; }
     public IGraph Graph { get; init; }
 
     public static InMemoryJourney CreateInMemoryJourney()

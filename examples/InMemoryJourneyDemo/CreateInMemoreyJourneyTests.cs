@@ -19,8 +19,12 @@ public class CreateInMemoreyJourneyTests
         var node3 = new Node3();
         INode[] nodes = [node1, node2, node3];
 
+        // basic factories
+        var routeFactory = new RouteFactory();
+        var edgeFactory = new EdgeFactory();
+
         // Generate the graph.
-        var graph = new DijkstraGraph(nodes);
+        var graph = new DijkstraGraph(nodes, routeFactory, edgeFactory);
 
         // Create the InMemoryJourney
         var inMemoryJourney = new InMemoryJourney(

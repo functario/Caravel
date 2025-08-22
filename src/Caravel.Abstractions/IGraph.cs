@@ -32,4 +32,6 @@ public interface IGraph
     /// The declared Nodes to use when resolving the <see cref="IRoute"/>.
     /// </summary>
     FrozenDictionary<Type, INode> Nodes { get; }
+
+    public IRouteFactory RouteFactory { get; }
 }

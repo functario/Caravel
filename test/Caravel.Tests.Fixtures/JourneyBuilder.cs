@@ -29,6 +29,9 @@ public sealed class JourneyBuilder
     public Type Node => _firstNodeType!;
     public Map Map => _map!;
 
+    public static IEdgeFactory EdgeFactory => new EdgeFactory();
+    public static IRouteFactory RouteFactory => new RouteFactory();
+
     public SmartJourney Build(TimeProvider? timeProvider = default, CancellationToken ct = default)
     {
         var nodesByType = new Dictionary<Type, INodeSpy>();
@@ -52,7 +55,11 @@ public sealed class JourneyBuilder
             builder.ResolveMoveNext(nodesByType);
         }
 
-        var graph = new DijkstraGraph([.. nodesByType.Values.Cast<INode>()]);
+        var graph = new DijkstraGraph(
+            [.. nodesByType.Values.Cast<INode>()],
+            RouteFactory,
+            EdgeFactory
+        );
         var startNode = nodesByType[_firstNodeType!];
 
         timeProvider ??= TimeProvider.System;
