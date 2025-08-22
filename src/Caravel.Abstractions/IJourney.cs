@@ -5,8 +5,6 @@ public interface IJourney
     CancellationToken JourneyCancellationToken { get; }
     IGraph Graph { get; }
     INode CurrentNode { get; }
-    IJourneyLegFactory JourneyLegFactory { get; }
-    IActionMetaDataFactory ActionMetaDataFactory { get; }
 
     public IJourney SetStartingNode(INode node);
 

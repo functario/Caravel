@@ -9,19 +9,11 @@ public sealed class SmartJourney : InMemoryJourney
         INode current,
         IGraph graph,
         TimeProvider timeProvider,
-        IJourneyLegFactory journeyLegFactory,
-        IActionMetaDataFactory actionMetaDataFactory,
+        IJourneyFactories factories,
         Map map,
         CancellationToken journeyCancellationToken
     )
-        : base(
-            current,
-            graph,
-            timeProvider,
-            journeyLegFactory,
-            actionMetaDataFactory,
-            journeyCancellationToken
-        )
+        : base(current, graph, timeProvider, factories, journeyCancellationToken)
     {
         Map = map;
     }

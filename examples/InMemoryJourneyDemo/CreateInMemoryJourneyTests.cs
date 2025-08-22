@@ -8,7 +8,7 @@ using InMemoryJourneyDemo.Nodes.UnweightedNodes;
 namespace InMemoryJourneyDemo;
 
 // csharpier-ignore-start
-public class CreateInMemoreyJourneyTests
+public class CreateInMemoryJourneyTests
 {
     [Fact(DisplayName = "Create a InMemoryJourney")]
     public void Test1()
@@ -22,8 +22,6 @@ public class CreateInMemoreyJourneyTests
         // basic factories
         var routeFactory = new RouteFactory();
         var edgeFactory = new EdgeFactory();
-        var journeyLegFactory = new JourneyLegFactory();
-        var actionMetaDataFactory = new ActionMetaDataFactory();
 
         // Generate the graph.
         var graph = new DijkstraGraph(nodes, routeFactory, edgeFactory);
@@ -33,8 +31,6 @@ public class CreateInMemoreyJourneyTests
             node1,
             graph,
             TimeProvider.System,
-            journeyLegFactory,
-            actionMetaDataFactory,
             CancellationToken.None
         );
 

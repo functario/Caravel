@@ -6,22 +6,24 @@ namespace Caravel.Core;
 
 public class InMemoryJourney : Journey
 {
+    private static readonly IJourneyFactories s_journeyFactories = new JourneyFactories();
+
     public InMemoryJourney(
         INode startingNode,
         IGraph graph,
         TimeProvider timeProvider,
-        IJourneyLegFactory journeyLegFactory,
-        IActionMetaDataFactory actionMetaDataFactory,
         CancellationToken journeyCancellationToken
     )
-        : base(
-            startingNode,
-            graph,
-            timeProvider,
-            journeyLegFactory,
-            actionMetaDataFactory,
-            journeyCancellationToken
-        ) { }
+        : base(startingNode, graph, timeProvider, s_journeyFactories, journeyCancellationToken) { }
+
+    public InMemoryJourney(
+        INode startingNode,
+        IGraph graph,
+        TimeProvider timeProvider,
+        IJourneyFactories factories,
+        CancellationToken journeyCancellationToken
+    )
+        : base(startingNode, graph, timeProvider, factories, journeyCancellationToken) { }
 
     public ConcurrentQueue<IJourneyLegEvent> LegEvents { get; init; } = [];
 

@@ -64,17 +64,8 @@ public sealed class JourneyBuilder
         var startNode = nodesByType[_firstNodeType!];
 
         timeProvider ??= TimeProvider.System;
-        var journeyLegFactory = new JourneyLegFactory();
-        var actionMetaDataFactory = new ActionMetaDataFactory();
-        return new SmartJourney(
-            startNode,
-            graph,
-            timeProvider,
-            journeyLegFactory,
-            actionMetaDataFactory,
-            _map,
-            ct
-        );
+        var journeyFactories = new JourneyFactories();
+        return new SmartJourney(startNode, graph, timeProvider, journeyFactories, _map, ct);
     }
 }
 

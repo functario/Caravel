@@ -9,25 +9,27 @@ namespace Caravel.Core;
 public abstract class Journey : IJourney, IJourneyLegPublisher
 {
     private readonly TimeProvider _timeProvider;
+    private readonly IActionMetaDataFactory _actionMetaDataFactory;
+    private readonly IJourneyLegFactory _journeyLegFactory;
     private bool _isJourneyStarted;
 
     protected Journey(
         INode startingNode,
         IGraph graph,
         TimeProvider timeProvider,
-        IJourneyLegFactory journeyLegFactory,
-        IActionMetaDataFactory actionMetaDataFactory,
+        IJourneyFactories factories,
         CancellationToken journeyCancellationToken
     )
     {
         ArgumentNullException.ThrowIfNull(startingNode, nameof(startingNode));
+        ArgumentNullException.ThrowIfNull(factories, nameof(factories));
         journeyCancellationToken.ThrowIfCancellationRequested();
 
         _isJourneyStarted = false;
         Graph = graph;
         _timeProvider = timeProvider;
-        JourneyLegFactory = journeyLegFactory;
-        ActionMetaDataFactory = actionMetaDataFactory;
+        _actionMetaDataFactory = factories.ActionMetaDataFactory;
+        _journeyLegFactory = factories.JourneyLegFactory;
         JourneyCancellationToken = journeyCancellationToken;
         CurrentNode = startingNode;
     }
@@ -35,9 +37,6 @@ public abstract class Journey : IJourney, IJourneyLegPublisher
     public INode CurrentNode { get; private set; }
     public IGraph Graph { get; init; }
     public CancellationToken JourneyCancellationToken { get; }
-
-    public IJourneyLegFactory JourneyLegFactory { get; init; }
-    public IActionMetaDataFactory ActionMetaDataFactory { get; init; }
     public Guid Id { get; init; } = Guid.CreateVersion7();
 
     public IJourney SetStartingNode(INode node)
@@ -321,11 +320,11 @@ public abstract class Journey : IJourney, IJourneyLegPublisher
     )
     {
         // Publish start and end of navigation.
-        actionMetaData ??= ActionMetaDataFactory.CreateActionMetaData(
-            ActionMetaDataFactory.DefaultDoAsyncDescription
+        actionMetaData ??= _actionMetaDataFactory.CreateActionMetaData(
+            _actionMetaDataFactory.DefaultDoAsyncDescription
         );
 
-        var journeyLeg = JourneyLegFactory.CreateJourneyLeg(
+        var journeyLeg = _journeyLegFactory.CreateJourneyLeg(
             currentNode,
             nodeOut,
             journeyId,

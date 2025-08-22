@@ -12,18 +12,9 @@ public sealed class WebSiteJourney : InMemoryJourney
         TimeProvider timeProvider,
         App app,
         Map map,
-        IJourneyLegFactory journeyLegFactory,
-        IActionMetaDataFactory actionMetaDataFactory,
         CancellationToken journeyCancellationToken
     )
-        : base(
-            current,
-            graph,
-            timeProvider,
-            journeyLegFactory,
-            actionMetaDataFactory,
-            journeyCancellationToken
-        )
+        : base(current, graph, timeProvider, journeyCancellationToken)
     {
         App = app;
         Map = map;
