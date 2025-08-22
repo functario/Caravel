@@ -9,7 +9,6 @@ namespace Caravel.Core;
 public abstract class Journey : IJourney, IJourneyLegPublisher
 {
     private readonly TimeProvider _timeProvider;
-    private readonly IJourneyLegFactory _journeyLegFactory;
     private bool _isJourneyStarted;
 
     protected Journey(
@@ -17,6 +16,7 @@ public abstract class Journey : IJourney, IJourneyLegPublisher
         IGraph graph,
         TimeProvider timeProvider,
         IJourneyLegFactory journeyLegFactory,
+        IActionMetaDataFactory actionMetaDataFactory,
         CancellationToken journeyCancellationToken
     )
     {
@@ -26,7 +26,8 @@ public abstract class Journey : IJourney, IJourneyLegPublisher
         _isJourneyStarted = false;
         Graph = graph;
         _timeProvider = timeProvider;
-        _journeyLegFactory = journeyLegFactory;
+        JourneyLegFactory = journeyLegFactory;
+        ActionMetaDataFactory = actionMetaDataFactory;
         JourneyCancellationToken = journeyCancellationToken;
         CurrentNode = startingNode;
     }
@@ -34,6 +35,9 @@ public abstract class Journey : IJourney, IJourneyLegPublisher
     public INode CurrentNode { get; private set; }
     public IGraph Graph { get; init; }
     public CancellationToken JourneyCancellationToken { get; }
+
+    public IJourneyLegFactory JourneyLegFactory { get; init; }
+    public IActionMetaDataFactory ActionMetaDataFactory { get; init; }
     public Guid Id { get; init; } = Guid.CreateVersion7();
 
     public IJourney SetStartingNode(INode node)
@@ -170,9 +174,11 @@ public abstract class Journey : IJourney, IJourneyLegPublisher
 
             (var outNode, var actionMetaData) = GetNodeIfWrapped(funcNode);
 
-            // Ensure the navigation from DoAsync is registered.
-            actionMetaData ??= new ActionMetaData($"{nameof(Journey)}.{nameof(DoAsync)}");
-            await SetNavigationFromDoAsync(
+            // Change the current node.
+            CurrentNode = outNode;
+
+            // Ensure the navigation from DoAsync is registered as JourneyLeg.
+            var doJourneyLeg = await AddDoAsyncToJourneyLegAsync(
                     current,
                     outNode,
                     Id,
@@ -306,7 +312,7 @@ public abstract class Journey : IJourney, IJourneyLegPublisher
         CancellationToken cancellationToken
     );
 
-    private async Task SetNavigationFromDoAsync(
+    private async Task<IJourneyLeg> AddDoAsyncToJourneyLegAsync(
         INode currentNode,
         INode nodeOut,
         Guid journeyId,
@@ -314,11 +320,12 @@ public abstract class Journey : IJourney, IJourneyLegPublisher
         CancellationToken linkedCancellationToken
     )
     {
-        // Change the current node.
-        CurrentNode = nodeOut;
-
         // Publish start and end of navigation.
-        var journeyLeg = _journeyLegFactory.CreateJourneyLeg(
+        actionMetaData ??= ActionMetaDataFactory.CreateActionMetaData(
+            ActionMetaDataFactory.DefaultDoAsyncDescription
+        );
+
+        var journeyLeg = JourneyLegFactory.CreateJourneyLeg(
             currentNode,
             nodeOut,
             journeyId,
@@ -340,6 +347,8 @@ public abstract class Journey : IJourney, IJourneyLegPublisher
                 linkedCancellationToken
             )
             .ConfigureAwait(false);
+
+        return journeyLeg;
     }
 
     private async Task CompleteJourneyLegAsync(

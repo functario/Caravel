@@ -21,6 +21,7 @@ public class ActionsInNodesTests
     private readonly RouteFactory _routeFactory;
     private readonly EdgeFactory _edgeFactory;
     private readonly JourneyLegFactory _journeyLegFactory;
+    private readonly ActionMetaDataFactory _actionMetaDataFactory;
 
     public ActionsInNodesTests()
     {
@@ -31,6 +32,7 @@ public class ActionsInNodesTests
         _routeFactory = new RouteFactory();
         _edgeFactory = new EdgeFactory();
         _journeyLegFactory = new JourneyLegFactory();
+        _actionMetaDataFactory = new ActionMetaDataFactory();
         _graph = new DijkstraGraph(_nodes, _routeFactory, _edgeFactory);
 
         _inMemoryJourney = new InMemoryJourney(
@@ -38,6 +40,7 @@ public class ActionsInNodesTests
             _graph,
             TimeProvider.System,
             _journeyLegFactory,
+            _actionMetaDataFactory,
             CancellationToken.None
         );
 

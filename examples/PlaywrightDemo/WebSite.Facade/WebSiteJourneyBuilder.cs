@@ -11,6 +11,7 @@ public sealed class WebSiteJourneyBuilder
     private readonly App _app;
     private readonly Map _map;
     private readonly IJourneyLegFactory _journeyLegFactory;
+    private readonly IActionMetaDataFactory _actionMetaDataFactory;
 
     public WebSiteJourneyBuilder(
         IStartingPOM current,
@@ -18,7 +19,8 @@ public sealed class WebSiteJourneyBuilder
         TimeProvider timeProvider,
         App app,
         Map map,
-        IJourneyLegFactory journeyLegFactory
+        IJourneyLegFactory journeyLegFactory,
+        IActionMetaDataFactory actionMetaDataFactory
     )
     {
         _current = current;
@@ -27,6 +29,7 @@ public sealed class WebSiteJourneyBuilder
         _app = app;
         _map = map;
         _journeyLegFactory = journeyLegFactory;
+        _actionMetaDataFactory = actionMetaDataFactory;
     }
 
     public WebSiteJourney Create(CancellationToken cancellationToken = default)
@@ -38,6 +41,7 @@ public sealed class WebSiteJourneyBuilder
             _app,
             _map,
             _journeyLegFactory,
+            _actionMetaDataFactory,
             cancellationToken
         );
     }

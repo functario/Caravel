@@ -15,6 +15,7 @@ internal sealed class UnweightedJourneySeed
         RouteFactory = new RouteFactory();
         EdgeFactory = new EdgeFactory();
         JourneyLegFactory = new JourneyLegFactory();
+        ActionMetaDataFactory = new ActionMetaDataFactory();
         Graph = new DijkstraGraph(Nodes, RouteFactory, EdgeFactory);
     }
 
@@ -25,6 +26,7 @@ internal sealed class UnweightedJourneySeed
     public RouteFactory RouteFactory { get; init; }
     public EdgeFactory EdgeFactory { get; init; }
     public JourneyLegFactory JourneyLegFactory { get; init; }
+    public ActionMetaDataFactory ActionMetaDataFactory { get; init; }
     public IGraph Graph { get; init; }
 
     public static InMemoryJourney CreateInMemoryJourney()
@@ -35,6 +37,7 @@ internal sealed class UnweightedJourneySeed
             seed.Graph,
             TimeProvider.System,
             seed.JourneyLegFactory,
+            seed.ActionMetaDataFactory,
             CancellationToken.None
         );
     }

@@ -47,6 +47,7 @@ public static class ServiceCollectionExtensions
 
         services.AddSingleton(TimeProvider.System);
         services.AddScoped<IJourneyLegFactory, JourneyLegFactory>();
+        services.AddScoped<IActionMetaDataFactory, ActionMetaDataFactory>();
         services.AddScoped<WebSiteJourneyBuilder>();
         return services;
     }
