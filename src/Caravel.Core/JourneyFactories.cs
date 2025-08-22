@@ -8,12 +8,9 @@ public sealed class JourneyFactories : IJourneyFactories
     {
         JourneyLegFactory = new JourneyLegFactory();
         ActionMetaDataFactory = new ActionMetaDataFactory();
-        TimeProvider = TimeProvider.System;
     }
 
     public IJourneyLegFactory JourneyLegFactory { get; init; }
 
     public IActionMetaDataFactory ActionMetaDataFactory { get; init; }
-
-    public TimeProvider TimeProvider { get; init; }
 }

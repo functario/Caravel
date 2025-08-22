@@ -6,24 +6,43 @@ namespace Caravel.Core;
 
 public class InMemoryJourney : Journey
 {
-    private static readonly IJourneyFactories s_journeyFactories = new JourneyFactories();
+    private static CoreFactories CreateDefaultCoreFactories(TimeProvider timeProvider) =>
+        new(timeProvider);
 
+    /// <summary>
+    /// Build an <see cref="InMemoryJourney"/> with default <see cref="CoreFactories"/>.
+    /// </summary>
+    /// <param name="startingNode">The starting <see cref="INode"/>.</param>
+    /// <param name="graph">The <see cref="IGraph"/>.</param>
+    /// <param name="timeProvider">A <see cref="TimeProvider"/> used to create events timestamp.</param>
+    /// <param name="journeyCancellationToken">The <see cref="IJourney"/> <see cref="CancellationToken"/>.</param>
     public InMemoryJourney(
         INode startingNode,
         IGraph graph,
         TimeProvider timeProvider,
         CancellationToken journeyCancellationToken
     )
-        : base(startingNode, graph, timeProvider, s_journeyFactories, journeyCancellationToken) { }
+        : base(
+            startingNode,
+            graph,
+            CreateDefaultCoreFactories(timeProvider),
+            journeyCancellationToken
+        ) { }
 
+    /// <summary>
+    /// Build an <see cref="InMemoryJourney"/> with default <see cref="CoreFactories"/>.
+    /// </summary>
+    /// <param name="startingNode">The starting <see cref="INode"/>.</param>
+    /// <param name="graph">The <see cref="IGraph"/>.</param>
+    /// <param name="factories">The <see cref="ICoreFactories"/>.</param>
+    /// <param name="journeyCancellationToken">The <see cref="IJourney"/> <see cref="CancellationToken"/>.</param>
     public InMemoryJourney(
         INode startingNode,
         IGraph graph,
-        TimeProvider timeProvider,
-        IJourneyFactories factories,
+        ICoreFactories factories,
         CancellationToken journeyCancellationToken
     )
-        : base(startingNode, graph, timeProvider, factories, journeyCancellationToken) { }
+        : base(startingNode, graph, factories, journeyCancellationToken) { }
 
     public ConcurrentQueue<IJourneyLegEvent> LegEvents { get; init; } = [];
 

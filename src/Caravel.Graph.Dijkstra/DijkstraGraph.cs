@@ -30,13 +30,7 @@ public sealed class DijkstraGraph : IGraph
     /// <inheritdoc />
     public IRoute GetSelfRoute(INode node)
     {
-        // TODO: INode could have a GetEdgeFactory() or could accept an EdgeFactory.
-        // this will allow to remove dependency on Caravel.Core.
-        // Also see Journey.DynamicJourneyLeg() which could reuse the factory.
         ArgumentNullException.ThrowIfNull(node);
-        //var type = node.GetType();
-        //var selfEdge = new Edge(type, type, new NeighborNavigator((_, _) => Task.FromResult(node)));
-
         var selfEdge = _edgeFactory.CreteSelfEdge(node);
         return _routeFactory.CreateRoute([selfEdge]);
     }
