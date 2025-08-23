@@ -4,7 +4,6 @@ using System.Reflection;
 using System.Text;
 using System.Text.RegularExpressions;
 using Caravel.Abstractions;
-using Caravel.Abstractions.Exceptions;
 using Caravel.Mermaid.Exceptions;
 
 namespace Caravel.Mermaid;
@@ -191,11 +190,6 @@ public static partial class GraphExtensions
         CancellationToken cancellationToken
     )
     {
-        if (journey.JourneyLegReader is null)
-        {
-            throw new JourneyLegReaderNullException(journey);
-        }
-
         var history = await journey
             .JourneyLegReader.GetCompletedJourneyLegsAsync(cancellationToken)
             .ConfigureAwait(false);
