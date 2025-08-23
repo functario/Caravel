@@ -1,4 +1,4 @@
-﻿namespace Caravel.Abstractions;
+﻿namespace Caravel.Abstractions.Configurations;
 
 public interface IActionMetaDataFactory
 {

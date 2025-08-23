@@ -1,4 +1,5 @@
 ﻿using Caravel.Abstractions;
+using Caravel.Abstractions.Configurations;
 using WebSite.Facade.POMs.Abstractions;
 
 namespace WebSite.Facade;

@@ -1,6 +1,6 @@
 ﻿using System.Collections.Immutable;
 
-namespace Caravel.Abstractions;
+namespace Caravel.Abstractions.Configurations;
 
 public interface IRouteFactory
 {

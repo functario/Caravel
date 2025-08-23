@@ -1,4 +1,5 @@
 ﻿using System.Collections.Frozen;
+using Caravel.Abstractions.Configurations;
 using Caravel.Abstractions.Exceptions;
 
 namespace Caravel.Abstractions;

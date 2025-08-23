@@ -1,5 +1,7 @@
 ﻿using Caravel.Abstractions;
+using Caravel.Abstractions.Configurations;
 using Caravel.Core;
+using Caravel.Core.Configurations;
 using Caravel.Graph.Dijkstra;
 
 namespace InMemoryJourneyDemo.Nodes.WeightedNodes;
@@ -15,7 +17,10 @@ internal sealed class WeightedJourneySeed
         RouteFactory = new RouteFactory();
         EdgeFactory = new EdgeFactory();
         WeightedGraph = new DijkstraGraph(WeightedNodes, RouteFactory, EdgeFactory);
-        CoreFactories = new JourneyConfiguration(TimeProvider.System);
+        JourneyConfiguration = JourneyConfigurationFactory.Create(
+            JourneyLegConfigurationOptions.InMemory,
+            TimeProvider.System
+        );
     }
 
     public WeightedNode1 WeightedNode1 { get; init; }
@@ -25,7 +30,7 @@ internal sealed class WeightedJourneySeed
     public RouteFactory RouteFactory { get; private set; }
     public EdgeFactory EdgeFactory { get; private set; }
     public IGraph WeightedGraph { get; init; }
-    public JourneyConfiguration CoreFactories { get; init; }
+    public IJourneyConfiguration JourneyConfiguration { get; init; }
 
     public static Journey CreateJourney()
     {
@@ -33,7 +38,7 @@ internal sealed class WeightedJourneySeed
         return new Journey(
             seed.WeightedNode1,
             seed.WeightedGraph,
-            seed.CoreFactories,
+            seed.JourneyConfiguration,
             CancellationToken.None
         );
     }

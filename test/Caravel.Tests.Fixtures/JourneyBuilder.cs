@@ -1,6 +1,8 @@
 ﻿using System.Collections.Immutable;
 using Caravel.Abstractions;
+using Caravel.Abstractions.Configurations;
 using Caravel.Core;
+using Caravel.Core.Configurations;
 using Caravel.Graph.Dijkstra;
 
 namespace Caravel.Tests.Fixtures;
@@ -64,7 +66,10 @@ public sealed class JourneyBuilder
         var startNode = nodesByType[_firstNodeType!];
 
         timeProvider ??= TimeProvider.System;
-        var journeyConfiguration = new JourneyConfiguration(timeProvider);
+        var journeyConfiguration = JourneyConfigurationFactory.Create(
+            JourneyLegConfigurationOptions.InMemory,
+            timeProvider
+        );
         return new SmartJourney(startNode, graph, journeyConfiguration, _map, ct);
     }
 }

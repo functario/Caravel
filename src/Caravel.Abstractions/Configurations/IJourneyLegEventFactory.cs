@@ -1,4 +1,6 @@
-﻿namespace Caravel.Abstractions.Events;
+﻿using Caravel.Abstractions.Events;
+
+namespace Caravel.Abstractions.Configurations;
 
 public interface IJourneyLegEventFactory
 {

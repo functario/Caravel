@@ -1,7 +1,9 @@
 ﻿using Caravel.Abstractions;
+using Caravel.Abstractions.Configurations;
 using Caravel.Abstractions.Events;
+using Caravel.Core.Events;
 
-namespace Caravel.Core.Events;
+namespace Caravel.Core.Configurations;
 
 public sealed class JourneyLegEventFactory : IJourneyLegEventFactory
 {

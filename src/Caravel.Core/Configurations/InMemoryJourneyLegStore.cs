@@ -2,7 +2,7 @@
 using Caravel.Abstractions;
 using Caravel.Abstractions.Events;
 
-namespace Caravel.Core;
+namespace Caravel.Core.Configurations;
 
 public class InMemoryJourneyLegStore : IJourneyLegPublisher, IJourneyLegReader
 {

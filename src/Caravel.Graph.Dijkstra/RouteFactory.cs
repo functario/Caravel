@@ -1,5 +1,6 @@
 ﻿using System.Collections.Immutable;
 using Caravel.Abstractions;
+using Caravel.Abstractions.Configurations;
 
 namespace Caravel.Graph.Dijkstra;
 

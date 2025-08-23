@@ -1,4 +1,5 @@
 ﻿using Caravel.Abstractions;
+using Caravel.Abstractions.Configurations;
 using Caravel.Abstractions.Events;
 using Caravel.Abstractions.Exceptions;
 using Caravel.Core.Extensions;

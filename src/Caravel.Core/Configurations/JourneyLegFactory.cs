@@ -1,6 +1,7 @@
 ﻿using Caravel.Abstractions;
+using Caravel.Abstractions.Configurations;
 
-namespace Caravel.Core;
+namespace Caravel.Core.Configurations;
 
 public sealed class JourneyLegFactory : IJourneyLegFactory
 {

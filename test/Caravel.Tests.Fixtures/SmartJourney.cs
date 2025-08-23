@@ -1,4 +1,5 @@
 ﻿using Caravel.Abstractions;
+using Caravel.Abstractions.Configurations;
 using Caravel.Core;
 
 namespace Caravel.Tests.Fixtures;

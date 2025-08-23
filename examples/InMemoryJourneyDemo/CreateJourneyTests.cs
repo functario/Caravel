@@ -1,6 +1,7 @@
 ﻿using AwesomeAssertions;
 using Caravel.Abstractions;
 using Caravel.Core;
+using Caravel.Core.Configurations;
 using Caravel.Graph.Dijkstra;
 using Caravel.Mermaid;
 using InMemoryJourneyDemo.Nodes.UnweightedNodes;
@@ -27,7 +28,10 @@ public class CreateJourneyTests
         var graph = new DijkstraGraph(nodes, routeFactory, edgeFactory);
 
         // Create the Journey with default JourneyCoreOptions
-        var journeyConfiguration = new JourneyConfiguration(TimeProvider.System);
+        var journeyConfiguration = JourneyConfigurationFactory.Create(
+            JourneyLegConfigurationOptions.InMemory,
+            TimeProvider.System);
+
         var inMemoryJourney = new Journey(
             node1,
             graph,

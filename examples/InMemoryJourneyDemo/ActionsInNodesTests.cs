@@ -1,6 +1,8 @@
 ﻿using AwesomeAssertions;
 using Caravel.Abstractions;
+using Caravel.Abstractions.Configurations;
 using Caravel.Core;
+using Caravel.Core.Configurations;
 using Caravel.Core.Extensions;
 using Caravel.Graph.Dijkstra;
 using Caravel.Mermaid;
@@ -20,7 +22,7 @@ public class ActionsInNodesTests
     private readonly IJourney _journey;
     private readonly RouteFactory _routeFactory;
     private readonly EdgeFactory _edgeFactory;
-    private readonly JourneyConfiguration _coreFactories;
+    private readonly IJourneyConfiguration _journeyConfigurations;
 
     public ActionsInNodesTests()
     {
@@ -31,12 +33,14 @@ public class ActionsInNodesTests
         _routeFactory = new RouteFactory();
         _edgeFactory = new EdgeFactory();
         _graph = new DijkstraGraph(_nodes, _routeFactory, _edgeFactory);
-        _coreFactories = new JourneyConfiguration(TimeProvider.System);
+        _journeyConfigurations = JourneyConfigurationFactory.Create(
+            JourneyLegConfigurationOptions.InMemory,
+            TimeProvider.System);
 
         _journey = new Journey(
             _node1,
             _graph,
-            _coreFactories,
+            _journeyConfigurations,
             CancellationToken.None
         );
 

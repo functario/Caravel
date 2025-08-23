@@ -9,7 +9,12 @@ internal static class InMemoryJourneyFactory
 {
     public static IJourney CreateJourney(this UnweightedJourneySeed seed)
     {
-        return new Journey(seed.Node1, seed.Graph, seed.CoreFactories, CancellationToken.None);
+        return new Journey(
+            seed.Node1,
+            seed.Graph,
+            seed.JourneyConfiguration,
+            CancellationToken.None
+        );
     }
 
     public static IJourney CreateJourney(this WeightedJourneySeed seed)
@@ -17,7 +22,7 @@ internal static class InMemoryJourneyFactory
         return new Journey(
             seed.WeightedNode1,
             seed.WeightedGraph,
-            seed.CoreFactories,
+            seed.JourneyConfiguration,
             CancellationToken.None
         );
     }
