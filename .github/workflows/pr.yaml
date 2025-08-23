@@ -63,7 +63,7 @@ jobs:
 
       - name: Ensure browsers are installed
         run: |
-          pwsh ./examples/PlaywrightDemo/WebSite.PlaywrightTests/bin/Release/net9.0/playwright.ps1 \
+          pwsh ./examples/PlaywrightDemo/WebSite.PlaywrightTests/bin/Release/net8.0/playwright.ps1 \
             install \
             --with-deps \
             chromium
