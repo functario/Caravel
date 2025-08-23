@@ -12,7 +12,6 @@ public interface IJourneyLegEventFactory
     );
 
     public IJourneyLegCompletedEvent CreateJourneyLegCompletedEvent(
-        IJourneyLeg completedJourneyLeg,
-        IEdge finishingEdge
+        IJourneyLeg completedJourneyLeg
     );
 }

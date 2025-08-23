@@ -159,7 +159,6 @@ public class Journey : IJourney
         await CompleteJourneyLegAsync(
                 destinationType,
                 journeyLeg,
-                journeyLeg.Edges.Last(),
                 linkedCancellationTokenSource.Token
             )
             .ConfigureAwait(false);
@@ -353,12 +352,7 @@ public class Journey : IJourney
             )
             .ConfigureAwait(false);
 
-        await CompleteJourneyLegAsync(
-                nodeOut.GetType(),
-                journeyLeg,
-                journeyLeg.Edges.Last(),
-                linkedCancellationToken
-            )
+        await CompleteJourneyLegAsync(nodeOut.GetType(), journeyLeg, linkedCancellationToken)
             .ConfigureAwait(false);
 
         return journeyLeg;
@@ -367,15 +361,11 @@ public class Journey : IJourney
     private async Task CompleteJourneyLegAsync(
         Type destinationType,
         IJourneyLeg completedJourneyLeg,
-        IEdge finishingEdge,
         CancellationToken cancellationToken
     )
     {
         await _publishOnJourneyLegCompletedAsync(
-                _journeyLegEventFactory.CreateJourneyLegCompletedEvent(
-                    completedJourneyLeg,
-                    finishingEdge
-                ),
+                _journeyLegEventFactory.CreateJourneyLegCompletedEvent(completedJourneyLeg),
                 cancellationToken
             )
             .ConfigureAwait(false);

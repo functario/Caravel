@@ -15,10 +15,8 @@ public sealed class JourneyLegEventFactory : IJourneyLegEventFactory
     }
 
     public IJourneyLegCompletedEvent CreateJourneyLegCompletedEvent(
-        IJourneyLeg completedJourneyLeg,
-        IEdge finishingEdge
-    ) =>
-        new JourneyLegCompletedEvent(_timeProvider.GetUtcNow(), completedJourneyLeg, finishingEdge);
+        IJourneyLeg completedJourneyLeg
+    ) => new JourneyLegCompletedEvent(_timeProvider.GetUtcNow(), completedJourneyLeg);
 
     public IJourneyLegStartedEvent CreateJourneyLegStartedEvent(IJourneyLeg journeyLeg) =>
         new JourneyLegStartedEvent(_timeProvider.GetUtcNow(), journeyLeg);
