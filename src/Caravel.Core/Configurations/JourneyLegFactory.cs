@@ -17,9 +17,6 @@ public sealed class JourneyLegFactory : IJourneyLegFactory
         ArgumentNullException.ThrowIfNull(edgeFactory, nameof(edgeFactory));
         ArgumentNullException.ThrowIfNull(routeFactory, nameof(routeFactory));
 
-        if (journeyId.Version != 7)
-            throw new InvalidOperationException("Id must be Guid.V7.");
-
         var edge = edgeFactory.CreateEdge(currentNode, destination, actionMetaData);
         var legEdges = new Queue<IEdge>([edge]);
         var doRoute = routeFactory.CreateRoute([.. legEdges]);
