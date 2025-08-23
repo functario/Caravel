@@ -34,7 +34,7 @@ public class ActionsInNodesTests
         _edgeFactory = new EdgeFactory();
         _graph = new DijkstraGraph(_nodes, _routeFactory, _edgeFactory);
         _journeyConfigurations = JourneyConfigurationFactory.Create(
-            JourneyLegConfigurationOptions.InMemory,
+            JourneyLegHandlingOptions.InMemory,
             TimeProvider.System);
 
         _journey = new Journey(

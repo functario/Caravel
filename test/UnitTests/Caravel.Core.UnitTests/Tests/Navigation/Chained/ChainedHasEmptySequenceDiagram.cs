@@ -11,7 +11,7 @@ public class ChainedHasEmptySequenceDiagram
     public async Task Test1()
     {
         // Arrange
-        var noSequenceRecord = JourneyLegConfigurationOptions.None;
+        var noSequenceRecord = JourneyLegHandlingOptions.None;
         var journey = new JourneyBuilder()
             .AddNode<Node1>()
             .WithEdge<Node2>()

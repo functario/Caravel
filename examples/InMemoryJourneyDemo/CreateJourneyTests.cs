@@ -29,7 +29,7 @@ public class CreateJourneyTests
 
         // Create the Journey with default JourneyCoreOptions
         var journeyConfiguration = JourneyConfigurationFactory.Create(
-            JourneyLegConfigurationOptions.InMemory,
+            JourneyLegHandlingOptions.InMemory,
             TimeProvider.System);
 
         var inMemoryJourney = new Journey(

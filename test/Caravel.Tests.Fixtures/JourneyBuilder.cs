@@ -35,8 +35,7 @@ public sealed class JourneyBuilder
     public static IRouteFactory RouteFactory => new RouteFactory();
 
     public SmartJourney Build(
-        JourneyLegConfigurationOptions journeyLegConfigurationOptions =
-            JourneyLegConfigurationOptions.InMemory,
+        JourneyLegHandlingOptions journeyLegHandlingOptions = JourneyLegHandlingOptions.InMemory,
         TimeProvider? timeProvider = default,
         CancellationToken ct = default
     )
@@ -72,7 +71,7 @@ public sealed class JourneyBuilder
 
         timeProvider ??= TimeProvider.System;
         var journeyConfiguration = JourneyConfigurationFactory.Create(
-            journeyLegConfigurationOptions,
+            journeyLegHandlingOptions,
             timeProvider
         );
 

@@ -2,7 +2,7 @@
 
 namespace Caravel.Core.Configurations;
 
-public enum JourneyLegConfigurationOptions
+public enum JourneyLegHandlingOptions
 {
     /// <summary>
     /// The <see cref="IJourneyLeg"/> are stored in memory.

@@ -43,7 +43,7 @@ public static class ServiceCollectionExtensions
             (x) =>
             {
                 return JourneyConfigurationFactory.Create(
-                    JourneyLegConfigurationOptions.InMemory,
+                    JourneyLegHandlingOptions.InMemory,
                     x.GetRequiredService<TimeProvider>()
                 );
             }

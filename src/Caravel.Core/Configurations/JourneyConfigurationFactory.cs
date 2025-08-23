@@ -5,14 +5,14 @@ namespace Caravel.Core.Configurations;
 public static class JourneyConfigurationFactory
 {
     public static IJourneyConfiguration Create(
-        JourneyLegConfigurationOptions journeyLegConfigurationOptions,
+        JourneyLegHandlingOptions journeyLegHandlingOptions,
         TimeProvider timeProvider
     )
     {
-        return journeyLegConfigurationOptions switch
+        return journeyLegHandlingOptions switch
         {
-            JourneyLegConfigurationOptions.InMemory => CreateInMemory(timeProvider),
-            JourneyLegConfigurationOptions.None => CreateWithoutJourneyLegRecord(timeProvider),
+            JourneyLegHandlingOptions.InMemory => CreateInMemory(timeProvider),
+            JourneyLegHandlingOptions.None => CreateWithoutJourneyLegRecord(timeProvider),
             _ => throw new NotImplementedException(),
         };
     }

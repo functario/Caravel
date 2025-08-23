@@ -11,7 +11,7 @@ public class AtomicHasEmptySequenceDiagram
     public async Task Test1()
     {
         // Arrange
-        var noSequenceRecord = JourneyLegConfigurationOptions.None;
+        var noSequenceRecord = JourneyLegHandlingOptions.None;
         // csharpier-ignore
         var journey = new JourneyBuilder()
             .AddNode<Node1>()

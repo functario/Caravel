@@ -18,7 +18,7 @@ internal sealed class UnweightedJourneySeed
         EdgeFactory = new EdgeFactory();
         Graph = new DijkstraGraph(Nodes, RouteFactory, EdgeFactory);
         JourneyConfiguration = JourneyConfigurationFactory.Create(
-            JourneyLegConfigurationOptions.InMemory,
+            JourneyLegHandlingOptions.InMemory,
             TimeProvider.System
         );
     }
