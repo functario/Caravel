@@ -87,7 +87,7 @@ public static partial class GraphExtensions
         ArgumentNullException.ThrowIfNull(journey, nameof(journey));
         options ??= MermaidOptions.Default();
         var mermaidLegsByIndexes = await journey
-            .ToManyMermaidSequenceDiagramMarkdown(options, cancellationToken)
+            .ToManyMermaidSequenceDiagramMarkdownAsync(options, cancellationToken)
             .ConfigureAwait(false);
 
         var mermaidLegs = mermaidLegsByIndexes.Values;
@@ -124,7 +124,7 @@ public static partial class GraphExtensions
             : result;
     }
 
-    public static async Task<Dictionary<int, string>> ToManyMermaidSequenceDiagramMarkdown(
+    public static async Task<Dictionary<int, string>> ToManyMermaidSequenceDiagramMarkdownAsync(
         this IJourney journey,
         MermaidOptions? options = null,
         CancellationToken cancellationToken = default

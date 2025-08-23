@@ -111,7 +111,7 @@ public class MermaidToolsTests
             .GotoAsync<Node2>();
 
         // Sequences are splitted into individual Mermaid sequence.
-        var splitedNavigationSequences = await _unweightedJourney.ToManyMermaidSequenceDiagramMarkdown();
+        var splitedNavigationSequences = await _unweightedJourney.ToManyMermaidSequenceDiagramMarkdownAsync();
         Dictionary<int, string> expectedSequences = [];
 
         // Node1 (starting Node) => GotoAsync<Node3>()
