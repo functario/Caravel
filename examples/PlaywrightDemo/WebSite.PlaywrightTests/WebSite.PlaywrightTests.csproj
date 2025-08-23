@@ -41,4 +41,8 @@
             <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
         </None>
     </ItemGroup>
+    <ItemGroup>
+      <Folder Include="Tests\Navigations_Snapshots\" />
+      <Folder Include="Tests\WaypointsAndExcludedNodes_Snapshots\" />
+    </ItemGroup>
 </Project>
