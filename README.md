@@ -125,16 +125,26 @@ internal sealed class Node1 : INode
 
     var navigationSequence = await journey.ToMermaidSequenceDiagramMarkdownAsync();
 
-    /* navigationSequence => 
-        
-        sequenceDiagram
-        Node1->>Node3:0
-        Node3->>Node3:0
-        Node3->>Node1:0
-
-    */
-
 ```
+
+The navigationSequence will contain the following Mermaid sequence diagram:
+
+```text
+sequenceDiagram
+Node1->>Node3:0
+Node3->>Node3:0
+Node3->>Node1:0
+```
+
+
+```mermaid
+sequenceDiagram
+Node1->>Node3:0
+Node3->>Node3:0
+Node3->>Node1:0
+```
+
+> **Note:** Copy the above code into a `.md` file and open it in a markdown viewer that supports Mermaid to visualize the diagram or use [Mermaid Live Editor](https://mermaid.live/) to paste the code and see the rendered diagram.
 
 [[↑ top](#caravel)]
 
