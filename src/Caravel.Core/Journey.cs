@@ -1,30 +1,48 @@
 ﻿using Caravel.Abstractions;
+using Caravel.Abstractions.Configurations;
 using Caravel.Abstractions.Events;
 using Caravel.Abstractions.Exceptions;
-using Caravel.Core.Events;
 using Caravel.Core.Extensions;
 
 namespace Caravel.Core;
 
-public abstract class Journey : IJourney, IJourneyLegPublisher
+public class Journey : IJourney
 {
-    private readonly TimeProvider _timeProvider;
+    private readonly IActionMetaDataFactory _actionMetaDataFactory;
+    private readonly IJourneyLegFactory _journeyLegFactory;
+    private readonly IJourneyLegEventFactory _journeyLegEventFactory;
+    private readonly IJourneyLegPublisher _journeyLegPublisher;
     private bool _isJourneyStarted;
 
-    protected Journey(
+    public Journey(
         INode startingNode,
         IGraph graph,
-        TimeProvider timeProvider,
+        IJourneyConfiguration journeyConfiguration,
         CancellationToken journeyCancellationToken
     )
     {
         ArgumentNullException.ThrowIfNull(startingNode, nameof(startingNode));
+        ArgumentNullException.ThrowIfNull(journeyConfiguration, nameof(journeyConfiguration));
+        ArgumentNullException.ThrowIfNull(
+            journeyConfiguration.JourneyLegReader,
+            nameof(journeyConfiguration.JourneyLegReader)
+        );
+
+        ArgumentNullException.ThrowIfNull(
+            journeyConfiguration.JourneyLegPublisher,
+            nameof(journeyConfiguration.JourneyLegPublisher)
+        );
+
         journeyCancellationToken.ThrowIfCancellationRequested();
 
         _isJourneyStarted = false;
         Graph = graph;
-        _timeProvider = timeProvider;
+        JourneyLegReader = journeyConfiguration.JourneyLegReader;
+        _journeyLegEventFactory = journeyConfiguration.JourneyLegEventFactory;
+        _actionMetaDataFactory = journeyConfiguration.ActionMetaDataFactory;
+        _journeyLegFactory = journeyConfiguration.JourneyLegFactory;
         JourneyCancellationToken = journeyCancellationToken;
+        _journeyLegPublisher = journeyConfiguration.JourneyLegPublisher;
         CurrentNode = startingNode;
     }
 
@@ -32,6 +50,7 @@ public abstract class Journey : IJourney, IJourneyLegPublisher
     public IGraph Graph { get; init; }
     public CancellationToken JourneyCancellationToken { get; }
     public Guid Id { get; init; } = Guid.CreateVersion7();
+    public IJourneyLegReader JourneyLegReader { get; init; }
 
     public IJourney SetStartingNode(INode node)
     {
@@ -101,36 +120,21 @@ public abstract class Journey : IJourney, IJourneyLegPublisher
         var originType = CurrentNode.GetType();
         var route = GetRoute(originType, destinationType, waypoints, excludedNodes);
         var legEdges = new Queue<IEdge>();
-        var journeyLeg = new JourneyLeg(Id, legEdges, route);
-        await PublishOnJourneyLegStartedAsync(
-                new JourneyLegStartedEvent(_timeProvider.GetUtcNow(), journeyLeg),
+        var journeyLeg = _journeyLegFactory.CreateJourneyLeg(Id, legEdges, route);
+
+        await _journeyLegPublisher
+            .PublishOnJourneyLegStartedAsync(
+                _journeyLegEventFactory.CreateJourneyLegStartedEvent(journeyLeg),
                 linkedCancellationTokenSource.Token
             )
             .ConfigureAwait(false);
 
-        foreach (var edge in route.Edges)
-        {
-            linkedCancellationTokenSource.Token.ThrowIfCancellationRequested();
-            CurrentNode = await edge
-                .NeighborNavigator.MoveNext(this, linkedCancellationTokenSource.Token)
-                .ConfigureAwait(false);
-
-            await CurrentNode
-                .OnNodeOpenedAsync(this, linkedCancellationTokenSource.Token)
-                .ConfigureAwait(false);
-
-            journeyLeg.Edges.Enqueue(edge);
-            await PublishOnJourneyLegUpdatedAsync(
-                    new JourneyLegUpdatedEvent(_timeProvider.GetUtcNow(), journeyLeg, edge),
-                    linkedCancellationTokenSource.Token
-                )
-                .ConfigureAwait(false);
-        }
+        await NavigateAsync(route.Edges, journeyLeg, linkedCancellationTokenSource.Token)
+            .ConfigureAwait(false);
 
         await CompleteJourneyLegAsync(
                 destinationType,
                 journeyLeg,
-                journeyLeg.Edges.Last(),
                 linkedCancellationTokenSource.Token
             )
             .ConfigureAwait(false);
@@ -167,8 +171,11 @@ public abstract class Journey : IJourney, IJourneyLegPublisher
 
             (var outNode, var actionMetaData) = GetNodeIfWrapped(funcNode);
 
-            // Ensure the navigation from DoAsync is registered.
-            await SetNavigationFromDoAsync(
+            // Change the current node.
+            CurrentNode = outNode;
+
+            // Ensure the navigation from DoAsync is registered as JourneyLeg.
+            var doJourneyLeg = await AddDoAsyncToJourneyLegAsync(
                     current,
                     outNode,
                     Id,
@@ -178,6 +185,7 @@ public abstract class Journey : IJourney, IJourneyLegPublisher
                 .ConfigureAwait(false);
 
             linkedCancellationTokenSource.Token.ThrowIfCancellationRequested();
+
             await outNode
                 .OnNodeOpenedAsync(this, linkedCancellationTokenSource.Token)
                 .ConfigureAwait(false);
@@ -268,41 +276,32 @@ public abstract class Journey : IJourney, IJourneyLegPublisher
     private static bool DestinationIsAlsoAWaypoint(Type destinationType, IWaypoints waypoints) =>
         waypoints.Any(x => x == destinationType);
 
-    Task IJourneyLegPublisher.PublishOnJourneyLegCompletedAsync(
-        IJourneyLegCompletedEvent journeyLegCompletedEvent,
+    private async Task NavigateAsync(
+        ICollection<IEdge> edges,
+        IJourneyLeg journeyLeg,
         CancellationToken cancellationToken
-    ) => PublishOnJourneyLegCompletedAsync(journeyLegCompletedEvent, cancellationToken);
+    )
+    {
+        foreach (var edge in edges)
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+            CurrentNode = await edge
+                .NeighborNavigator.MoveNext(this, cancellationToken)
+                .ConfigureAwait(false);
 
-    Task IJourneyLegPublisher.PublishOnJourneyLegStartedAsync(
-        IJourneyLegStartedEvent journeyLegStartedEvent,
-        CancellationToken cancellationToken
-    ) => PublishOnJourneyLegStartedAsync(journeyLegStartedEvent, cancellationToken);
+            await CurrentNode.OnNodeOpenedAsync(this, cancellationToken).ConfigureAwait(false);
 
-    Task IJourneyLegPublisher.PublishOnJourneyLegUpdatedAsync(
-        IJourneyLegUpdatedEvent journeyLegUpdatedEvent,
-        CancellationToken cancellationToken
-    ) => PublishOnJourneyLegUpdatedAsync(journeyLegUpdatedEvent, cancellationToken);
+            journeyLeg.Edges.Enqueue(edge);
+            await _journeyLegPublisher
+                .PublishOnJourneyLegUpdatedAsync(
+                    _journeyLegEventFactory.CreateJourneyLegUpdatedEvent(edge, journeyLeg),
+                    cancellationToken
+                )
+                .ConfigureAwait(false);
+        }
+    }
 
-    protected abstract Task PublishOnJourneyLegCompletedAsync(
-        IJourneyLegCompletedEvent journeyLegCompletedEvent,
-        CancellationToken cancellationToken
-    );
-
-    protected abstract Task PublishOnJourneyLegStartedAsync(
-        IJourneyLegStartedEvent journeyLegStartedEvent,
-        CancellationToken cancellationToken
-    );
-
-    protected abstract Task PublishOnJourneyLegUpdatedAsync(
-        IJourneyLegUpdatedEvent journeyLegUpdatedEvent,
-        CancellationToken cancellationToken
-    );
-
-    public abstract Task<IEnumerable<IJourneyLeg>> GetCompletedJourneyLegsAsync(
-        CancellationToken cancellationToken
-    );
-
-    private async Task SetNavigationFromDoAsync(
+    private async Task<IJourneyLeg> AddDoAsyncToJourneyLegAsync(
         INode currentNode,
         INode nodeOut,
         Guid journeyId,
@@ -310,45 +309,42 @@ public abstract class Journey : IJourney, IJourneyLegPublisher
         CancellationToken linkedCancellationToken
     )
     {
-        // Change the current node.
-        CurrentNode = nodeOut;
-
         // Publish start and end of navigation.
-        var journeyLeg = DynamicJourneyLeg(
+        actionMetaData ??= _actionMetaDataFactory.CreateActionMetaData(
+            _actionMetaDataFactory.DefaultDoAsyncDescription
+        );
+
+        var journeyLeg = _journeyLegFactory.CreateJourneyLeg(
             currentNode,
-            nodeOut.GetType(),
+            nodeOut,
             journeyId,
+            Graph.RouteFactory,
+            Graph.EdgeFactory,
             actionMetaData
         );
 
-        await PublishOnJourneyLegStartedAsync(
-                new JourneyLegStartedEvent(_timeProvider.GetUtcNow(), journeyLeg),
+        await _journeyLegPublisher
+            .PublishOnJourneyLegStartedAsync(
+                _journeyLegEventFactory.CreateJourneyLegStartedEvent(journeyLeg),
                 linkedCancellationToken
             )
             .ConfigureAwait(false);
 
-        await CompleteJourneyLegAsync(
-                nodeOut.GetType(),
-                journeyLeg,
-                journeyLeg.Edges.Last(),
-                linkedCancellationToken
-            )
+        await CompleteJourneyLegAsync(nodeOut.GetType(), journeyLeg, linkedCancellationToken)
             .ConfigureAwait(false);
+
+        return journeyLeg;
     }
 
     private async Task CompleteJourneyLegAsync(
         Type destinationType,
         IJourneyLeg completedJourneyLeg,
-        IEdge finishingEdge,
         CancellationToken cancellationToken
     )
     {
-        await PublishOnJourneyLegCompletedAsync(
-                new JourneyLegCompletedEvent(
-                    _timeProvider.GetUtcNow(),
-                    completedJourneyLeg,
-                    finishingEdge
-                ),
+        await _journeyLegPublisher
+            .PublishOnJourneyLegCompletedAsync(
+                _journeyLegEventFactory.CreateJourneyLegCompletedEvent(completedJourneyLeg),
                 cancellationToken
             )
             .ConfigureAwait(false);
@@ -359,35 +355,5 @@ public abstract class Journey : IJourney, IJourneyLegPublisher
         }
 
         await CurrentNode.OnNodeOpenedAsync(this, cancellationToken).ConfigureAwait(false);
-    }
-
-    private static JourneyLeg DynamicJourneyLeg(
-        INode currentNode,
-        Type nodeOutType,
-        Guid journeyId,
-        IActionMetaData? actionMetaData = null
-    )
-    {
-        if (journeyId.Version != 7)
-            throw new InvalidOperationException("Id must be Guid.V7.");
-
-        actionMetaData ??= new ActionMetaData($"{nameof(Journey)}.{nameof(DoAsync)}");
-
-        var neighborNavigator = new NeighborNavigator(MoveNext(currentNode), actionMetaData);
-
-        var legEdges = new Queue<IEdge>(
-            [new Edge(currentNode.GetType(), nodeOutType, neighborNavigator)]
-        );
-
-        // TODO: The graph should expose a RouteFactory to allow custom implementation.
-        var doRoute = new DoRoute([.. legEdges]);
-        return new JourneyLeg(journeyId, legEdges, doRoute);
-    }
-
-    private static Func<IJourney, CancellationToken, Task<INode>> MoveNext(INode node)
-    {
-        Task<INode> Func(IJourney journey, CancellationToken cancellationToken) =>
-            Task.FromResult(node);
-        return Func;
     }
 }

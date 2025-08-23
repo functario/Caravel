@@ -1,4 +1,5 @@
-﻿using Caravel.Core;
+﻿using Caravel.Abstractions;
+using Caravel.Core;
 using InMemoryJourneyDemo.Nodes.UnweightedNodes;
 using InMemoryJourneyDemo.Nodes.WeightedNodes;
 
@@ -6,22 +7,22 @@ namespace InMemoryJourneyDemo.Nodes;
 
 internal static class InMemoryJourneyFactory
 {
-    public static InMemoryJourney CreateInMemoryJourney(this UnweightedJourneySeed seed)
+    public static IJourney CreateJourney(this UnweightedJourneySeed seed)
     {
-        return new InMemoryJourney(
+        return new Journey(
             seed.Node1,
             seed.Graph,
-            TimeProvider.System,
+            seed.JourneyConfiguration,
             CancellationToken.None
         );
     }
 
-    public static InMemoryJourney CreateInMemoryJourney(this WeightedJourneySeed seed)
+    public static IJourney CreateJourney(this WeightedJourneySeed seed)
     {
-        return new InMemoryJourney(
+        return new Journey(
             seed.WeightedNode1,
             seed.WeightedGraph,
-            TimeProvider.System,
+            seed.JourneyConfiguration,
             CancellationToken.None
         );
     }

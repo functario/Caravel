@@ -191,7 +191,7 @@ public static partial class GraphExtensions
     )
     {
         var history = await journey
-            .GetCompletedJourneyLegsAsync(cancellationToken)
+            .JourneyLegReader.GetCompletedJourneyLegsAsync(cancellationToken)
             .ConfigureAwait(false);
 
         return [.. history];

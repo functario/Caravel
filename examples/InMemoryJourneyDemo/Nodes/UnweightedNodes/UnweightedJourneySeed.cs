@@ -1,5 +1,7 @@
 ﻿using Caravel.Abstractions;
+using Caravel.Abstractions.Configurations;
 using Caravel.Core;
+using Caravel.Core.Configurations;
 using Caravel.Graph.Dijkstra;
 
 namespace InMemoryJourneyDemo.Nodes.UnweightedNodes;
@@ -12,22 +14,31 @@ internal sealed class UnweightedJourneySeed
         Node2 = new Node2();
         Node3 = new Node3();
         Nodes = [Node1, Node2, Node3];
-        Graph = new DijkstraGraph(Nodes);
+        RouteFactory = new RouteFactory();
+        EdgeFactory = new EdgeFactory();
+        Graph = new DijkstraGraph(Nodes, RouteFactory, EdgeFactory);
+        JourneyConfiguration = JourneyConfigurationFactory.Create(
+            JourneyLegHandlingOptions.InMemory,
+            TimeProvider.System
+        );
     }
 
     public Node1 Node1 { get; init; }
     public Node2 Node2 { get; init; }
     public Node3 Node3 { get; init; }
     public INode[] Nodes { get; init; }
+    public RouteFactory RouteFactory { get; init; }
+    public EdgeFactory EdgeFactory { get; init; }
     public IGraph Graph { get; init; }
+    public IJourneyConfiguration JourneyConfiguration { get; init; }
 
-    public static InMemoryJourney CreateInMemoryJourney()
+    public static Journey CreateJourney()
     {
         var seed = new UnweightedJourneySeed();
-        return new InMemoryJourney(
+        return new Journey(
             seed.Node1,
             seed.Graph,
-            TimeProvider.System,
+            seed.JourneyConfiguration,
             CancellationToken.None
         );
     }

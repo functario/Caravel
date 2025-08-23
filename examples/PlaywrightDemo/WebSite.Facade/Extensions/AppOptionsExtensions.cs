@@ -10,12 +10,4 @@ public static class AppOptionsExtensions
         appOptions.WebSitePath = EnvironmentVariablesNames.WebSiteFilePath.GetEnvironmentVariable();
         return appOptions;
     }
-
-    public static AppOptions SetFrom(this AppOptions original, AppOptions other)
-    {
-        ArgumentNullException.ThrowIfNull(original, nameof(original));
-        ArgumentNullException.ThrowIfNull(other, nameof(other));
-        original.WebSitePath = other.WebSitePath;
-        return original;
-    }
 }

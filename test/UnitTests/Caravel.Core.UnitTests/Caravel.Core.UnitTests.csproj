@@ -30,4 +30,15 @@
         <ProjectReference Include="..\..\Caravel.Tests.Fixtures\Caravel.Tests.Fixtures.csproj" />
         <ProjectReference Include="..\..\Caravel.Tests.Support\Caravel.Tests.Support.csproj" />
     </ItemGroup>
+    <ItemGroup>
+      <None Update="Tests\Navigation\Atomic\AtomicHasEmptySequenceDiagram.Test1.verified.txt">
+        <DependentUpon>AtomicHasEmptySequenceDiagram.cs</DependentUpon>
+      </None>
+      <None Update="Tests\Navigation\Chained\ChainedHasEmptySequenceDiagram.Test1.verified.txt">
+        <DependentUpon>ChainedHasEmptySequenceDiagram.cs</DependentUpon>
+      </None>
+    </ItemGroup>
+    <ItemGroup>
+      <Folder Include="Tests\Navigation\Atomic\AtomicHasEmptySequenceDiagram_Snapshots\" />
+    </ItemGroup>
 </Project>

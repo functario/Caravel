@@ -1,33 +1,39 @@
 ﻿using System.Collections.Frozen;
 using System.Collections.Immutable;
 using Caravel.Abstractions;
+using Caravel.Abstractions.Configurations;
 using Caravel.Abstractions.Exceptions;
-using Caravel.Core;
 
 namespace Caravel.Graph.Dijkstra;
 
 public sealed class DijkstraGraph : IGraph
 {
     private readonly FrozenDictionary<Type, INode> _registeredNodes;
+    private readonly IRouteFactory _routeFactory;
+    private readonly IEdgeFactory _edgeFactory;
 
-    public DijkstraGraph(IEnumerable<INode> nodes)
+    public DijkstraGraph(
+        IEnumerable<INode> nodes,
+        IRouteFactory routeFactory,
+        IEdgeFactory edgeFactory
+    )
     {
         _registeredNodes = nodes.ToDictionary(n => n.GetType(), n => n).ToFrozenDictionary();
+        _routeFactory = routeFactory;
+        _edgeFactory = edgeFactory;
     }
 
     /// <inheritdoc />
     public FrozenDictionary<Type, INode> Nodes => _registeredNodes;
+    public IRouteFactory RouteFactory => _routeFactory;
+    public IEdgeFactory EdgeFactory => _edgeFactory;
 
     /// <inheritdoc />
     public IRoute GetSelfRoute(INode node)
     {
-        // TODO: INode could have a GetEdgeFactory() or could accept an EdgeFactory.
-        // this will allow to remove dependency on Caravel.Core.
-        // Also see Journey.DynamicJourneyLeg() which could reuse the factory.
         ArgumentNullException.ThrowIfNull(node);
-        var type = node.GetType();
-        var selfEdge = new Edge(type, type, new NeighborNavigator((_, _) => Task.FromResult(node)));
-        return new Route([selfEdge]);
+        var selfEdge = _edgeFactory.CreteSelfEdge(node);
+        return _routeFactory.CreateRoute([selfEdge]);
     }
 
     /// <inheritdoc />
@@ -58,7 +64,7 @@ public sealed class DijkstraGraph : IGraph
         var finalSegment = Dijkstra(current, destination, excludedNodes);
         allEdges.AddRange(finalSegment);
 
-        return new Route([.. allEdges]);
+        return _routeFactory.CreateRoute([.. allEdges]);
     }
 
     private static void ValidateWaypointsNotExcluded(

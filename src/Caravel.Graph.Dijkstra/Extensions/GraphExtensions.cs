@@ -1,5 +1,4 @@
 ﻿using Caravel.Abstractions;
-using Caravel.Core;
 
 namespace Caravel.Graph.Dijkstra.Extensions;
 
@@ -8,7 +7,7 @@ public static class GraphExtensions
     public static IRoute GetShortestRoute(this IGraph graph, Type origin, Type destination)
     {
         ArgumentNullException.ThrowIfNull(graph, nameof(graph));
-        return graph.GetRoute(origin, destination, Waypoints.Empty(), ExcludedNodes.Empty());
+        return graph.GetRoute(origin, destination, IWaypoints.Empty(), IExcludedNodes.Empty());
     }
 
     public static IRoute GetShortestRoute(
@@ -19,7 +18,7 @@ public static class GraphExtensions
     )
     {
         ArgumentNullException.ThrowIfNull(graph, nameof(graph));
-        return graph.GetRoute(origin, destination, Waypoints.Empty(), excludedNodes);
+        return graph.GetRoute(origin, destination, IWaypoints.Empty(), excludedNodes);
     }
 
     public static IRoute GetShortestRoute(
@@ -30,6 +29,6 @@ public static class GraphExtensions
     )
     {
         ArgumentNullException.ThrowIfNull(graph, nameof(graph));
-        return graph.GetRoute(origin, destination, waypoints, ExcludedNodes.Empty());
+        return graph.GetRoute(origin, destination, waypoints, IExcludedNodes.Empty());
     }
 }

@@ -7,8 +7,6 @@ namespace Caravel.Core;
 [CollectionBuilder(typeof(ExcludedNodes), nameof(Create))]
 public sealed class ExcludedNodes : IExcludedNodes
 {
-    public static ExcludedNodes Empty() => new([]);
-
     public static ExcludedNodes Create(ReadOnlySpan<Type> values) => new(values);
 
     private readonly Type[] _values;

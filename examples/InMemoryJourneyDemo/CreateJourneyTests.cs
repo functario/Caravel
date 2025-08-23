@@ -1,6 +1,7 @@
 ﻿using AwesomeAssertions;
 using Caravel.Abstractions;
 using Caravel.Core;
+using Caravel.Core.Configurations;
 using Caravel.Graph.Dijkstra;
 using Caravel.Mermaid;
 using InMemoryJourneyDemo.Nodes.UnweightedNodes;
@@ -8,9 +9,9 @@ using InMemoryJourneyDemo.Nodes.UnweightedNodes;
 namespace InMemoryJourneyDemo;
 
 // csharpier-ignore-start
-public class CreateInMemoreyJourneyTests
+public class CreateJourneyTests
 {
-    [Fact(DisplayName = "Create a InMemoryJourney")]
+    [Fact(DisplayName = "Create a Journey")]
     public void Test1()
     {
         // Create the nodes.
@@ -19,14 +20,22 @@ public class CreateInMemoreyJourneyTests
         var node3 = new Node3();
         INode[] nodes = [node1, node2, node3];
 
-        // Generate the graph.
-        var graph = new DijkstraGraph(nodes);
+        // basic factories
+        var routeFactory = new RouteFactory();
+        var edgeFactory = new EdgeFactory();
 
-        // Create the InMemoryJourney
-        var inMemoryJourney = new InMemoryJourney(
+        // Generate the graph.
+        var graph = new DijkstraGraph(nodes, routeFactory, edgeFactory);
+
+        // Create the Journey with default JourneyCoreOptions
+        var journeyConfiguration = JourneyConfigurationFactory.Create(
+            JourneyLegHandlingOptions.InMemory,
+            TimeProvider.System);
+
+        var inMemoryJourney = new Journey(
             node1,
             graph,
-            TimeProvider.System,
+            journeyConfiguration,
             CancellationToken.None
         );
 

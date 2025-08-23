@@ -7,8 +7,6 @@ namespace Caravel.Core;
 [CollectionBuilder(typeof(Waypoints), nameof(Create))]
 public sealed class Waypoints : IWaypoints
 {
-    public static Waypoints Empty() => new([]);
-
     public static Waypoints Create(ReadOnlySpan<Type> values) => new(values);
 
     private readonly Type[] _values;

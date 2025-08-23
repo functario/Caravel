@@ -1,16 +1,16 @@
-﻿namespace Caravel.Abstractions;
+﻿using Caravel.Abstractions.Events;
+
+namespace Caravel.Abstractions;
 
 public interface IJourney
 {
+    public Guid Id { get; }
     CancellationToken JourneyCancellationToken { get; }
     IGraph Graph { get; }
     INode CurrentNode { get; }
+    public IJourneyLegReader JourneyLegReader { get; }
 
     public IJourney SetStartingNode(INode node);
-
-    public Task<IEnumerable<IJourneyLeg>> GetCompletedJourneyLegsAsync(
-        CancellationToken cancellationToken = default
-    );
 
     public TJourney OfType<TJourney>()
         where TJourney : IJourney;

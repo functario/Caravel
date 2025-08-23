@@ -1,6 +1,8 @@
 ﻿using System.Collections.Immutable;
 using Caravel.Abstractions;
+using Caravel.Abstractions.Configurations;
 using Caravel.Core;
+using Caravel.Core.Configurations;
 using Caravel.Graph.Dijkstra;
 
 namespace Caravel.Tests.Fixtures;
@@ -29,7 +31,14 @@ public sealed class JourneyBuilder
     public Type Node => _firstNodeType!;
     public Map Map => _map!;
 
-    public SmartJourney Build(TimeProvider? timeProvider = default, CancellationToken ct = default)
+    public static IEdgeFactory EdgeFactory => new EdgeFactory();
+    public static IRouteFactory RouteFactory => new RouteFactory();
+
+    public SmartJourney Build(
+        JourneyLegHandlingOptions journeyLegHandlingOptions = JourneyLegHandlingOptions.InMemory,
+        TimeProvider? timeProvider = default,
+        CancellationToken ct = default
+    )
     {
         var nodesByType = new Dictionary<Type, INodeSpy>();
 
@@ -52,11 +61,21 @@ public sealed class JourneyBuilder
             builder.ResolveMoveNext(nodesByType);
         }
 
-        var graph = new DijkstraGraph([.. nodesByType.Values.Cast<INode>()]);
+        var graph = new DijkstraGraph(
+            [.. nodesByType.Values.Cast<INode>()],
+            RouteFactory,
+            EdgeFactory
+        );
+
         var startNode = nodesByType[_firstNodeType!];
 
         timeProvider ??= TimeProvider.System;
-        return new SmartJourney(startNode, graph, timeProvider, _map, ct);
+        var journeyConfiguration = JourneyConfigurationFactory.Create(
+            journeyLegHandlingOptions,
+            timeProvider
+        );
+
+        return new SmartJourney(startNode, graph, journeyConfiguration, _map, ct);
     }
 }
 

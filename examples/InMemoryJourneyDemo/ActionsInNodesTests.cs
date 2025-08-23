@@ -1,6 +1,8 @@
 ﻿using AwesomeAssertions;
 using Caravel.Abstractions;
+using Caravel.Abstractions.Configurations;
 using Caravel.Core;
+using Caravel.Core.Configurations;
 using Caravel.Core.Extensions;
 using Caravel.Graph.Dijkstra;
 using Caravel.Mermaid;
@@ -17,7 +19,10 @@ public class ActionsInNodesTests
     private readonly Node3 _node3;
     private readonly INode[] _nodes;
     private readonly IGraph _graph;
-    private readonly InMemoryJourney _inMemoryJourney;
+    private readonly IJourney _journey;
+    private readonly RouteFactory _routeFactory;
+    private readonly EdgeFactory _edgeFactory;
+    private readonly IJourneyConfiguration _journeyConfigurations;
 
     public ActionsInNodesTests()
     {
@@ -25,12 +30,17 @@ public class ActionsInNodesTests
         _node2 = new Node2();
         _node3 = new Node3();
         _nodes = [_node1, _node2, _node3];
-        _graph = new DijkstraGraph(_nodes);
+        _routeFactory = new RouteFactory();
+        _edgeFactory = new EdgeFactory();
+        _graph = new DijkstraGraph(_nodes, _routeFactory, _edgeFactory);
+        _journeyConfigurations = JourneyConfigurationFactory.Create(
+            JourneyLegHandlingOptions.InMemory,
+            TimeProvider.System);
 
-        _inMemoryJourney = new InMemoryJourney(
+        _journey = new Journey(
             _node1,
             _graph,
-            TimeProvider.System,
+            _journeyConfigurations,
             CancellationToken.None
         );
 
@@ -41,7 +51,7 @@ public class ActionsInNodesTests
     {
         // You need "using Caravel.Core.Extensions;"
 
-        await _inMemoryJourney
+        await _journey
             .DoAsync<Node1>((node1, cancellationToken) =>
             {
                 // Do something on the current node (Node1)
@@ -55,7 +65,7 @@ public class ActionsInNodesTests
             });
 
         //Validate the navigation sequence with a Mermaid sequence diagram
-        var mermaidNavigationSequence = await _inMemoryJourney.ToMermaidSequenceDiagramMarkdownAsync();
+        var mermaidNavigationSequence = await _journey.ToMermaidSequenceDiagramMarkdownAsync();
         var expectedNavigation =
             """
             sequenceDiagram
@@ -71,7 +81,7 @@ public class ActionsInNodesTests
     {
         // You need "using Caravel.Core.Extensions;"
 
-        await _inMemoryJourney
+        await _journey
             .DoAsync<Node1, Node3>((node1, cancellationToken) =>
             {
                 // Do something that will change the current node to Node3 and return it.
@@ -85,7 +95,7 @@ public class ActionsInNodesTests
             });
 
         //Validate the navigation sequence with a Mermaid sequence diagram
-        var mermaidNavigationSequence = await _inMemoryJourney.ToMermaidSequenceDiagramMarkdownAsync();
+        var mermaidNavigationSequence = await _journey.ToMermaidSequenceDiagramMarkdownAsync();
         var expectedNavigation =
             """
             sequenceDiagram

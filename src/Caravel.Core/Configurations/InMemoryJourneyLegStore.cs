@@ -2,21 +2,13 @@
 using Caravel.Abstractions;
 using Caravel.Abstractions.Events;
 
-namespace Caravel.Core;
+namespace Caravel.Core.Configurations;
 
-public class InMemoryJourney : Journey
+public sealed class InMemoryJourneyLegStore : IJourneyLegPublisher, IJourneyLegReader
 {
-    public InMemoryJourney(
-        INode startingNode,
-        IGraph graph,
-        TimeProvider timeProvider,
-        CancellationToken journeyCancellationToken
-    )
-        : base(startingNode, graph, timeProvider, journeyCancellationToken) { }
-
     public ConcurrentQueue<IJourneyLegEvent> LegEvents { get; init; } = [];
 
-    public sealed override Task<IEnumerable<IJourneyLeg>> GetCompletedJourneyLegsAsync(
+    public Task<IEnumerable<IJourneyLeg>> GetCompletedJourneyLegsAsync(
         CancellationToken cancellationToken = default
     )
     {
@@ -29,7 +21,7 @@ public class InMemoryJourney : Journey
         return Task.FromResult<IEnumerable<IJourneyLeg>>(legArray);
     }
 
-    protected override Task PublishOnJourneyLegCompletedAsync(
+    public Task PublishOnJourneyLegCompletedAsync(
         IJourneyLegCompletedEvent journeyLegCompletedEvent,
         CancellationToken cancellationToken
     )
@@ -41,12 +33,12 @@ public class InMemoryJourney : Journey
         return Task.CompletedTask;
     }
 
-    protected override Task PublishOnJourneyLegStartedAsync(
+    public Task PublishOnJourneyLegStartedAsync(
         IJourneyLegStartedEvent journeyLegStartedEvent,
         CancellationToken cancellationToken
     ) => PublishJourneyLegEventAsync(journeyLegStartedEvent, cancellationToken);
 
-    protected override Task PublishOnJourneyLegUpdatedAsync(
+    public Task PublishOnJourneyLegUpdatedAsync(
         IJourneyLegUpdatedEvent journeyLegUpdatedEvent,
         CancellationToken cancellationToken
     ) => PublishJourneyLegEventAsync(journeyLegUpdatedEvent, cancellationToken);

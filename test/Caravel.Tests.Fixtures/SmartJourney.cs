@@ -1,18 +1,19 @@
 ﻿using Caravel.Abstractions;
+using Caravel.Abstractions.Configurations;
 using Caravel.Core;
 
 namespace Caravel.Tests.Fixtures;
 
-public sealed class SmartJourney : InMemoryJourney
+public sealed class SmartJourney : Journey
 {
     public SmartJourney(
         INode current,
         IGraph graph,
-        TimeProvider timeProvider,
+        IJourneyConfiguration journeyConfiguration,
         Map map,
         CancellationToken journeyCancellationToken
     )
-        : base(current, graph, timeProvider, journeyCancellationToken)
+        : base(current, graph, journeyConfiguration, journeyCancellationToken)
     {
         Map = map;
     }

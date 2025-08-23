@@ -224,4 +224,26 @@ public class AtomicThrowsException
                     + "Caravel.Tests.Fixtures.Node6."
             );
     }
+
+    [Fact(DisplayName = "When trying to change starting node after the journey has started")]
+    public async Task Test8()
+    {
+        // Arrange
+        // csharpier-ignore
+        var builder = JourneyFixtures.JourneyWithJoinRightFractalGraph3Levels;
+        var journey = builder.Build();
+
+        // Act
+        var startedJourney = await journey.GotoAsync<Node15>();
+        var sut = () => startedJourney.SetStartingNode(builder.Map.NodeSpy15);
+
+        // Assert
+        sut.Should()
+            .ThrowExactly<CannotChangeStartingNodeException>()
+            .WithMessage(
+                "Cannot change starting INode once the IJourney is started"
+                    + " (current starting node 'Caravel.Tests.Fixtures.Node15',"
+                    + " requested starting node 'Caravel.Tests.Fixtures.Node15')"
+            );
+    }
 }
