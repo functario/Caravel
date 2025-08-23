@@ -16,7 +16,7 @@ public class WeightedNavigatationTests
         _journey = WeightedJourneySeed.CreateJourney();
     }
 
-    [Fact(DisplayName = "Navigate a weighted graph using GotoAsync")]
+    [Fact(DisplayName = $"Navigate a weighted graph using {nameof(IJourney.GotoAsync)}")]
     public async Task Test1()
     {
         // You need "using Caravel.Core.Extensions;"

@@ -18,13 +18,13 @@ public interface IJourney
     public Task<IJourney> GotoAsync(
         Type destinationType,
         IWaypoints waypoints,
-        IExcludedNodes excludedNodes,
+        IExcludedWaypoints excludedWaypoints,
         CancellationToken scopedCancellationToken = default
     );
 
     public Task<IJourney> GotoAsync<TDestination>(
         IWaypoints waypoints,
-        IExcludedNodes excludedNodes,
+        IExcludedWaypoints excludedWaypoints,
         CancellationToken scopedCancellationToken = default
     )
         where TDestination : INode;

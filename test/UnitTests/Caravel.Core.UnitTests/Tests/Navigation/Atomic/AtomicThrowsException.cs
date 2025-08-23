@@ -52,7 +52,7 @@ public class AtomicThrowsException
             );
     }
 
-    [Fact(DisplayName = $"When no route found between waypoints")]
+    [Fact(DisplayName = $"When no route found between {nameof(Waypoints)}")]
     public async Task Test2()
     {
         // Arrange
@@ -172,12 +172,12 @@ public class AtomicThrowsException
             );
     }
 
-    [Fact(DisplayName = "When only route possible has ExcludedNodes")]
+    [Fact(DisplayName = $"When only route possible has {nameof(ExcludedWaypoints)}")]
     public async Task Test6()
     {
         // Arrange
         // csharpier-ignore
-        ExcludedNodes waypoints = [typeof(Node2)];
+        ExcludedWaypoints waypoints = [typeof(Node2)];
         var journey = new JourneyBuilder()
             .AddNode<Node1>()
             .WithEdge<Node2>()
@@ -202,18 +202,18 @@ public class AtomicThrowsException
             );
     }
 
-    [Fact(DisplayName = "When nodes are waypoints and excluded nodes")]
+    [Fact(DisplayName = $"When nodes are {nameof(Waypoints)} and {nameof(ExcludedWaypoints)}")]
     public async Task Test7()
     {
         // Arrange
         // csharpier-ignore
         var nodeWaypointAndExcluded = typeof(Node6);
         Waypoints waypoints = [nodeWaypointAndExcluded, typeof(Node14)];
-        ExcludedNodes excludedNodes = [typeof(Node13), nodeWaypointAndExcluded];
+        ExcludedWaypoints excludedWaypoints = [typeof(Node13), nodeWaypointAndExcluded];
         var journey = JourneyFixtures.JourneyWithJoinRightFractalGraph3Levels.Build();
 
         // Act
-        var sut = async () => await journey.GotoAsync<Node15>(waypoints, excludedNodes);
+        var sut = async () => await journey.GotoAsync<Node15>(waypoints, excludedWaypoints);
 
         // Assert
         await sut.Should()

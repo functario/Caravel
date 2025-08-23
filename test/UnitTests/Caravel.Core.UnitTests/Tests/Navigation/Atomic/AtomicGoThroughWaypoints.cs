@@ -38,7 +38,7 @@ public class AtomicGoThroughWaypoints
         await result.VerifyMermaidMarkdownAsync().UseParameters(waypoint.Name);
     }
 
-    [Fact(DisplayName = "Whith many waypoints")]
+    [Fact(DisplayName = $"Whith many {nameof(Waypoints)}")]
     public async Task Test2()
     {
         // Arrange

@@ -25,10 +25,10 @@ internal static class GotoTool
             var destinationType = GetDestinationType(destinationPage);
 
             Waypoints waypoints = [];
-            ExcludedNodes excludedNodes = [];
+            ExcludedWaypoints excludedWaypoints = [];
 
             await journey
-                .GotoAsync(destinationType, waypoints, excludedNodes, CancellationToken.None)
+                .GotoAsync(destinationType, waypoints, excludedWaypoints, CancellationToken.None)
                 .ConfigureAwait(false);
 
             // You can return something if needed; here we return the type name for illustration

@@ -22,7 +22,7 @@ public static partial class JourneyExtensions
 
     public static async Task<IJourney> GotoAsync<TDestination>(
         this IJourney journey,
-        IExcludedNodes excludedNodes,
+        IExcludedWaypoints excludedWaypoints,
         CancellationToken scopedCancellationToken = default
     )
         where TDestination : INode
@@ -31,7 +31,7 @@ public static partial class JourneyExtensions
         return await journey
             .GotoAsync<TDestination>(
                 EmptyWaypoints.Create(),
-                excludedNodes,
+                excludedWaypoints,
                 scopedCancellationToken
             )
             .ConfigureAwait(false);
@@ -57,7 +57,7 @@ public static partial class JourneyExtensions
     public static async Task<IJourney> GotoAsync<TDestination>(
         this IJourney journey,
         IWaypoints waypoints,
-        IExcludedNodes excludeNodes,
+        IExcludedWaypoints excludeNodes,
         CancellationToken scopedCancellationToken = default
     )
         where TDestination : INode

@@ -4,14 +4,14 @@ using Caravel.Abstractions;
 
 namespace Caravel.Core;
 
-[CollectionBuilder(typeof(ExcludedNodes), nameof(Create))]
-public sealed class ExcludedNodes : IExcludedNodes
+[CollectionBuilder(typeof(ExcludedWaypoints), nameof(Create))]
+public sealed class ExcludedWaypoints : IExcludedWaypoints
 {
-    public static ExcludedNodes Create(ReadOnlySpan<Type> values) => new(values);
+    public static ExcludedWaypoints Create(ReadOnlySpan<Type> values) => new(values);
 
     private readonly Type[] _values;
 
-    public ExcludedNodes(ReadOnlySpan<Type> values)
+    public ExcludedWaypoints(ReadOnlySpan<Type> values)
     {
         _values = values.ToArray();
     }

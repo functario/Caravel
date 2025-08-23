@@ -11,7 +11,7 @@ namespace InMemoryJourneyDemo;
 // csharpier-ignore-start
 public class CreateJourneyTests
 {
-    [Fact(DisplayName = "Create a Journey")]
+    [Fact(DisplayName = $"Create a {nameof(Journey)}")]
     public void Test1()
     {
         // Create the nodes.
