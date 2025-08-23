@@ -1,6 +1,6 @@
 <Project>
   <PropertyGroup>
-    <SdkTargetFramework>net9.0</SdkTargetFramework>
+    <SdkTargetFramework>net8.0</SdkTargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
