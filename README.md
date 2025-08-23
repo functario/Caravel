@@ -7,7 +7,7 @@ The public API, documentation and internal implementation are still evolving, an
 
 `Caravel` is a framework that provides an abstraction for creating and navigating graphs. Enabling developers to define relationships between nodes and traverse them efficiently using Dijkstra's algorithm for shortest path calculations.
 
-**Table of contents**
+**Table of Contents:**
 
 - [Caravel](#caravel)
   - [Key Features](#key-features)
