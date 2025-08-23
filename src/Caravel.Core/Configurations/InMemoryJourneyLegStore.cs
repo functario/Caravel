@@ -4,7 +4,7 @@ using Caravel.Abstractions.Events;
 
 namespace Caravel.Core.Configurations;
 
-public class InMemoryJourneyLegStore : IJourneyLegPublisher, IJourneyLegReader
+public sealed class InMemoryJourneyLegStore : IJourneyLegPublisher, IJourneyLegReader
 {
     public ConcurrentQueue<IJourneyLegEvent> LegEvents { get; init; } = [];
 
@@ -21,22 +21,7 @@ public class InMemoryJourneyLegStore : IJourneyLegPublisher, IJourneyLegReader
         return Task.FromResult<IEnumerable<IJourneyLeg>>(legArray);
     }
 
-    Task IJourneyLegPublisher.PublishOnJourneyLegCompletedAsync(
-        IJourneyLegCompletedEvent journeyLegCompletedEvent,
-        CancellationToken cancellationToken
-    ) => PublishOnJourneyLegCompletedAsync(journeyLegCompletedEvent, cancellationToken);
-
-    Task IJourneyLegPublisher.PublishOnJourneyLegStartedAsync(
-        IJourneyLegStartedEvent journeyLegStartedEvent,
-        CancellationToken cancellationToken
-    ) => PublishOnJourneyLegStartedAsync(journeyLegStartedEvent, cancellationToken);
-
-    Task IJourneyLegPublisher.PublishOnJourneyLegUpdatedAsync(
-        IJourneyLegUpdatedEvent journeyLegUpdatedEvent,
-        CancellationToken cancellationToken
-    ) => PublishOnJourneyLegUpdatedAsync(journeyLegUpdatedEvent, cancellationToken);
-
-    protected Task PublishOnJourneyLegCompletedAsync(
+    public Task PublishOnJourneyLegCompletedAsync(
         IJourneyLegCompletedEvent journeyLegCompletedEvent,
         CancellationToken cancellationToken
     )
@@ -48,12 +33,12 @@ public class InMemoryJourneyLegStore : IJourneyLegPublisher, IJourneyLegReader
         return Task.CompletedTask;
     }
 
-    protected Task PublishOnJourneyLegStartedAsync(
+    public Task PublishOnJourneyLegStartedAsync(
         IJourneyLegStartedEvent journeyLegStartedEvent,
         CancellationToken cancellationToken
     ) => PublishJourneyLegEventAsync(journeyLegStartedEvent, cancellationToken);
 
-    protected Task PublishOnJourneyLegUpdatedAsync(
+    public Task PublishOnJourneyLegUpdatedAsync(
         IJourneyLegUpdatedEvent journeyLegUpdatedEvent,
         CancellationToken cancellationToken
     ) => PublishJourneyLegEventAsync(journeyLegUpdatedEvent, cancellationToken);
