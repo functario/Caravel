@@ -4,4 +4,6 @@ public interface IExcludedNodes : IEnumerable<Type>
 {
     int Count { get; }
     Type this[int index] { get; }
+
+    public static IExcludedNodes Empty() => (IExcludedNodes)Enumerable.Empty<IExcludedNodes>();
 }

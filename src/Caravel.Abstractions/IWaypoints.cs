@@ -6,4 +6,6 @@ public interface IWaypoints : IEnumerable<Type>
 
     // Indexer property
     Type this[int index] { get; }
+
+    public static IWaypoints Empty() => (IWaypoints)Enumerable.Empty<IWaypoints>();
 }
