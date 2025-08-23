@@ -136,6 +136,13 @@ internal sealed class Node1 : INode
 
 ```
 
+```mermaid
+sequenceDiagram
+Node1->>Node3:0
+Node3->>Node3:0
+Node3->>Node1:0
+```
+
 [[↑ top](#caravel)]
 
 
