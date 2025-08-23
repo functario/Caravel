@@ -11,25 +11,8 @@ public class Journey : IJourney
     private readonly IActionMetaDataFactory _actionMetaDataFactory;
     private readonly IJourneyLegFactory _journeyLegFactory;
     private readonly IJourneyLegEventFactory _journeyLegEventFactory;
+    private readonly IJourneyLegPublisher _journeyLegPublisher;
     private bool _isJourneyStarted;
-
-    private readonly Func<
-        IJourneyLegCompletedEvent,
-        CancellationToken,
-        Task
-    > _publishOnJourneyLegCompletedAsync = (_, _) => Task.CompletedTask;
-
-    private readonly Func<
-        IJourneyLegStartedEvent,
-        CancellationToken,
-        Task
-    > _publishOnJourneyLegStartedAsync = (_, _) => Task.CompletedTask;
-
-    private readonly Func<
-        IJourneyLegUpdatedEvent,
-        CancellationToken,
-        Task
-    > _publishOnJourneyLegUpdatedAsync = (_, _) => Task.CompletedTask;
 
     public Journey(
         INode startingNode,
@@ -45,6 +28,11 @@ public class Journey : IJourney
             nameof(journeyConfiguration.JourneyLegReader)
         );
 
+        ArgumentNullException.ThrowIfNull(
+            journeyConfiguration.JourneyLegPublisher,
+            nameof(journeyConfiguration.JourneyLegPublisher)
+        );
+
         journeyCancellationToken.ThrowIfCancellationRequested();
 
         _isJourneyStarted = false;
@@ -54,20 +42,7 @@ public class Journey : IJourney
         _actionMetaDataFactory = journeyConfiguration.ActionMetaDataFactory;
         _journeyLegFactory = journeyConfiguration.JourneyLegFactory;
         JourneyCancellationToken = journeyCancellationToken;
-
-        if (journeyConfiguration.JourneyLegPublisher is not null)
-        {
-            _publishOnJourneyLegCompletedAsync = journeyConfiguration
-                .JourneyLegPublisher
-                .PublishOnJourneyLegCompletedAsync;
-            _publishOnJourneyLegStartedAsync = journeyConfiguration
-                .JourneyLegPublisher
-                .PublishOnJourneyLegStartedAsync;
-            _publishOnJourneyLegUpdatedAsync = journeyConfiguration
-                .JourneyLegPublisher
-                .PublishOnJourneyLegUpdatedAsync;
-        }
-
+        _journeyLegPublisher = journeyConfiguration.JourneyLegPublisher;
         CurrentNode = startingNode;
     }
 
@@ -147,7 +122,8 @@ public class Journey : IJourney
         var legEdges = new Queue<IEdge>();
         var journeyLeg = _journeyLegFactory.CreateJourneyLeg(Id, legEdges, route);
 
-        await _publishOnJourneyLegStartedAsync(
+        await _journeyLegPublisher
+            .PublishOnJourneyLegStartedAsync(
                 _journeyLegEventFactory.CreateJourneyLegStartedEvent(journeyLeg),
                 linkedCancellationTokenSource.Token
             )
@@ -316,7 +292,8 @@ public class Journey : IJourney
             await CurrentNode.OnNodeOpenedAsync(this, cancellationToken).ConfigureAwait(false);
 
             journeyLeg.Edges.Enqueue(edge);
-            await _publishOnJourneyLegUpdatedAsync(
+            await _journeyLegPublisher
+                .PublishOnJourneyLegUpdatedAsync(
                     _journeyLegEventFactory.CreateJourneyLegUpdatedEvent(edge, journeyLeg),
                     cancellationToken
                 )
@@ -346,7 +323,8 @@ public class Journey : IJourney
             actionMetaData
         );
 
-        await _publishOnJourneyLegStartedAsync(
+        await _journeyLegPublisher
+            .PublishOnJourneyLegStartedAsync(
                 _journeyLegEventFactory.CreateJourneyLegStartedEvent(journeyLeg),
                 linkedCancellationToken
             )
@@ -364,7 +342,8 @@ public class Journey : IJourney
         CancellationToken cancellationToken
     )
     {
-        await _publishOnJourneyLegCompletedAsync(
+        await _journeyLegPublisher
+            .PublishOnJourneyLegCompletedAsync(
                 _journeyLegEventFactory.CreateJourneyLegCompletedEvent(completedJourneyLeg),
                 cancellationToken
             )
