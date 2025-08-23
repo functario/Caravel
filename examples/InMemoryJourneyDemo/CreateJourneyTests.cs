@@ -27,11 +27,11 @@ public class CreateJourneyTests
         var graph = new DijkstraGraph(nodes, routeFactory, edgeFactory);
 
         // Create the Journey with default JourneyCoreOptions
-        var journeyCoreOptions = new JourneyCoreOptions(TimeProvider.System);
+        var journeyConfiguration = new JourneyConfiguration(TimeProvider.System);
         var inMemoryJourney = new Journey(
             node1,
             graph,
-            journeyCoreOptions,
+            journeyConfiguration,
             CancellationToken.None
         );
 

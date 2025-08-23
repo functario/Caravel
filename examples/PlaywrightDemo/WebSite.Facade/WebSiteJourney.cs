@@ -9,12 +9,12 @@ public sealed class WebSiteJourney : Journey
     public WebSiteJourney(
         IStartingPOM current,
         IGraph graph,
-        IJourneyCoreOptions journeyCoreOptions,
+        IJourneyConfiguration journeyConfiguration,
         App app,
         Map map,
         CancellationToken journeyCancellationToken
     )
-        : base(current, graph, journeyCoreOptions, journeyCancellationToken)
+        : base(current, graph, journeyConfiguration, journeyCancellationToken)
     {
         App = app;
         Map = map;

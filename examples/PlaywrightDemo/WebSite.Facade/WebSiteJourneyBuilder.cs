@@ -7,21 +7,21 @@ public sealed class WebSiteJourneyBuilder
 {
     private readonly IStartingPOM _current;
     private readonly IGraph _graph;
-    private readonly IJourneyCoreOptions _journeyCoreOptions;
+    private readonly IJourneyConfiguration _journeyCoreOptions;
     private readonly App _app;
     private readonly Map _map;
 
     public WebSiteJourneyBuilder(
         IStartingPOM current,
         IGraph graph,
-        IJourneyCoreOptions journeyCoreOptions,
+        IJourneyConfiguration journeyConfiguration,
         App app,
         Map map
     )
     {
         _current = current;
         _graph = graph;
-        _journeyCoreOptions = journeyCoreOptions;
+        _journeyCoreOptions = journeyConfiguration;
         _app = app;
         _map = map;
     }

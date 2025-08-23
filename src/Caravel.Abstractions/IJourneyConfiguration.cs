@@ -2,7 +2,7 @@
 
 namespace Caravel.Abstractions;
 
-public interface IJourneyCoreOptions
+public interface IJourneyConfiguration
 {
     public IJourneyFactories JourneyFactories { get; }
     public IJourneyLegEventFactory JourneyLegEventFactory { get; }

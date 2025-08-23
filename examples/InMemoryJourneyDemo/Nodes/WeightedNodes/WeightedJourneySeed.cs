@@ -15,7 +15,7 @@ internal sealed class WeightedJourneySeed
         RouteFactory = new RouteFactory();
         EdgeFactory = new EdgeFactory();
         WeightedGraph = new DijkstraGraph(WeightedNodes, RouteFactory, EdgeFactory);
-        CoreFactories = new JourneyCoreOptions(TimeProvider.System);
+        CoreFactories = new JourneyConfiguration(TimeProvider.System);
     }
 
     public WeightedNode1 WeightedNode1 { get; init; }
@@ -25,7 +25,7 @@ internal sealed class WeightedJourneySeed
     public RouteFactory RouteFactory { get; private set; }
     public EdgeFactory EdgeFactory { get; private set; }
     public IGraph WeightedGraph { get; init; }
-    public JourneyCoreOptions CoreFactories { get; init; }
+    public JourneyConfiguration CoreFactories { get; init; }
 
     public static Journey CreateJourney()
     {

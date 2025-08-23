@@ -33,36 +33,36 @@ public class Journey : IJourney
     public Journey(
         INode startingNode,
         IGraph graph,
-        IJourneyCoreOptions journeyCoreOptions,
+        IJourneyConfiguration journeyConfiguration,
         CancellationToken journeyCancellationToken
     )
     {
         ArgumentNullException.ThrowIfNull(startingNode, nameof(startingNode));
-        ArgumentNullException.ThrowIfNull(journeyCoreOptions, nameof(journeyCoreOptions));
+        ArgumentNullException.ThrowIfNull(journeyConfiguration, nameof(journeyConfiguration));
         ArgumentNullException.ThrowIfNull(
-            journeyCoreOptions.JourneyLegReader,
-            nameof(journeyCoreOptions.JourneyLegReader)
+            journeyConfiguration.JourneyLegReader,
+            nameof(journeyConfiguration.JourneyLegReader)
         );
 
         journeyCancellationToken.ThrowIfCancellationRequested();
 
         _isJourneyStarted = false;
         Graph = graph;
-        JourneyLegReader = journeyCoreOptions.JourneyLegReader;
-        _journeyLegEventFactory = journeyCoreOptions.JourneyLegEventFactory;
-        _actionMetaDataFactory = journeyCoreOptions.JourneyFactories.ActionMetaDataFactory;
-        _journeyLegFactory = journeyCoreOptions.JourneyFactories.JourneyLegFactory;
+        JourneyLegReader = journeyConfiguration.JourneyLegReader;
+        _journeyLegEventFactory = journeyConfiguration.JourneyLegEventFactory;
+        _actionMetaDataFactory = journeyConfiguration.JourneyFactories.ActionMetaDataFactory;
+        _journeyLegFactory = journeyConfiguration.JourneyFactories.JourneyLegFactory;
         JourneyCancellationToken = journeyCancellationToken;
 
-        if (journeyCoreOptions.JourneyLegPublisher is not null)
+        if (journeyConfiguration.JourneyLegPublisher is not null)
         {
-            _publishOnJourneyLegCompletedAsync = journeyCoreOptions
+            _publishOnJourneyLegCompletedAsync = journeyConfiguration
                 .JourneyLegPublisher
                 .PublishOnJourneyLegCompletedAsync;
-            _publishOnJourneyLegStartedAsync = journeyCoreOptions
+            _publishOnJourneyLegStartedAsync = journeyConfiguration
                 .JourneyLegPublisher
                 .PublishOnJourneyLegStartedAsync;
-            _publishOnJourneyLegUpdatedAsync = journeyCoreOptions
+            _publishOnJourneyLegUpdatedAsync = journeyConfiguration
                 .JourneyLegPublisher
                 .PublishOnJourneyLegUpdatedAsync;
         }

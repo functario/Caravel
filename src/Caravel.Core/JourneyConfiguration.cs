@@ -4,11 +4,11 @@ using Caravel.Core.Events;
 
 namespace Caravel.Core;
 
-public sealed class JourneyCoreOptions : IJourneyCoreOptions
+public sealed class JourneyConfiguration : IJourneyConfiguration
 {
     private readonly TimeProvider _timeProvider;
 
-    public JourneyCoreOptions(
+    public JourneyConfiguration(
         TimeProvider timeProvider,
         IJourneyLegPublisher journeyLegPublisher,
         IJourneyLegReader journeyLegReader
@@ -20,11 +20,11 @@ public sealed class JourneyCoreOptions : IJourneyCoreOptions
     }
 
     /// <summary>
-    /// Create a <see cref="JourneyCoreOptions"/> with <see cref="InMemoryJourneyLegStore"/>
+    /// Create a <see cref="JourneyConfiguration"/> with <see cref="InMemoryJourneyLegStore"/>
     /// as <see cref="IJourneyLegPublisher"/> and <see cref="IJourneyLegReader"/>.
     /// </summary>
     /// <param name="timeProvider">The <see cref="TimeProvider"/>.</param>
-    public JourneyCoreOptions(TimeProvider timeProvider)
+    public JourneyConfiguration(TimeProvider timeProvider)
     {
         _timeProvider = timeProvider;
 

@@ -8,7 +8,7 @@ public interface IJourney
     CancellationToken JourneyCancellationToken { get; }
     IGraph Graph { get; }
     INode CurrentNode { get; }
-    public IJourneyLegReader? JourneyLegReader { get; }
+    public IJourneyLegReader JourneyLegReader { get; }
 
     public IJourney SetStartingNode(INode node);
 

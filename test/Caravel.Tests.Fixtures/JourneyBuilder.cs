@@ -64,8 +64,8 @@ public sealed class JourneyBuilder
         var startNode = nodesByType[_firstNodeType!];
 
         timeProvider ??= TimeProvider.System;
-        var journeyCoreOptions = new JourneyCoreOptions(timeProvider);
-        return new SmartJourney(startNode, graph, journeyCoreOptions, _map, ct);
+        var journeyConfiguration = new JourneyConfiguration(timeProvider);
+        return new SmartJourney(startNode, graph, journeyConfiguration, _map, ct);
     }
 }
 
