@@ -50,8 +50,8 @@ public class Journey : IJourney
         Graph = graph;
         JourneyLegReader = journeyConfiguration.JourneyLegReader;
         _journeyLegEventFactory = journeyConfiguration.JourneyLegEventFactory;
-        _actionMetaDataFactory = journeyConfiguration.JourneyFactories.ActionMetaDataFactory;
-        _journeyLegFactory = journeyConfiguration.JourneyFactories.JourneyLegFactory;
+        _actionMetaDataFactory = journeyConfiguration.ActionMetaDataFactory;
+        _journeyLegFactory = journeyConfiguration.JourneyLegFactory;
         JourneyCancellationToken = journeyCancellationToken;
 
         if (journeyConfiguration.JourneyLegPublisher is not null)

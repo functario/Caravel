@@ -17,6 +17,8 @@ public sealed class JourneyConfiguration : IJourneyConfiguration
         _timeProvider = timeProvider;
         JourneyLegPublisher = journeyLegPublisher;
         JourneyLegReader = journeyLegReader;
+        JourneyLegFactory = new JourneyLegFactory();
+        ActionMetaDataFactory = new ActionMetaDataFactory();
     }
 
     /// <summary>
@@ -32,9 +34,9 @@ public sealed class JourneyConfiguration : IJourneyConfiguration
         var inMemoryJourneyLegStore = new InMemoryJourneyLegStore();
         JourneyLegPublisher = inMemoryJourneyLegStore;
         JourneyLegReader = inMemoryJourneyLegStore;
+        JourneyLegFactory = new JourneyLegFactory();
+        ActionMetaDataFactory = new ActionMetaDataFactory();
     }
-
-    public IJourneyFactories JourneyFactories => new JourneyFactories();
 
     public IJourneyLegEventFactory JourneyLegEventFactory =>
         new JourneyLegEventFactory(_timeProvider);
@@ -42,4 +44,6 @@ public sealed class JourneyConfiguration : IJourneyConfiguration
     public IJourneyLegPublisher? JourneyLegPublisher { get; init; }
 
     public IJourneyLegReader? JourneyLegReader { get; init; }
+    public IJourneyLegFactory JourneyLegFactory { get; init; }
+    public IActionMetaDataFactory ActionMetaDataFactory { get; init; }
 }
