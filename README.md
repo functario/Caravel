@@ -32,13 +32,13 @@ The public API, documentation and internal implementation are still evolving, an
 
 Caravel supports the creation of weighted and unweighted graphs through `Caravel.Graph.Dijkstra`. Using Dijkstra's algorithm, it can compute the shortest route from any node to another, making it ideal for applications requiring optimal pathfinding.
 
-([↩ Back](#caravel))
+[[↑ top](#caravel)]
 
 ### Step-by-Step Node Navigation
 
 With methods like `GotoAsync<TDestination>`, Caravel allows step-by-step navigation through a graph. Each node implements `INode.GetEdges()` to declare its neighbors and transitions, enabling fluent navigation patterns.
 
-([↩ Back](#caravel))
+[[↑ top](#caravel)]
 
 ### Waypoints & Exclusion Rules
 
@@ -49,7 +49,7 @@ Navigation can be controlled using:
 
 This makes complex routing logic flexible and maintainable.
 
-([↩ Back](#caravel))
+[[↑ top](#caravel)]
 
 ### Node Lifecycle Events
 
@@ -59,13 +59,13 @@ When a node is opened, `INode.OnNodeOpenedAsync()` is invoked. This allows for:
 * Logging or monitoring
 * Dynamic behavior based on node state
 
-([↩ Back](#caravel))
+[[↑ top](#caravel)]
 
 ### Contextual Actions in Nodes
 
 Caravel supports executing actions within the context of a node using `DoAsync<TCurrentNode>` or transitioning to another node via `DoAsync<TCurrentNode, TDestination>`. This enables rich workflows with side-effects and dynamic navigation.
 
-([↩ Back](#caravel))
+[[↑ top](#caravel)]
 
 ### Cancellation & Timeout Management
 
@@ -79,13 +79,13 @@ Caravel integrates seamlessly with Mermaid.js for documentation:
 * **Sequence Diagrams**: Document navigation flows and action sequences.
 * Support for metadata, relative nodes positions, and custom descriptions.
 
-([↩ Back](#caravel))
+[[↑ top](#caravel)]
 
 ### UI Automation Ready
 
 Caravel is compatible with Page Object Models (POM) and tools like [Playwright](https://playwright.dev/dotnet/), making it suitable for automating UI journeys in web or desktop applications.
 
-([↩ Back](#caravel))
+[[↑ top](#caravel)]
 
 ## Example Usage
 
@@ -108,7 +108,7 @@ Caravel is compatible with Page Object Models (POM) and tools like [Playwright](
 
 ```
 
-([↩ Back](#caravel))
+[[↑ top](#caravel)]
 
 ## Creating Nodes and Journeys
 
@@ -147,7 +147,7 @@ internal sealed class Node1 : INode
 }
 ```
 
-([↩ Back](#caravel))
+[[↑ top](#caravel)]
 
 ### Creating a Journey
 
@@ -180,7 +180,7 @@ internal sealed class Node1 : INode
 
 ```
 
-([↩ Back](#caravel))
+[[↑ top](#caravel)]
 
 # Getting Started
 
@@ -189,6 +189,8 @@ internal sealed class Node1 : INode
 1. Initialize a journey with a starting node.
 1. Navigate using fluent methods like .GotoAsync<T>() or .DoAsync<T>().
 1. Optionally document your journey and graph using Mermaid tools.
+
+[[↑ top](#caravel)]
 
 # Tips
 
@@ -204,4 +206,4 @@ global using static Caravel.Mermaid.JourneyExtensions;
 global using static Caravel.Mermaid.RouteExtensions;
 ```
 
-([↩ Back](#caravel))
+[[↑ top](#caravel)]
