@@ -34,7 +34,12 @@ public sealed class JourneyBuilder
     public static IEdgeFactory EdgeFactory => new EdgeFactory();
     public static IRouteFactory RouteFactory => new RouteFactory();
 
-    public SmartJourney Build(TimeProvider? timeProvider = default, CancellationToken ct = default)
+    public SmartJourney Build(
+        JourneyLegConfigurationOptions journeyLegConfigurationOptions =
+            JourneyLegConfigurationOptions.InMemory,
+        TimeProvider? timeProvider = default,
+        CancellationToken ct = default
+    )
     {
         var nodesByType = new Dictionary<Type, INodeSpy>();
 
@@ -67,9 +72,10 @@ public sealed class JourneyBuilder
 
         timeProvider ??= TimeProvider.System;
         var journeyConfiguration = JourneyConfigurationFactory.Create(
-            JourneyLegConfigurationOptions.InMemory,
+            journeyLegConfigurationOptions,
             timeProvider
         );
+
         return new SmartJourney(startNode, graph, journeyConfiguration, _map, ct);
     }
 }
