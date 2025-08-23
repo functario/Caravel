@@ -23,7 +23,7 @@ The public API, documentation and internal implementation are still evolving, an
     - [Defining Nodes](#defining-nodes)
     - [Creating a Journey](#creating-a-journey)
 - [Getting Started](#getting-started)
-  - [Tips](#tips)
+- [Tips](#tips)
 
 
 ## Key Features
@@ -190,7 +190,7 @@ internal sealed class Node1 : INode
 1. Navigate using fluent methods like .GotoAsync<T>() or .DoAsync<T>().
 1. Optionally document your journey and graph using Mermaid tools.
 
-## Tips
+# Tips
 
 1. Use [global using file](https://learn.microsoft.com/en-us/dotnet/csharp/language-reference/keywords/using-directive#the-global-modifier) with references to `Caravel` namespaces to simplify your code files:  
 ```csharp
