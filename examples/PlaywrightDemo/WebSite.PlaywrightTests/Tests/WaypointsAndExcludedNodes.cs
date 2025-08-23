@@ -11,7 +11,7 @@ public sealed class WaypointsAndExcludedNodes : TestBase
     public WaypointsAndExcludedNodes(PlaywrightFixture playwrightFixture)
         : base(playwrightFixture) { }
 
-    [Fact(DisplayName = "From PageA Goto PageE with PageC and PageD as waypoints")]
+    [Fact(DisplayName = $"From PageA Goto PageE with PageC and PageD as {nameof(Waypoints)}")]
     public async Task Test1()
     {
         var expectedRoute = "PageA-->PageC-->PageD-->PageE";
@@ -34,15 +34,15 @@ public sealed class WaypointsAndExcludedNodes : TestBase
         // Given PageA-->PageE has a weight of 99,
         // the shortest route should be A, B, E.
         // but excluding PageB will resolve the next shortest one A, C, E.
-        ExcludedNodes excludedNodes = [typeof(PageB)];
-        await WebSiteJourney.GotoAsync<PageE>(excludedNodes);
+        ExcludedWaypoints excludedWaypoints = [typeof(PageB)];
+        await WebSiteJourney.GotoAsync<PageE>(excludedWaypoints);
 
         // Route validation
         await WebSiteJourney.VerifyRouteAsync();
     }
 
     [Fact(
-        DisplayName = "From PageA Goto PageE with PageB as excluded node and PageD and PageC as waypoints"
+        DisplayName = $"From PageA Goto PageE with PageB as excluded node and PageD and PageC as {nameof(Waypoints)}"
     )]
     public async Task Test3()
     {
@@ -52,9 +52,9 @@ public sealed class WaypointsAndExcludedNodes : TestBase
         // Given PageA-->PageE has a weight of 99,
         // the shortest route should be A, B, E.
         // but excluding PageB will resolve the next shortest one A, C, E.
-        ExcludedNodes excludedNodes = [typeof(PageB)];
+        ExcludedWaypoints excludedWaypoints = [typeof(PageB)];
         Waypoints waypoints = [typeof(PageC), typeof(PageD)];
-        await WebSiteJourney.GotoAsync<PageE>(waypoints, excludedNodes);
+        await WebSiteJourney.GotoAsync<PageE>(waypoints, excludedWaypoints);
 
         // Route validation
         await WebSiteJourney.VerifyRouteAsync();

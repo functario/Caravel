@@ -33,7 +33,7 @@ public class MermaidToolsTests
 
     }
 
-    [Fact(DisplayName = "Generate a Mermaid graph diagram of the Graph")]
+    [Fact(DisplayName = $"Generate a Mermaid graph diagram of the {nameof(IGraph)}")]
     public void Test1()
     {
         // Generate from the InMemoryJourney...

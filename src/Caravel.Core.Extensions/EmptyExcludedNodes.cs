@@ -5,7 +5,7 @@ using Caravel.Abstractions;
 namespace Caravel.Core.Extensions;
 
 [CollectionBuilder(typeof(EmptyExcludedNodes), nameof(Create))]
-internal sealed class EmptyExcludedNodes : IExcludedNodes
+internal sealed class EmptyExcludedNodes : IExcludedWaypoints
 {
     public static EmptyExcludedNodes Create() => new();
 

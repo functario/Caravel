@@ -34,7 +34,7 @@ public sealed class IWaypointsTests
     public void Test3()
     {
         // Arrange
-        var empty = (IEnumerable<Type>)IExcludedNodes.Empty();
+        var empty = (IEnumerable<Type>)IExcludedWaypoints.Empty();
 
         // Act
         var sut = empty.GetEnumerator();

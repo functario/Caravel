@@ -12,7 +12,7 @@ public static class Domains
 
     public const string WaypointsDomain = "Waypoints";
 
-    public const string ExcludedNodesDomain = "ExcludedNodes";
+    public const string ExcludedWaypointsDomain = "ExcludedWaypoints";
 
     public const string GotoDomain = "Goto";
 }

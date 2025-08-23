@@ -39,6 +39,8 @@
       </None>
     </ItemGroup>
     <ItemGroup>
+      <Folder Include="Tests\Navigation\Atomic\AtomicGotoDestination_Snapshots\" />
       <Folder Include="Tests\Navigation\Atomic\AtomicHasEmptySequenceDiagram_Snapshots\" />
+      <Folder Include="Tests\Navigation\Chained\ChainedGotoDestination_Snapshots\" />
     </ItemGroup>
 </Project>

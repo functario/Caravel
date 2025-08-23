@@ -16,7 +16,7 @@ public class NavigatationTests
         _journey = UnweightedJourneySeed.CreateJourney();
     }
 
-    [Fact(DisplayName = "Navigate using GotoAsync")]
+    [Fact(DisplayName = $"Navigate using {nameof(IJourney.GotoAsync)}")]
     public async Task Test1()
     {
         // You need "using Caravel.Core.Extensions;"

@@ -10,7 +10,7 @@ public sealed class IExcludedNodesTests
     public void Test1()
     {
         // Act
-        var sut = IExcludedNodes.Empty();
+        var sut = IExcludedWaypoints.Empty();
 
         // Assert
         sut.Should().BeEmpty();
@@ -21,7 +21,7 @@ public sealed class IExcludedNodesTests
     public void Test2()
     {
         // Arrange
-        var empty = IExcludedNodes.Empty();
+        var empty = IExcludedWaypoints.Empty();
 
         // Act
         var sut = () => empty[0];
@@ -34,7 +34,7 @@ public sealed class IExcludedNodesTests
     public void Test3()
     {
         // Arrange
-        var empty = (IEnumerable<Type>)IExcludedNodes.Empty();
+        var empty = (IEnumerable<Type>)IExcludedWaypoints.Empty();
 
         // Act
         var sut = empty.GetEnumerator();

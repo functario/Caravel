@@ -83,14 +83,14 @@ public class Journey : IJourney
 
     public async Task<IJourney> GotoAsync<TDestination>(
         IWaypoints waypoints,
-        IExcludedNodes excludedNodes,
+        IExcludedWaypoints excludedWaypoints,
         CancellationToken scopedCancellationToken
     )
         where TDestination : INode
     {
         ArgumentNullException.ThrowIfNull(waypoints, nameof(waypoints));
 
-        await GotoAsync(typeof(TDestination), waypoints, excludedNodes, scopedCancellationToken)
+        await GotoAsync(typeof(TDestination), waypoints, excludedWaypoints, scopedCancellationToken)
             .ConfigureAwait(false);
 
         return this;
@@ -99,7 +99,7 @@ public class Journey : IJourney
     public async Task<IJourney> GotoAsync(
         Type destinationType,
         IWaypoints waypoints,
-        IExcludedNodes excludedNodes,
+        IExcludedWaypoints excludedWaypoints,
         CancellationToken scopedCancellationToken
     )
     {
@@ -118,7 +118,7 @@ public class Journey : IJourney
             .ConfigureAwait(false);
 
         var originType = CurrentNode.GetType();
-        var route = GetRoute(originType, destinationType, waypoints, excludedNodes);
+        var route = GetRoute(originType, destinationType, waypoints, excludedWaypoints);
         var legEdges = new Queue<IEdge>();
         var journeyLeg = _journeyLegFactory.CreateJourneyLeg(Id, legEdges, route);
 
@@ -229,7 +229,7 @@ public class Journey : IJourney
         Type originType,
         Type destinationType,
         IWaypoints waypoints,
-        IExcludedNodes excludedNodes
+        IExcludedWaypoints excludedWaypoints
     )
     {
         // Cannot allow explicit self reference.
@@ -264,7 +264,7 @@ public class Journey : IJourney
             return Graph.GetSelfRoute(CurrentNode);
         }
 
-        return Graph.GetRoute(originType, destinationType, waypoints, excludedNodes);
+        return Graph.GetRoute(originType, destinationType, waypoints, excludedWaypoints);
     }
 
     private static bool HasExplicitEdgeToItself(INode node) =>

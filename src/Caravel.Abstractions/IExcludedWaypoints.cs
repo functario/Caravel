@@ -1,17 +1,17 @@
 ﻿namespace Caravel.Abstractions;
 
-public interface IExcludedNodes : IEnumerable<Type>
+public interface IExcludedWaypoints : IEnumerable<Type>
 {
     int Count { get; }
     Type this[int index] { get; }
 
-    public static IExcludedNodes Empty() => EmptyIExcludedNodes.Instance;
+    public static IExcludedWaypoints Empty() => EmptyIExcludedWaypoints.Instance;
 
-    private sealed class EmptyIExcludedNodes : IExcludedNodes
+    private sealed class EmptyIExcludedWaypoints : IExcludedWaypoints
     {
-        public static readonly EmptyIExcludedNodes Instance = new();
+        public static readonly EmptyIExcludedWaypoints Instance = new();
 
-        private EmptyIExcludedNodes() { }
+        private EmptyIExcludedWaypoints() { }
 
         public int Count => 0;
 

@@ -8,7 +8,7 @@ namespace Caravel.Core.UnitTests.Tests.Navigation.Chained;
 public class ChainedGotoDestination
 {
     [Fact(
-        DisplayName = "When origin is also destination without waypoints or explicit self reference edge"
+        DisplayName = $"When origin is also destination without {nameof(Waypoints)} or explicit self reference edge"
     )]
     public async Task Test1()
     {
@@ -37,7 +37,7 @@ public class ChainedGotoDestination
         await result.VerifyMermaidMarkdownAsync();
     }
 
-    [Fact(DisplayName = "When origin is also destination with waypoints")]
+    [Fact(DisplayName = $"When origin is also destination with {nameof(Waypoints)}")]
     public async Task Test2()
     {
         // Arrange
@@ -67,17 +67,17 @@ public class ChainedGotoDestination
         // csharpier-ignore-stop
     }
 
-    [Fact(DisplayName = "Whith waypoints and excluded nodes")]
+    [Fact(DisplayName = $"Whith {nameof(Waypoints)} and {nameof(ExcludedWaypoints)}")]
     public async Task Test3()
     {
         // Arrange
         // csharpier-ignore
         Waypoints waypoints = [typeof(Node6), typeof(Node14)];
-        ExcludedNodes excludedNodes = [typeof(Node3), typeof(Node7)];
+        ExcludedWaypoints excludedWaypoints = [typeof(Node3), typeof(Node7)];
         var journey = JourneyFixtures.JourneyWithJoinRightFractalGraph3Levels.Build();
 
         // Act
-        var sut = await journey.GotoAsync<Node1>().GotoAsync<Node15>(waypoints, excludedNodes);
+        var sut = await journey.GotoAsync<Node1>().GotoAsync<Node15>(waypoints, excludedWaypoints);
 
         // Assert
         var result = await sut.ToMermaidSequenceDiagramMarkdownAsync(WithGridPosition);

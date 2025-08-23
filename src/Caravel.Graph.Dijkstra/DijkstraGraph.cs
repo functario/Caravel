@@ -41,27 +41,27 @@ public sealed class DijkstraGraph : IGraph
         Type origin,
         Type destination,
         IWaypoints waypoints,
-        IExcludedNodes excludedNodes
+        IExcludedWaypoints excludedWaypoints
     )
     {
         ArgumentNullException.ThrowIfNull(origin);
         ArgumentNullException.ThrowIfNull(destination);
         ArgumentNullException.ThrowIfNull(waypoints);
-        ArgumentNullException.ThrowIfNull(excludedNodes);
-        ValidateOriginAndDestinationNotExcluded(origin, destination, excludedNodes);
-        ValidateWaypointsNotExcluded(waypoints, excludedNodes);
+        ArgumentNullException.ThrowIfNull(excludedWaypoints);
+        ValidateOriginAndDestinationNotExcluded(origin, destination, excludedWaypoints);
+        ValidateWaypointsNotExcluded(waypoints, excludedWaypoints);
 
         var allEdges = new List<IEdge>();
         var current = origin;
 
         foreach (var waypoint in waypoints)
         {
-            var segment = Dijkstra(current, waypoint, excludedNodes);
+            var segment = Dijkstra(current, waypoint, excludedWaypoints);
             allEdges.AddRange(segment);
             current = waypoint;
         }
 
-        var finalSegment = Dijkstra(current, destination, excludedNodes);
+        var finalSegment = Dijkstra(current, destination, excludedWaypoints);
         allEdges.AddRange(finalSegment);
 
         return _routeFactory.CreateRoute([.. allEdges]);
@@ -69,10 +69,10 @@ public sealed class DijkstraGraph : IGraph
 
     private static void ValidateWaypointsNotExcluded(
         IWaypoints waypoints,
-        IExcludedNodes excludedNodes
+        IExcludedWaypoints excludedWaypoints
     )
     {
-        var invalidWaypoints = excludedNodes.Where(x => waypoints.Contains(x)).ToArray();
+        var invalidWaypoints = excludedWaypoints.Where(x => waypoints.Contains(x)).ToArray();
         if (invalidWaypoints.Length > 0)
         {
             throw new InvalidWaypointsException(
@@ -85,11 +85,11 @@ public sealed class DijkstraGraph : IGraph
     private static void ValidateOriginAndDestinationNotExcluded(
         Type origin,
         Type destination,
-        IExcludedNodes excludedNodes
+        IExcludedWaypoints excludedWaypoints
     )
     {
-        var isOriginExcluded = IsExcluded(origin, excludedNodes);
-        var isdestinationExcluded = IsExcluded(destination, excludedNodes);
+        var isOriginExcluded = IsExcluded(origin, excludedWaypoints);
+        var isdestinationExcluded = IsExcluded(destination, excludedWaypoints);
         InvalidRouteReasons? reason = (isOriginExcluded, isdestinationExcluded) switch
         {
             (true, true) => InvalidRouteReasons.ExtremityNodesExcluded,
@@ -106,10 +106,10 @@ public sealed class DijkstraGraph : IGraph
         throw new InvalidRouteException((InvalidRouteReasons)reason!, origin, destination);
     }
 
-    private static bool IsExcluded(Type node, IExcludedNodes excludedNodes) =>
-        excludedNodes.Any(x => x == node);
+    private static bool IsExcluded(Type node, IExcludedWaypoints excludedWaypoints) =>
+        excludedWaypoints.Any(x => x == node);
 
-    private List<IEdge> Dijkstra(Type origin, Type destination, IExcludedNodes excludedNodes)
+    private List<IEdge> Dijkstra(Type origin, Type destination, IExcludedWaypoints excludedWaypoints)
     {
         var distances = new Dictionary<Type, int> { [origin] = 0 };
         var previous = new Dictionary<Type, IEdge>();
@@ -120,7 +120,7 @@ public sealed class DijkstraGraph : IGraph
 
         while (queue.TryDequeue(out var nodeVisited, out _))
         {
-            if (IsExcluded(nodeVisited, excludedNodes))
+            if (IsExcluded(nodeVisited, excludedWaypoints))
                 continue;
 
             if (visited.Contains(nodeVisited))
