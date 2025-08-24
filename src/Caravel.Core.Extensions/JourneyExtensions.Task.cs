@@ -95,13 +95,13 @@ public static partial class JourneyExtensions
             .ConfigureAwait(false);
     }
 
-    public static async Task<IJourney> DoAsync<TCurrentNode, TNodeOut>(
+    public static async Task<IJourney> DoAsync<TCurrentNode, TTargetNode>(
         this Task<IJourney> journeyTask,
-        Func<TCurrentNode, CancellationToken, Task<TNodeOut>> func,
+        Func<TCurrentNode, CancellationToken, Task<TTargetNode>> func,
         CancellationToken scopedCancellationToken = default
     )
         where TCurrentNode : INode
-        where TNodeOut : INode
+        where TTargetNode : INode
     {
         ArgumentNullException.ThrowIfNull(journeyTask, nameof(journeyTask));
 
@@ -122,13 +122,13 @@ public static partial class JourneyExtensions
         return await journey.DoAsync(func, scopedCancellationToken).ConfigureAwait(false);
     }
 
-    public static async Task<IJourney> DoAsync<TCurrentNode, TNodeOut>(
+    public static async Task<IJourney> DoAsync<TCurrentNode, TTargetNode>(
         this Task<IJourney> journeyTask,
-        Func<IJourney, TCurrentNode, CancellationToken, Task<TNodeOut>> func,
+        Func<IJourney, TCurrentNode, CancellationToken, Task<TTargetNode>> func,
         CancellationToken scopedCancellationToken = default
     )
         where TCurrentNode : INode
-        where TNodeOut : INode
+        where TTargetNode : INode
     {
         ArgumentNullException.ThrowIfNull(journeyTask, nameof(journeyTask));
 

@@ -10,7 +10,7 @@ public interface IEnrichedNode<TNode> : INode
     where TNode : INode
 {
     /// <summary>
-    /// The <see cref="ActionMetaData"/> to add when returns from <see cref="IJourney.DoAsync{TCurrentNode, TNodeOut}(Func{IJourney, TCurrentNode, CancellationToken, Task{TNodeOut}}, CancellationToken)"/>
+    /// The <see cref="ActionMetaData"/> to add when returns from <see cref="IJourney.DoAsync{TCurrentNode, TTargetNode}(Func{IJourney, TCurrentNode, CancellationToken, Task{TTargetNode}}, CancellationToken)"/>
     /// </summary>
     ///
     IActionMetaData ActionMetaData { get; init; }
