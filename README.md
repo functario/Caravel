@@ -2,7 +2,7 @@
 
 > ⚠️**Warning!**  
 > 
-> Caravel is a pre‑release framework.
+> `Caravel` is a pre‑release framework.
 The public API, documentation and internal implementation are still evolving, and breaking changes may occur in future releases.
 
 `Caravel` is a framework that provides an abstraction for creating and navigating graphs. Enabling developers to define relationships between nodes and traverse them efficiently using Dijkstra's algorithm for shortest path calculations.
@@ -153,13 +153,13 @@ Node3->>Node1:0
 
 ### Graph Navigation with Dijkstra Algorithm
 
-Caravel supports the creation of weighted and unweighted graphs through `Caravel.Graph.Dijkstra`. Using Dijkstra's algorithm, it can compute the shortest route from any node to another, making it ideal for applications requiring optimal pathfinding.
+`Caravel` supports the creation of weighted and unweighted graphs through `Caravel.Graph.Dijkstra`. Using Dijkstra's algorithm, it can compute the shortest route from any node to another, making it ideal for applications requiring optimal pathfinding.
 
 [[↑ top](#caravel)]
 
 ### Step-by-Step Node Navigation
 
-With methods like `GotoAsync<TDestination>`, Caravel allows step-by-step navigation through a graph. Each node implements `INode.GetEdges()` to declare its neighbors and transitions, enabling fluent navigation patterns.
+With methods like `GotoAsync<TDestination>`, `Caravel` allows step-by-step navigation through a graph. Each node implements `INode.GetEdges()` to declare its neighbors and transitions, enabling fluent navigation patterns.
 
 [[↑ top](#caravel)]
 
@@ -186,7 +186,9 @@ When a node is visited by `Caravel`, `INode.OnNodeVisitedAsync()` is invoked. Th
 
 ### Contextual Actions in Nodes
 
-Caravel supports executing actions within the context of a node using `DoAsync<TCurrentNode>` or transitioning to another node via `DoAsync<TCurrentNode, TDestination>`. This enables rich workflows with side-effects and dynamic navigation.
+`Caravel` supports executing actions within the context of the current node using `DoAsync<TCurrentNode>` or transitioning to another node via `DoAsync<TCurrentNode, TTargetNode>`. This enables rich workflows with side-effects and dynamic navigation.
+
+`GotoDoAsync<TOriginNode, TTargetNode>` can be used to combine navigation and action in a single step. It navigates to `TOriginNode` and performs the specified action returning `TTargnetNode`. `TTargnetNode` can be the same as `TOriginNode` to perform actions without changing nodes.
 
 [[↑ top](#caravel)]
 
@@ -196,7 +198,7 @@ Each journey has a global timeout (`JourneyCancellationToken`) that applies acro
 
 ### Documentation via Mermaid
 
-Caravel integrates seamlessly with Mermaid.js for documentation:
+`Caravel` integrates seamlessly with Mermaid.js for documentation:
 
 * **Graph Diagrams**: Visualize the entire graph structure.
 * **Sequence Diagrams**: Document navigation flows and action sequences.
@@ -206,7 +208,7 @@ Caravel integrates seamlessly with Mermaid.js for documentation:
 
 ### UI Automation Ready
 
-Caravel is compatible with Page Object Models (POM) and tools like [Playwright](https://playwright.dev/dotnet/), making it suitable for automating UI journeys in web or desktop applications.
+`Caravel` is compatible with Page Object Models (POM) and tools like [Playwright](https://playwright.dev/dotnet/), making it suitable for automating UI journeys in web or desktop applications.
 
 [[↑ top](#caravel)]
 

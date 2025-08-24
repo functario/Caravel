@@ -48,7 +48,7 @@ public class Journey : IJourney
 
     public INode CurrentNode { get; private set; }
     public IGraph Graph { get; init; }
-    public CancellationToken JourneyCancellationToken { get; }
+    public CancellationToken JourneyCancellationToken { get; init; }
     public Guid Id { get; init; } = Guid.NewGuid();
     public IJourneyLegReader JourneyLegReader { get; init; }
 
@@ -142,12 +142,12 @@ public class Journey : IJourney
         return this;
     }
 
-    public async Task<IJourney> DoAsync<TCurrentNode, TNodeOut>(
-        Func<IJourney, TCurrentNode, CancellationToken, Task<TNodeOut>> func,
+    public async Task<IJourney> DoAsync<TCurrentNode, TTargetNode>(
+        Func<IJourney, TCurrentNode, CancellationToken, Task<TTargetNode>> func,
         CancellationToken scopedCancellationToken = default
     )
         where TCurrentNode : INode
-        where TNodeOut : INode
+        where TTargetNode : INode
     {
         // Prevent setting starting node once the journey is started
         _isJourneyStarted = true;
@@ -169,15 +169,15 @@ public class Journey : IJourney
             var funcNode = await func(this, current, linkedCancellationTokenSource.Token)
                 .ConfigureAwait(false);
 
-            (var outNode, var actionMetaData) = GetNodeIfWrapped(funcNode);
+            (var targetNode, var actionMetaData) = GetNodeIfWrapped(funcNode);
 
             // Change the current node.
-            CurrentNode = outNode;
+            CurrentNode = targetNode;
 
             // Ensure the navigation from DoAsync is registered as JourneyLeg.
             var doJourneyLeg = await AddDoAsyncToJourneyLegAsync(
                     current,
-                    outNode,
+                    targetNode,
                     Id,
                     actionMetaData,
                     linkedCancellationTokenSource.Token
@@ -186,7 +186,7 @@ public class Journey : IJourney
 
             linkedCancellationTokenSource.Token.ThrowIfCancellationRequested();
 
-            await outNode
+            await targetNode
                 .OnNodeVisitedAsync(this, linkedCancellationTokenSource.Token)
                 .ConfigureAwait(false);
 
@@ -196,10 +196,11 @@ public class Journey : IJourney
         throw new UnexpectedNodeException(CurrentNode.GetType(), typeof(TCurrentNode));
     }
 
-    private static (INode outNode, IActionMetaData? actionMetaData) GetNodeIfWrapped<TNodeOut>(
-        TNodeOut funcNode
-    )
-        where TNodeOut : INode
+    private static (
+        INode targetNode,
+        IActionMetaData? actionMetaData
+    ) GetNodeIfWrapped<TTargetNode>(TTargetNode funcNode)
+        where TTargetNode : INode
     {
         ArgumentNullException.ThrowIfNull(funcNode, nameof(funcNode));
 
@@ -303,7 +304,7 @@ public class Journey : IJourney
 
     private async Task<IJourneyLeg> AddDoAsyncToJourneyLegAsync(
         INode currentNode,
-        INode nodeOut,
+        INode targetNode,
         Guid journeyId,
         IActionMetaData? actionMetaData,
         CancellationToken linkedCancellationToken
@@ -316,7 +317,7 @@ public class Journey : IJourney
 
         var journeyLeg = _journeyLegFactory.CreateJourneyLeg(
             currentNode,
-            nodeOut,
+            targetNode,
             journeyId,
             Graph.RouteFactory,
             Graph.EdgeFactory,
@@ -330,7 +331,7 @@ public class Journey : IJourney
             )
             .ConfigureAwait(false);
 
-        await CompleteJourneyLegAsync(nodeOut.GetType(), journeyLeg, linkedCancellationToken)
+        await CompleteJourneyLegAsync(targetNode.GetType(), journeyLeg, linkedCancellationToken)
             .ConfigureAwait(false);
 
         return journeyLeg;
