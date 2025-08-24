@@ -48,7 +48,7 @@ public class Journey : IJourney
 
     public INode CurrentNode { get; private set; }
     public IGraph Graph { get; init; }
-    public CancellationToken JourneyCancellationToken { get; }
+    public CancellationToken JourneyCancellationToken { get; init; }
     public Guid Id { get; init; } = Guid.NewGuid();
     public IJourneyLegReader JourneyLegReader { get; init; }
 
