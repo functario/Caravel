@@ -66,7 +66,7 @@ internal sealed class Node1 : INode
     private static Task<Node3> OpenNode3(IJourney journey, CancellationToken cancellationToken) =>
         Task.FromResult(new Node3());
 
-    public Task OnNodeOpenedAsync(IJourney journey, CancellationToken cancellationToken)
+    public Task OnNodeVisitedAsync(IJourney journey, CancellationToken cancellationToken)
     {
         // Add your own logic
         return Task.CompletedTask;
@@ -176,11 +176,11 @@ This makes complex routing logic flexible and maintainable.
 
 ### Node Lifecycle Events
 
-When a node is opened, `INode.OnNodeOpenedAsync()` is invoked. This allows for:
+When a node is visited by `Caravel`, `INode.OnNodeVisitedAsync()` is invoked. This allows for:
 
 * Validation (e.g., waiting for prerequisites)
 * Logging or monitoring
-* Dynamic behavior based on node state
+* Dynamic behavior based on node state (e.g., retrying on failure, set a flag on first visit, etc.)
 
 [[↑ top](#caravel)]
 

@@ -4,17 +4,17 @@ namespace Caravel.Abstractions;
 
 public interface INode
 {
+    /// <summary>
+    /// Get the neighbors <see cref="IEdge"/>.
+    /// </summary>
+    /// <returns>The neighbors</returns>
     public ImmutableHashSet<IEdge> GetEdges();
 
-    // TODO: Document that OnNodeOpenedAsync can be used to log, throw exception or to change a StateMachine.
-    // In the case of the StateMachine, it can be used to dynamically modify the Node.GetEdges().
-    // OnNodeOpenedAsync is always executed before Node.GetEdges().
-
     /// <summary>
-    /// Method called each time a <see cref="INode"/> is opened.
+    /// Method called each time a <see cref="INode"/> is visited by <see cref="Caravel"/>.
     /// </summary>
     /// <param name="journey">The current <see cref="IJourney"/>.</param>
     /// <param name="cancellationToken">The CancellationToken.</param>
     /// <returns>A Task.</returns>
-    public Task OnNodeOpenedAsync(IJourney journey, CancellationToken cancellationToken);
+    public Task OnNodeVisitedAsync(IJourney journey, CancellationToken cancellationToken);
 }

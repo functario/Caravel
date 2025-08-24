@@ -12,6 +12,6 @@ public sealed record EnrichedNode<TNode>(TNode NodeToEnrich, IActionMetaData Act
     public ImmutableHashSet<IEdge> GetEdges() => NodeToEnrich.GetEdges();
 
     /// <inheritdoc cref="INode" />
-    public Task OnNodeOpenedAsync(IJourney journey, CancellationToken cancellationToken) =>
-        NodeToEnrich.OnNodeOpenedAsync(journey, cancellationToken);
+    public Task OnNodeVisitedAsync(IJourney journey, CancellationToken cancellationToken) =>
+        NodeToEnrich.OnNodeVisitedAsync(journey, cancellationToken);
 }
