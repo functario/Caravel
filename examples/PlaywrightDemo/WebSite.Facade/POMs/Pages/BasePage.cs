@@ -38,7 +38,7 @@ public class BasePage
         return journey.OfType<WebSiteJourney>().Map.GetPOM<TPOM>();
     }
 
-    public async Task OnNodeOpenedAsync(IJourney _, CancellationToken cancellationToken)
+    public async Task OnNodeVisitedAsync(IJourney _, CancellationToken cancellationToken)
     {
         await Assertions
             .Expect(PageTitle.TxtTitle)

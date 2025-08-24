@@ -17,7 +17,7 @@ public class NodeSpyBase : INodeSpy
 
     public ImmutableHashSet<IEdge> GetEdges() => InternalEdges;
 
-    public Task OnNodeOpenedAsync(IJourney journey, CancellationToken cancellationToken)
+    public Task OnNodeVisitedAsync(IJourney journey, CancellationToken cancellationToken)
     {
         cancellationToken.ThrowIfCancellationRequested();
         if (_isOnOpenedSuccess)

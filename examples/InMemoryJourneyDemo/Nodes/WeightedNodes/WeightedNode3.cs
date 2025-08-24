@@ -22,7 +22,7 @@ internal sealed class WeightedNode3 : INode
     private static Task<WeightedNode1> OpenNode1(IJourney journey, CancellationToken cancellationToken) =>
         Task.FromResult(new WeightedNode1());
 
-    public Task OnNodeOpenedAsync(IJourney journey, CancellationToken cancellationToken)
+    public Task OnNodeVisitedAsync(IJourney journey, CancellationToken cancellationToken)
     {
         // Add your own logic
         return Task.CompletedTask;

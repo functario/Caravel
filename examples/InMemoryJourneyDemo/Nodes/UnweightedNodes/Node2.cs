@@ -17,7 +17,7 @@ internal sealed class Node2 : INode
     private static Task<Node3> OpenNode3(IJourney journey, CancellationToken cancellationToken) =>
         Task.FromResult(new Node3());
 
-    public Task OnNodeOpenedAsync(IJourney journey, CancellationToken cancellationToken)
+    public Task OnNodeVisitedAsync(IJourney journey, CancellationToken cancellationToken)
     {
         // Add your own logic
         return Task.CompletedTask;

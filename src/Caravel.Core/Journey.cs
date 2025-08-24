@@ -114,7 +114,7 @@ public class Journey : IJourney
         linkedCancellationTokenSource.Token.ThrowIfCancellationRequested();
 
         await CurrentNode
-            .OnNodeOpenedAsync(this, linkedCancellationTokenSource.Token)
+            .OnNodeVisitedAsync(this, linkedCancellationTokenSource.Token)
             .ConfigureAwait(false);
 
         var originType = CurrentNode.GetType();
@@ -160,7 +160,7 @@ public class Journey : IJourney
         linkedCancellationTokenSource.Token.ThrowIfCancellationRequested();
 
         await CurrentNode
-            .OnNodeOpenedAsync(this, linkedCancellationTokenSource.Token)
+            .OnNodeVisitedAsync(this, linkedCancellationTokenSource.Token)
             .ConfigureAwait(false);
 
         // Validate the CurrentNode at each steps.
@@ -187,7 +187,7 @@ public class Journey : IJourney
             linkedCancellationTokenSource.Token.ThrowIfCancellationRequested();
 
             await outNode
-                .OnNodeOpenedAsync(this, linkedCancellationTokenSource.Token)
+                .OnNodeVisitedAsync(this, linkedCancellationTokenSource.Token)
                 .ConfigureAwait(false);
 
             return this;
@@ -289,7 +289,7 @@ public class Journey : IJourney
                 .NeighborNavigator.MoveNext(this, cancellationToken)
                 .ConfigureAwait(false);
 
-            await CurrentNode.OnNodeOpenedAsync(this, cancellationToken).ConfigureAwait(false);
+            await CurrentNode.OnNodeVisitedAsync(this, cancellationToken).ConfigureAwait(false);
 
             journeyLeg.Edges.Enqueue(edge);
             await _journeyLegPublisher
@@ -354,6 +354,6 @@ public class Journey : IJourney
             throw new UnexpectedNodeException(destinationType, CurrentNode.GetType());
         }
 
-        await CurrentNode.OnNodeOpenedAsync(this, cancellationToken).ConfigureAwait(false);
+        await CurrentNode.OnNodeVisitedAsync(this, cancellationToken).ConfigureAwait(false);
     }
 }
