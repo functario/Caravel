@@ -37,7 +37,7 @@ public sealed class ChainedAllowsToAddMetadata : IDisposable
         var sut = await journey
             .GotoAsync<Node2>()
             .DoAsync<Node2, EnrichedNode<Node2>>(
-                (journey, node2, ct) =>
+                (node2, ct) =>
                 {
                     var actionMetadata = new ActionMetaData("My custom metadata");
                     var enrichedNode = new EnrichedNode<Node2>(node2, actionMetadata);
