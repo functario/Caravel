@@ -24,7 +24,7 @@ The public API, documentation and internal implementation are still evolving, an
     - [Cancellation \& Timeout Management](#cancellation--timeout-management)
     - [Documentation via Mermaid](#documentation-via-mermaid)
     - [UI Automation Ready](#ui-automation-ready)
-  - [Tips](#tips)
+  - [Remarks](#remarks)
 
 
 ## Getting Started
@@ -210,11 +210,32 @@ Each journey has a global timeout (`JourneyCancellationToken`) that applies acro
 
 `Caravel` is compatible with Page Object Models (POM) and tools like [Playwright](https://playwright.dev/dotnet/), making it suitable for automating UI journeys in web or desktop applications.
 
+`Caravel` should also be benific when using BDD frameworks like [Reqnroll](https://github.com/reqnroll/Reqnroll) since you can write steps in a declarative way and let `Caravel` manages the navigation.
+
+***before***
+```gherkin
+Given Anthony is logged in
+When he clicks on `CreateMeeting` button
+And he creates a meeting
+And the meeting should be saved
+```
+
+***after***  
+
+With '`And he creates a meeting`' StepDefinitions containing a '`journey.GotoDo<MeetingPage>(...)`'.
+```gherkin
+Given Anthony is logged in
+And he creates a meeting
+Then the meeting should be saved
+```
+
+
 [[↑ top](#caravel)]
 
-## Tips
+## Remarks
 
-1. Use [global using file](https://learn.microsoft.com/en-us/dotnet/csharp/language-reference/keywords/using-directive#the-global-modifier) with references to `Caravel` namespaces to simplify your code files:  
+- `Caravel` is **not thread-safe**. A parallelized navigation does not make much sense. If you need to perform concurrent navigations, create separate `IJourney` instances for each thread.
+- Use [global using file](https://learn.microsoft.com/en-us/dotnet/csharp/language-reference/keywords/using-directive#the-global-modifier) with references to `Caravel` namespaces to simplify your code files:  
 ```csharp
 global using Caravel.Abstractions;
 global using Caravel.Abstractions.Exceptions;
