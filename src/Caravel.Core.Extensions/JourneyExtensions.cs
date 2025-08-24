@@ -14,7 +14,7 @@ public static partial class JourneyExtensions
         return await journey
             .GotoAsync<TDestination>(
                 EmptyWaypoints.Create(),
-                EmptyExcludedNodes.Create(),
+                EmptyExcludedWaypoints.Create(),
                 scopedCancellationToken
             )
             .ConfigureAwait(false);
@@ -48,7 +48,7 @@ public static partial class JourneyExtensions
         return await journey
             .GotoAsync<TDestination>(
                 waypoints,
-                EmptyExcludedNodes.Create(),
+                EmptyExcludedWaypoints.Create(),
                 scopedCancellationToken
             )
             .ConfigureAwait(false);
