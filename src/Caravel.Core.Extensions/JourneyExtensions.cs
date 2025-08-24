@@ -112,18 +112,6 @@ public static partial class JourneyExtensions
         return await journey.DoAsync(func, scopedCancellationToken).ConfigureAwait(false);
     }
 
-    public static async Task<IJourney> DoAsync<TCurrentNode, TTargetNode>(
-        this IJourney journey,
-        Func<IJourney, TCurrentNode, CancellationToken, Task<TTargetNode>> func,
-        CancellationToken scopedCancellationToken = default
-    )
-        where TCurrentNode : INode
-        where TTargetNode : INode
-    {
-        ArgumentNullException.ThrowIfNull(journey, nameof(journey));
-        return await journey.DoAsync(func, scopedCancellationToken).ConfigureAwait(false);
-    }
-
     public static async Task<IJourney> GotoDoAsync<TOriginNode, TTargetNode>(
         this IJourney journey,
         Func<IJourney, TOriginNode, CancellationToken, Task<TTargetNode>> func,
