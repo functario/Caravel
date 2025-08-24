@@ -209,11 +209,11 @@ public sealed class AtomicGotoDo : IDisposable
 
         // Act
         var sut = await journey.GotoDoAsync<Node3, Node4>(
+            waypoints,
             (journey, node3, ct) =>
             {
                 return Task.FromResult(builder.Map.NodeSpy4);
             },
-            waypoints,
             CancellationToken.None
         );
 
@@ -249,11 +249,11 @@ public sealed class AtomicGotoDo : IDisposable
 
         // Act
         var sut = await journey.GotoDoAsync<Node4, Node5>(
+            excludedWaypoints,
             (journey, node4, ct) =>
             {
                 return Task.FromResult(builder.Map.NodeSpy5);
             },
-            excludedWaypoints,
             CancellationToken.None
         );
 
@@ -293,12 +293,12 @@ public sealed class AtomicGotoDo : IDisposable
 
         // Act
         var sut = await journey.GotoDoAsync<Node5, Node6>(
+            waypoints,
+            excludedWaypoints,
             (journey, node5, ct) =>
             {
                 return Task.FromResult(builder.Map.NodeSpy6);
             },
-            waypoints,
-            excludedWaypoints,
             CancellationToken.None
         );
 

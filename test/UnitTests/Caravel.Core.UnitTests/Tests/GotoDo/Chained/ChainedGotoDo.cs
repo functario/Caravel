@@ -169,7 +169,7 @@ public sealed class ChainedGotoDo : IDisposable
         var sut = await journey
             .GotoAsync<Node2>()
             .GotoDoAsync<Node3, Node4>(
-                (journey, node2, ct) =>
+                (journey, node3, ct) =>
                 {
                     return Task.FromResult(builder.Map.NodeSpy4);
                 },
@@ -206,7 +206,7 @@ public sealed class ChainedGotoDo : IDisposable
         var sut = await journey
             .GotoAsync<Node2>()
             .GotoDoAsync<Node3, EnrichedNode<Node4>>(
-                (journey, node2, ct) =>
+                (journey, node3, ct) =>
                 {
                     var actionMetadata = new ActionMetaData("My custom metadata");
                     var enrichedNode = new EnrichedNode<Node4>(
@@ -247,11 +247,11 @@ public sealed class ChainedGotoDo : IDisposable
         var sut = await journey
             .GotoAsync<Node1>()
             .GotoDoAsync<Node3, Node4>(
+                waypoints,
                 (journey, node3, ct) =>
                 {
                     return Task.FromResult(builder.Map.NodeSpy4);
                 },
-                waypoints,
                 CancellationToken.None
             );
 
@@ -289,11 +289,11 @@ public sealed class ChainedGotoDo : IDisposable
         var sut = await journey
             .GotoAsync<Node1>()
             .GotoDoAsync<Node4, Node5>(
-                (journey, node1, ct) =>
+                excludedWaypoints,
+                (journey, node4, ct) =>
                 {
                     return Task.FromResult(builder.Map.NodeSpy5);
                 },
-                excludedWaypoints,
                 CancellationToken.None
             );
 
@@ -335,12 +335,12 @@ public sealed class ChainedGotoDo : IDisposable
         var sut = await journey
             .GotoAsync<Node1>()
             .GotoDoAsync<Node5, Node6>(
-                (journey, node1, ct) =>
+                waypoints,
+                excludedWaypoints,
+                (journey, node5, ct) =>
                 {
                     return Task.FromResult(builder.Map.NodeSpy6);
                 },
-                waypoints,
-                excludedWaypoints,
                 CancellationToken.None
             );
 
