@@ -123,4 +123,77 @@ public static partial class JourneyExtensions
         ArgumentNullException.ThrowIfNull(journey, nameof(journey));
         return await journey.DoAsync(func, scopedCancellationToken).ConfigureAwait(false);
     }
+
+    public static async Task<IJourney> GotoDoAsync<TOriginNode, TTargetNode>(
+        this IJourney journey,
+        Func<IJourney, TOriginNode, CancellationToken, Task<TTargetNode>> func,
+        CancellationToken scopedCancellationToken = default
+    )
+        where TOriginNode : INode
+        where TTargetNode : INode
+    {
+        ArgumentNullException.ThrowIfNull(journey, nameof(journey));
+        var waypoints = EmptyWaypoints.Create();
+        var excludedWaypoints = EmptyExcludedWaypoints.Create();
+
+        return await journey
+            .GotoDoAsync(func, waypoints, excludedWaypoints, scopedCancellationToken)
+            .ConfigureAwait(false);
+    }
+
+    public static async Task<IJourney> GotoDoAsync<TOriginNode, TTargetNode>(
+        this IJourney journey,
+        Func<IJourney, TOriginNode, CancellationToken, Task<TTargetNode>> func,
+        IWaypoints waypoints,
+        CancellationToken scopedCancellationToken = default
+    )
+        where TOriginNode : INode
+        where TTargetNode : INode
+    {
+        ArgumentNullException.ThrowIfNull(journey, nameof(journey));
+        var excludedWaypoints = EmptyExcludedWaypoints.Create();
+
+        return await journey
+            .GotoDoAsync(func, waypoints, excludedWaypoints, scopedCancellationToken)
+            .ConfigureAwait(false);
+    }
+
+    public static async Task<IJourney> GotoDoAsync<TOriginNode, TTargetNode>(
+        this IJourney journey,
+        Func<IJourney, TOriginNode, CancellationToken, Task<TTargetNode>> func,
+        IExcludedWaypoints excludedWaypoints,
+        CancellationToken scopedCancellationToken = default
+    )
+        where TOriginNode : INode
+        where TTargetNode : INode
+    {
+        ArgumentNullException.ThrowIfNull(journey, nameof(journey));
+        var waypoints = EmptyWaypoints.Create();
+        return await journey
+            .GotoDoAsync(func, waypoints, excludedWaypoints, scopedCancellationToken)
+            .ConfigureAwait(false);
+    }
+
+    public static async Task<IJourney> GotoDoAsync<TOriginNode, TTargetNode>(
+        this IJourney journey,
+        Func<IJourney, TOriginNode, CancellationToken, Task<TTargetNode>> func,
+        IWaypoints waypoints,
+        IExcludedWaypoints excludedWaypoints,
+        CancellationToken scopedCancellationToken = default
+    )
+        where TOriginNode : INode
+        where TTargetNode : INode
+    {
+        ArgumentNullException.ThrowIfNull(journey, nameof(journey));
+        ArgumentNullException.ThrowIfNull(waypoints, nameof(waypoints));
+        ArgumentNullException.ThrowIfNull(excludedWaypoints, nameof(excludedWaypoints));
+        var originType = typeof(TOriginNode);
+        var targetType = typeof(TTargetNode);
+
+        await journey
+            .GotoAsync(originType, waypoints, excludedWaypoints, scopedCancellationToken)
+            .ConfigureAwait(false);
+
+        return await journey.DoAsync(func, scopedCancellationToken).ConfigureAwait(false);
+    }
 }
