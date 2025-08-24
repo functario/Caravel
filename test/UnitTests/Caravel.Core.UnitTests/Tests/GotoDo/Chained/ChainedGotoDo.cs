@@ -223,8 +223,6 @@ public sealed class ChainedGotoDo : IDisposable
         await result.VerifyMermaidMarkdownAsync();
     }
 
-    //-------------------------------------------------------------
-
     [Fact(DisplayName = "With waypoints")]
     public async Task Test7()
     {
