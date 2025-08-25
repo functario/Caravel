@@ -139,6 +139,11 @@ public class Journey : IJourney
             )
             .ConfigureAwait(false);
 
+        // Visit the new current node
+        await CurrentNode
+            .OnNodeVisitedAsync(this, linkedCancellationTokenSource.Token)
+            .ConfigureAwait(false);
+
         return this;
     }
 
@@ -183,8 +188,6 @@ public class Journey : IJourney
                     linkedCancellationTokenSource.Token
                 )
                 .ConfigureAwait(false);
-
-            linkedCancellationTokenSource.Token.ThrowIfCancellationRequested();
 
             await targetNode
                 .OnNodeVisitedAsync(this, linkedCancellationTokenSource.Token)
@@ -354,7 +357,5 @@ public class Journey : IJourney
         {
             throw new UnexpectedNodeException(destinationType, CurrentNode.GetType());
         }
-
-        await CurrentNode.OnNodeVisitedAsync(this, cancellationToken).ConfigureAwait(false);
     }
 }

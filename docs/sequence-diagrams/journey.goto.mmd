@@ -1,0 +1,44 @@
+sequenceDiagram
+    participant Journey            as Journey
+    participant Ext                as JourneyExtensions
+    participant EmptyExcl          as EmptyExcludedWaypoints
+    participant Graph              as Graph
+    participant CurrentNode        as CurrentNode
+    participant Edge               as Edge
+    participant NeighborNavigator  as NeighborNavigator
+    participant JourneyLegFactory  as JourneyLegFactory
+    participant JourneyLegPublisher as JourneyLegPublisher
+
+    %% ---- 1. Extension entry ------------------------------------
+    Journey->>Ext: GotoAsync<Node3>()  
+    Ext->>Journey: GotoAsync<Node3>(EmptyWaypoints.Create() and EmptyExcludedWaypoints.Create() and token)
+
+    %% ---- 3. Visit starting node --------------------------------
+    Journey->>CurrentNode: OnNodeVisitedAsync(journey, token)
+
+    %% ---- 4. Resolve route ---------------------------------------
+    Journey->>Graph: GetRoute(originType, destinationType, waypoints, excludedWaypoints)
+    Graph-->>Journey: route
+
+    %% ---- 5. Create journey leg ----------------------------------
+    Journey->>JourneyLegFactory: CreateJourneyLeg(Id, legEdges, route)
+    JourneyLegFactory-->>Journey: journeyLeg
+
+    %% ---- 6. Publish leg started --------------------------------
+    Journey->>JourneyLegPublisher: PublishOnJourneyLegStartedAsync(event and token)
+
+    %% ---- 7. Navigate through the edges --------------------------
+    loop each edge in route.Edges
+        Journey->>Edge: edge
+        Edge->>NeighborNavigator: MoveNext(journey, token)
+        NeighborNavigator-->>Journey: newNode
+        Journey->>CurrentNode: OnNodeVisitedAsync(journey, token)
+        Journey->>journeyLeg: Edges.Enqueue(edge)
+        Journey->>JourneyLegPublisher: PublishOnJourneyLegUpdatedAsync(event and token)
+    end
+
+    %% ---- 8. Finish the leg --------------------------------------
+    Journey->>JourneyLegPublisher: PublishOnJourneyLegCompletedAsync(event and token)
+
+    %% ---- 9. Final node visit ------------------------------------
+    Journey->>CurrentNode: OnNodeVisitedAsync(journey, token)
