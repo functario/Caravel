@@ -36,8 +36,6 @@
         <PackageLicenseExpression>MIT</PackageLicenseExpression>
         <PackageReadmeFile>README.md</PackageReadmeFile>
         <PackageTags>$(NugetTags)</PackageTags>
-        <IncludeSymbols>true</IncludeSymbols>
-        <EmbedAllSources>true</EmbedAllSources>
     </PropertyGroup>
     <ItemGroup>
         <None Include="..\..\README.md">

@@ -37,8 +37,6 @@
         <PackageLicenseExpression>MIT</PackageLicenseExpression>
         <PackageReadmeFile>README.md</PackageReadmeFile>
         <PackageTags>$(NugetTags)</PackageTags>
-        <IncludeSymbols>true</IncludeSymbols>
-        <EmbedAllSources>true</EmbedAllSources>
     </PropertyGroup>
     <!-- CreatePackage is a variable set in pipeline to point to the packages 
     instead of the output path when creating the NuGet package -->
