@@ -1,6 +1,7 @@
 Param(
     # Optional: override the configuration (default = Release)
-    [string]$Configuration = 'Release'
+    [string]$Configuration = 'Release',
+    [string]$CreatePackage = 'true'
 )
 
 $SolutionRoot = Resolve-Path -LiteralPath "$PSScriptRoot\.." | Select-Object -ExpandProperty Path
@@ -30,7 +31,8 @@ foreach ($proj in $ProjectFiles) {
         --configuration $Configuration `
         --output $PackageOutput `
         --verbosity normal `
-        "$($proj.FullName)"
+        "$($proj.FullName)" `
+        -p:CreatePackage=true
 
     if ($LASTEXITCODE -ne 0) {
         Write-Error " Failed to pack project: $($proj.FullName)"

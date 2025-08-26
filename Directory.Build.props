@@ -18,7 +18,8 @@
   </PropertyGroup>
   <!--Nugets configuration and metadata-->
   <PropertyGroup>
-    <NugetTags>functario caravel graph navigation</NugetTags>
+    <NugetTags>functario;caravel;graph;navigation;ui;test</NugetTags>
     <FunctarioName>Functario</FunctarioName>
+    <CaravelProducVersion>0.0.0</CaravelProducVersion>
   </PropertyGroup>
 </Project>
