@@ -5,17 +5,29 @@
     <ItemGroup>
         <ProjectReference Include="..\Caravel.Abstractions\Caravel.Abstractions.csproj" />
     </ItemGroup>
+    <!--Versioning-->
+    <PropertyGroup>
+        <MajorVersion>0</MajorVersion>
+        <MinorVersion>1</MinorVersion>
+        <PatchVersion>0</PatchVersion>
+        <BaseVersion>$(MajorVersion).$(MinorVersion).$(PatchVersion)</BaseVersion>
+        <BuildNumber Condition="'$(BuildNumber)' == ''">0</BuildNumber>
+        <PackageVersion>$(BaseVersion)-alpha</PackageVersion>
+        <Version>$(PackageVersion)</Version>
+        <!--CaravelProducVersion from Directory.Build.props-->
+        <ProductVersion>$(CaravelProducVersion)</ProductVersion>
+        <AssemblyVersion>$(MajorVersion).$(MajorVersion).0.0</AssemblyVersion>
+        <InformationalVersion>$(PackageVersion).$(BuildNumber)</InformationalVersion>
+    </PropertyGroup>
     <!--Nuget configuration-->
     <PropertyGroup Condition="'$(Configuration)'=='Release'">
         <PackageId>$(FunctarioName).$(MSBuildProjectName)</PackageId>
         <Title>$(FunctarioName).$(MSBuildProjectName)</Title>
         <Description>
-            Caravel – A lightweight graph‑processing framework.
+            Caravel is a framework that provides an abstraction for creating and navigating graphs.
         </Description>
-        <Version>0.1.0-alpha.1</Version>
         <PackageReleaseNotes>
-            ** Not ready for production **
-            Initial alpha release.
+            - Initial alpha release.
         </PackageReleaseNotes>
         <Authors>Functario</Authors>
         <PackageProjectUrl>https://github.com/functario/Caravel</PackageProjectUrl>
@@ -25,11 +37,6 @@
         <PackageLicenseExpression>MIT</PackageLicenseExpression>
         <PackageReadmeFile>README.md</PackageReadmeFile>
         <PackageTags>$(NugetTags)</PackageTags>
-    </PropertyGroup>
-    <PropertyGroup Condition="'$(Configuration)'=='Release'">
-        <IncludeSymbols>true</IncludeSymbols>
-        <SymbolPackageFormat>snupkg</SymbolPackageFormat>
-        <PackAsTool>false</PackAsTool>
     </PropertyGroup>
     <ItemGroup>
         <None Include="..\..\README.md">
