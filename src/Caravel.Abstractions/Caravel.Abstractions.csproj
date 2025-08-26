@@ -17,6 +17,7 @@
         <ProductVersion>$(CaravelProducVersion)</ProductVersion>
         <AssemblyVersion>$(MajorVersion).$(MajorVersion).0.0</AssemblyVersion>
         <InformationalVersion>$(PackageVersion).$(BuildNumber)</InformationalVersion>
+        <Copyright>$(CaravelCopyright)</Copyright>
     </PropertyGroup>
     <!--Nuget configuration-->
     <PropertyGroup Condition="'$(Configuration)'=='Release'">
