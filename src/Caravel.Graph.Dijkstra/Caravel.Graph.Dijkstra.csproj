@@ -38,6 +38,14 @@
         <PackageReadmeFile>README.md</PackageReadmeFile>
         <PackageTags>$(NugetTags)</PackageTags>
     </PropertyGroup>
+    <!-- CreatePackage is a variable set in pipeline to point to the packages 
+    instead of the output path when creating the NuGet package -->
+    <ItemGroup Condition="'$(CreatePackage)' == 'true'">
+        <PackageReference
+            Include="Functario.Caravel.Abstractions"
+            VersionOverride="[0.1.0-alpha,1.0.0)"
+        />
+    </ItemGroup>
     <ItemGroup>
         <None Include="..\..\README.md">
             <Pack>true</Pack>
